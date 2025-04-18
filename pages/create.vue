@@ -2,10 +2,10 @@
     <div class="mx-auto flex flex-col justify-center items-center h-screen">
         <form @submit.prevent="add_room">
             <fieldset class="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
-                <legend class="fieldset-legend">Create Room Page</legend>
+                <legend class="fieldset-legend text-lg">สร้างห้องสุ่มรางวัล</legend>
                 <div class="join">
-                    <input type="text" class="input join-item" placeholder="Room name" v-model="RoomData.name" />
-                    <button class="btn join-item">Create</button>
+                    <input type="text" class="input join-item" placeholder="ชื่อห้องสุ่มรางวัล" v-model="RoomData.name" />
+                    <button class="btn join-item">สร้างห้อง</button>
                 </div>
             </fieldset>
         </form>

@@ -1,6 +1,6 @@
 <template>
     <div class="navbar bg-base-100 shadow-sm">
-        <a class="btn btn-ghost text-xl">GRIT</a>
+        <NuxtLink to="/"><a class="btn btn-ghost text-xl">GRIT</a></NuxtLink>
     </div>
     <slot />
     <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4">

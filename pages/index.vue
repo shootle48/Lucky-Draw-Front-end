@@ -10,6 +10,7 @@
                         รองรับทุกขั้นตอน ใช้งานง่าย เหมาะสำหรับทุกกิจกรรมภายในองค์กร
                     </p>
                     <NuxtLink to="/create"><button class="btn btn-primary font-medium">สร้างห้องเลย!</button></NuxtLink>
+                    <NuxtLink to="/room/bf084d88-6ed6-42d0-8046-609798566d0b"><button class="btn btn-primary font-medium">ห้องจำลอง</button></NuxtLink>
                 </div>
             </div>
         </div>
