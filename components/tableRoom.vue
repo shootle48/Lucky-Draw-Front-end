@@ -16,8 +16,9 @@
                         <td>{{ room.id }}</td>
                         <td>{{ room.name }}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary mr-2">Edit</button>
-                            <button class="btn btn-sm btn-error">Delete</button>
+                            <NuxtLink :to="`/update/${room.id}`"><button
+                                    class="btn btn-sm btn-primary mr-2">Edit</button></NuxtLink>
+                            <button @click="deleteRoom(room.id)" class="btn btn-sm btn-error">Delete</button>
                         </td>
                     </tr>
                 </tbody>
@@ -28,6 +29,21 @@
 
 <script setup lang="ts">
 import type { roomType } from '@/types/room'
+import axios from 'axios';
+
+const deleteRoom = async (roomId: string) => {
+    if (confirm("Are you sure you want to delete this room?")) {
+        try {
+            const response = await axios.delete(`${import.meta.env.VITE_API}/rooms/${roomId}`)
+            if (response.status == 200) {
+                alert('Delete room successfully')
+                props.fetchRooms()
+            }
+        } catch (error) {
+            console.error("Error deleting room:", error)
+        }
+    }
+}
 
 const props = defineProps<{
     rooms: roomType[]

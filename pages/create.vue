@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import type { roomType } from '@/types/room';
+import type { roomTypes } from '@/types/room';
 
-const RoomData = ref < roomType > ({
+const RoomData = ref < roomTypes > ({
     id: '',
     name: '',
 });
