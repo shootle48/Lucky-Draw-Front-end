@@ -1,14 +1,17 @@
 <template>
-    <div class="flex flex-col items-center h-screen mt-20">
-        <h1 class="text-2xl font-bold">
-            หน้าแสดงห้องทั้งหมด
-        </h1>
-        <NuxtLink to="/create"><button class="btn btn-primary">สร้างห้อง</button></NuxtLink>
-        <div v-if="isLoading" class="flex justify-center py-4">
-            <span class="loading loading-dots loading-xl"></span>
-        </div>
-        <div v-else>
-            <tableRoom :rooms="rooms" :fetchRooms="fetchRooms" :isLoading="isLoading" />
+    <div class="flex flex-col mx-autos items-center h-screen justify-center relative">
+        <LoadingPage v-if="isLoading" />
+        <div v-else class="hero bg-base-200 min-h-screen">
+            <div class="hero-content text-center">
+                <div class="min-w-lg">
+                    <h1 class="text-5xl font-semibold">🎁 ระบบสุ่มของรางวัล</h1>
+                    <p class="text-lg py-6 font-medium ">
+                        บริหารรางวัล รายชื่อ และการสุ่ม ได้อย่างเป็นระบบ<br>
+                        รองรับทุกขั้นตอน ใช้งานง่าย เหมาะสำหรับทุกกิจกรรมภายในองค์กร
+                    </p>
+                    <NuxtLink to="/create"><button class="btn btn-primary font-medium">สร้างห้องเลย!</button></NuxtLink>
+                </div>
+            </div>
         </div>
     </div>
 </template>

@@ -16,22 +16,31 @@
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 
-const RoomData = ref < roomTypes > ({
+const Router = useRouter();
+const RoomData = ref<roomTypes>({
     id: '',
     name: '',
 });
 
 const add_room = async () => {
-    if (RoomData.value.name !== '') {
-        const response = await axios.post(`${import.meta.env.VITE_API}/rooms/create`, {
-            ...RoomData.value,
-        });
-        if (response.status == 200) {
-            alert('สร้างห้องำสำเร็จ');
-            navigateTo('/')
+    try {
+        if (RoomData.value.name !== '') {
+            const response = await axios.post(`${import.meta.env.VITE_API}/rooms/create`, {
+                ...RoomData.value,
+            });
+
+            if (response.status === 200) {
+                const roomId = response.data.data.id;
+                alert('Room created successfully');
+                const routeData = await Router.push(`/room/${roomId}`);
+                console.log(routeData);
+            }
+        } else {
+            alert('Please enter room name')
         }
-    } else {
-        alert('Please enter room name')
+    }
+    catch (error) {
+        console.error("Error creating room:", error);
     }
 }
 
