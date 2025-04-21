@@ -50,20 +50,37 @@ const handleImageUpload = (event: Event) => {
 
 // ฟังก์ชันลบรูปภาพ
 const removeImage = () => {
+  // 👇 revoke URL ที่เคย preview ก่อนล้าง
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+
   imagePreview.value = null;
   prizeStore.newPrize.image = null;
 
-  // รีเซ็ต input file
   const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
   if (fileInput) {
     fileInput.value = '';
   }
 };
 
+
+const getImageSrc = (image: string | File | null): string => {
+  if (!image) return '';
+  if (typeof image === 'string') return image;
+  return URL.createObjectURL(image);
+};
+
 // รีเซ็ตรูปภาพเมื่อปิด modal
 watch(() => prizeStore.showAddPrizeModal, (isOpen) => {
   if (!isOpen) {
     removeImage();
+  }
+});
+
+onBeforeUnmount(() => {
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value);
   }
 });
 </script>
@@ -131,7 +148,9 @@ watch(() => prizeStore.showAddPrizeModal, (isOpen) => {
 
                 <figure class="px-4 pt-4">
                   <div v-if="prize.image" class="rounded-xl h-32 w-full">
-                    <!-- <img :src="prize.image" :alt="prize.name" class="rounded-xl object-contain h-32 mx-auto" /> -->
+                    <img :src="getImageSrc(prize.image)" :alt="prize.name"
+                      class="rounded-xl object-contain h-32 mx-auto" />
+
                   </div>
                   <div v-else class="bg-base-300 rounded-xl flex items-center justify-center h-32 w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"

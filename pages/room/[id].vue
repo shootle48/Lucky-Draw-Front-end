@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div v-if='isLoading'  class="h-full">
-        <LoadingPage/>
-    </div>
-    <div v-else  class="flex flex-col m-6">
+        <div v-if='isLoading' class="h-full">
+            <LoadingPage />
+        </div>
+        <div v-else class="flex flex-col m-6">
             <div class="flex justify-center mb-4">
                 <h1 class="text-3xl font-bold">{{ roomName }}</h1>
             </div>
@@ -15,7 +15,8 @@
                     <legend class="fieldset-legend text-left text-3xl">ผู้เล่น</legend>
                     <div class="form-control w-full text-left">
                         <label class="label">
-                            <span class="label-text text-lg mb-2">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx, .csv)</span>
+                            <span class="label-text text-lg mb-2">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx,
+                                .csv)</span>
                         </label>
                         <input type="file" @change="playerStore.handlePlayersImport" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full" />
@@ -29,19 +30,19 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
 import { usePlayerStore } from '@/stores/playerStore';
 
 const route = useRoute();
 const playerStore = usePlayerStore();
-const roomName = playerStore.rooms.name;
-const isLoading = computed(() => playerStore.isLoading)
+const prizeStore = usePrizeStore()
 
+const { isLoading, rooms } = storeToRefs(playerStore);
+const roomName = computed(() => rooms.value.name);
 
-
-onMounted( ()=> {
-     playerStore.fetchRoom(route.params.id as string);
-})
+onMounted(() => {
+  playerStore.fetchRoom(route.params.id as string);
+});
 </script>
+
 
 <style lang="scss" scoped></style>
