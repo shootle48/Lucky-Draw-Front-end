@@ -39,8 +39,8 @@ const prizeStore = usePrizeStore()
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 
-onMounted(() => {
-  playerStore.fetchRoom(route.params.id as string);
+onMounted(async () => {
+    await playerStore.fetchRoom(route.params.id as string);
 });
 </script>
 

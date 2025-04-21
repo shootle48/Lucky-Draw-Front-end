@@ -3,9 +3,14 @@ import { ref, onMounted, watch } from 'vue';
 import type { prizeType } from '@/types/prize';
 import { usePrizeStore } from '@/stores/PrizeStore';
 import { useCarouselStore } from '@/stores/CarouselStore';
+import { storeToRefs } from 'pinia';
 
 const prizeStore = usePrizeStore();
 const carouselStore = useCarouselStore();
+const route = useRoute();
+const { isLoading } = storeToRefs(prizeStore);
+const currentRoomId = route.params.id as string;
+prizeStore.newPrize.room_id = currentRoomId;
 
 // เริ่มการทำงานของ carousel เมื่อ component ถูกโหลด
 onMounted(() => {
@@ -66,10 +71,11 @@ const removeImage = () => {
 
 
 const getImageSrc = (image: string | File | null): string => {
-  if (!image) return '';
-  if (typeof image === 'string') return image;
-  return URL.createObjectURL(image);
+  if (!image) return "";
+  if (typeof image === "string") return image; // ✅ image_url จาก backend
+  return URL.createObjectURL(image); // ✅ สำหรับ preview ก่อนบันทึก
 };
+
 
 // รีเซ็ตรูปภาพเมื่อปิด modal
 watch(() => prizeStore.showAddPrizeModal, (isOpen) => {
@@ -147,11 +153,10 @@ onBeforeUnmount(() => {
                 <div class="h-2 w-full bg-primary"></div>
 
                 <figure class="px-4 pt-4">
-                  <div v-if="prize.image" class="rounded-xl h-32 w-full">
-                    <img :src="getImageSrc(prize.image)" :alt="prize.name"
-                      class="rounded-xl object-contain h-32 mx-auto" />
 
-                  </div>
+                  <img v-if="prize.image" :src="getImageSrc(prize.image)" :alt="prize.name"
+                    class="rounded-xl object-contain h-32 mx-auto" />
+                    
                   <div v-else class="bg-base-300 rounded-xl flex items-center justify-center h-32 w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
                       viewBox="0 0 24 24" stroke="currentColor">
@@ -215,18 +220,19 @@ onBeforeUnmount(() => {
   <div class="modal" :class="{ 'modal-open': prizeStore.showAddPrizeModal }">
     <div class="modal-box">
       <h3 class="font-bold text-lg mb-4">เพิ่มรางวัล</h3>
-      <div class="form-control">
+      <div class="form-control flex flex-col">
         <label class="label">
           <span class="label-text">ชื่อรางวัล</span>
         </label>
-        <input v-model="prizeStore.newPrize.name" type="text" placeholder="ชื่อรางวัล" class="input input-bordered" />
+        <input v-model="prizeStore.newPrize.name" type="text" placeholder="ชื่อรางวัล"
+          class="input input-bordered w-full" />
       </div>
-      <div class="form-control mt-2">
+      <div class="form-control mt-2 flex flex-col">
         <label class="label">
           <span class="label-text">จำนวนรางวัล</span>
         </label>
         <input v-model="prizeStore.newPrize.quantity" type="number" min="1" placeholder="จำนวนรางวัล"
-          class="input input-bordered" />
+          class="input input-bordered w-full" />
       </div>
 
       <!-- เพิ่มส่วนอัปโหลดรูปภาพ -->
@@ -241,7 +247,7 @@ onBeforeUnmount(() => {
             <img :src="imagePreview" class="object-contain max-h-full" />
           </div>
           <div v-else class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-18 w-18 text-base-content opacity-30" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -267,4 +273,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+
+  <LoadingPage v-if="isLoading" />
 </template>
