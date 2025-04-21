@@ -1,0 +1,251 @@
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue';
+import type { prizeType } from '@/types/prize';
+import { usePrizeStore } from '@/stores/PrizeStore';
+import { useCarouselStore } from '@/stores/CarouselStore';
+
+const prizeStore = usePrizeStore();
+const carouselStore = useCarouselStore();
+
+// เริ่มการทำงานของ carousel เมื่อ component ถูกโหลด
+onMounted(() => {
+  carouselStore.setupCarousel();
+});
+
+const props = defineProps<{
+  prizes: prizeType[];
+}>();
+
+// เพิ่มตัวแปรสำหรับเก็บตัวอย่างรูปภาพ
+const imagePreview = ref<string | null>(null);
+
+// ฟังก์ชันจัดการการอัปโหลดรูปภาพ
+const handleImageUpload = (event: Event) => {
+  const fileInput = event.target as HTMLInputElement;
+  const files = fileInput.files;
+
+  if (files && files.length > 0) {
+    const file = files[0];
+
+    // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
+    if (!file.type.startsWith('image/')) {
+      alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
+      return;
+    }
+
+    // กำหนดขนาดไฟล์สูงสุด (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('ไฟล์มีขนาดใหญ่เกินไป กรุณาอัปโหลดไฟล์ขนาดไม่เกิน 5MB');
+      return;
+    }
+
+    // สร้าง URL สำหรับแสดงตัวอย่างรูปภาพ
+    imagePreview.value = URL.createObjectURL(file);
+
+    // เก็บไฟล์ไว้ใน prize
+    prizeStore.newPrize.image = file;
+  }
+};
+
+// ฟังก์ชันลบรูปภาพ
+const removeImage = () => {
+  imagePreview.value = null;
+  prizeStore.newPrize.image = null;
+
+  // รีเซ็ต input file
+  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+  if (fileInput) {
+    fileInput.value = '';
+  }
+};
+
+// รีเซ็ตรูปภาพเมื่อปิด modal
+watch(() => prizeStore.showAddPrizeModal, (isOpen) => {
+  if (!isOpen) {
+    removeImage();
+  }
+});
+</script>
+
+<template>
+  <!-- ส่วนข้อมูลรางวัล -->
+  <div class="card bg-base-100 w-full shadow-xl">
+    <div class="card-body">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="card-title text-3xl">รางวัล</h2>
+        <div class="flex gap-2">
+          <!-- ปุ่มเปิด/ปิดการเลื่อนอัตโนมัติ -->
+          <button @click="carouselStore.toggleAutoSlide" class="btn btn-sm btn-circle"
+            :class="carouselStore.autoSlideEnabled ? 'btn-success' : 'btn-outline'">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path v-if="carouselStore.autoSlideEnabled" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path v-if="!carouselStore.autoSlideEnabled" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+          <button @click="prizeStore.showAddPrizeModal = true" class="btn btn-primary btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            เพิ่มรางวัล
+          </button>
+        </div>
+      </div>
+
+      <!-- รายการรางวัลแบบ Carousel -->
+      <div v-if="props.prizes.length > 0" class="relative mb-4">
+        <!-- ปุ่มเลื่อนซ้าย -->
+        <button @click="carouselStore.moveCarousel('left')"
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-10 btn btn-circle bg-base-100 shadow-lg"
+          v-show="carouselStore.currentSlide > 0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- รายการรางวัล -->
+        <div class="overflow-hidden">
+          <div class="flex transition-transform duration-300 ease-in-out"
+            :style="{ transform: `translateX(-${carouselStore.currentSlide * 100 / carouselStore.itemsPerPage}%)` }">
+            <div v-for="(prize, index) in props.prizes" :key="index"
+              :style="{ flex: `0 0 ${100 / carouselStore.itemsPerPage}%` }" class="px-2">
+              <div
+                class="card bg-base-200 shadow-sm hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
+                <!-- ปุ่มลบรางวัล -->
+                <button @click="prizeStore.deletePrize(prize.id as string)"
+                  class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <!-- แถบสีด้านบนการ์ด -->
+                <div class="h-2 w-full bg-primary"></div>
+
+                <figure class="px-4 pt-4">
+                  <div v-if="prize.image" class="rounded-xl h-32 w-full">
+                    <img :src="prize.image" :alt="prize.name" class="rounded-xl object-contain h-32 mx-auto" />
+                  </div>
+                  <div v-else class="bg-base-300 rounded-xl flex items-center justify-center h-32 w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </figure>
+
+                <div class="card-body p-4">
+                  <h3 class="font-bold text-center truncate">{{ prize.name }}</h3>
+                  <div class="badge badge-primary badge-outline mx-auto">
+                    จำนวน {{ prize.quantity }} รางวัล
+                  </div>
+
+                  <div class="card-actions justify-end mt-2">
+                    <button class="btn btn-sm btn-outline btn-info">แก้ไข</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ปุ่มเลื่อนขวา -->
+        <button @click="carouselStore.moveCarousel('right')"
+          class="absolute right-0 top-1/2 -translate-y-1/2 z-10 btn btn-circle bg-base-100 shadow-lg"
+          v-show="carouselStore.currentSlide < carouselStore.maxSlide">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- ตัวแสดงสถานะการเล่นและจุดแสดงตำแหน่ง slide -->
+      <div v-if="props.prizes.length > carouselStore.itemsPerPage" class="flex flex-col items-center gap-1 mt-2 mb-4">
+        <div class="flex justify-center gap-1">
+          <button v-for="n in (carouselStore.maxSlide + 1)" :key="n" @click="carouselStore.currentSlide = n - 1"
+            class="btn btn-xs btn-circle" :class="carouselStore.currentSlide === n - 1 ? 'btn-primary' : 'btn-ghost'">
+          </button>
+        </div>
+
+        <!-- ตัวแสดงสถานะการเลื่อนอัตโนมัติ -->
+        <div v-if="carouselStore.autoSlideEnabled" class="text-xs text-success mt-1">
+          <span>เลื่อนอัตโนมัติทุก 5 วินาที</span>
+        </div>
+      </div>
+
+      <!-- ถ้าไม่มีรางวัล -->
+      <div v-if="props.prizes.length === 0" class="alert alert-info">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>ยังไม่มีรางวัล กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal เพิ่มรางวัล -->
+  <div class="modal" :class="{ 'modal-open': prizeStore.showAddPrizeModal }">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg mb-4">เพิ่มรางวัล</h3>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">ชื่อรางวัล</span>
+        </label>
+        <input v-model="prizeStore.newPrize.name" type="text" placeholder="ชื่อรางวัล" class="input input-bordered" />
+      </div>
+      <div class="form-control mt-2">
+        <label class="label">
+          <span class="label-text">จำนวนรางวัล</span>
+        </label>
+        <input v-model="prizeStore.newPrize.quantity" type="number" min="1" placeholder="จำนวนรางวัล"
+          class="input input-bordered" />
+      </div>
+
+      <!-- เพิ่มส่วนอัปโหลดรูปภาพ -->
+      <div class="form-control mt-2">
+        <label class="label">
+          <span class="label-text">รูปภาพรางวัล</span>
+        </label>
+        <div class="flex flex-col items-center gap-2">
+          <!-- แสดงรูปภาพตัวอย่าง ถ้ามีการเลือกรูป -->
+          <div v-if="imagePreview"
+            class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center overflow-hidden">
+            <img :src="imagePreview" class="object-contain max-h-full" />
+          </div>
+          <div v-else class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+
+          <div class="flex w-full gap-2">
+            <input type="file" @change="handleImageUpload" accept="image/*"
+              class="file-input file-input-bordered file-input-sm w-full" />
+            <button v-if="imagePreview" @click="removeImage" class="btn btn-sm btn-circle btn-error">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-action">
+        <button @click="prizeStore.showAddPrizeModal = false" class="btn">ยกเลิก</button>
+        <button @click="prizeStore.addPrize" class="btn btn-primary">เพิ่มรางวัล</button>
+      </div>
+    </div>
+  </div>
+</template>
