@@ -48,24 +48,20 @@ export const usePrizeStore = defineStore("prize", {
           room_id: this.newPrize.room_id,
           image_url: "", // ✅ ถ้ายังไม่มีภาพ
         };
-        this.isLoading = true;
-        const response = await fetch(
+
+        const response = await axios.post(
           `${import.meta.env.VITE_API}/prizes/create`,
+          payload,
           {
-            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(payload),
           }
         );
-        if (!response.ok) throw new Error("Failed to create prize");
 
-        const result = await response.json();
-        this.prizes.push(result.data);
+        this.prizes.push(response.data.data);
         this.showAddPrizeModal = false;
         this.resetNewPrize();
-        this.isLoading = false;
       } catch (error) {
         console.error("Error adding prize:", error);
         alert("ไม่สามารถเพิ่มรางวัลได้ กรุณาลองใหม่");
@@ -74,22 +70,58 @@ export const usePrizeStore = defineStore("prize", {
       }
     },
 
-    async deletePrize(prizeId: string) {
+    async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
+      this.isLoading = true;
       try {
-        this.isLoading = true;
-        const response = await axios.delete(
-          `${import.meta.env.VITE_API}/prizes/${prizeId}`
+        const response = await axios.patch(
+          `${import.meta.env.VITE_API}/prizes/${prizeId}`,
+          updatedData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
+    
         if (response.status === 200) {
-          this.prizes = this.prizes.filter((prize) => prize.id !== prizeId);
-          window.location.reload();
+          // Update local prize reactively
+          const index = this.prizes.findIndex((prize) => prize.id === prizeId);
+          if (index !== -1) {
+            this.prizes[index] = {
+              ...this.prizes[index],
+              ...response.data.data,
+            };
+          }
         }
+    
+        return response.data;
       } catch (error) {
-        console.error("Error deleting prize:", error);
+        console.error("Error updating prize:", error);
+        alert("ไม่สามารถอัปเดตรางวัลได้ กรุณาลองใหม่");
+        throw error;
       } finally {
         this.isLoading = false;
       }
     },
+    
+    async deletePrize(prizeId: string) {
+      this.isLoading = true;
+      try {
+        const response = await axios.delete(
+          `${import.meta.env.VITE_API}/prizes/${prizeId}`
+        );
+    
+        if (response.status === 200) {
+          this.prizes = this.prizes.filter((prize) => prize.id !== prizeId);
+        }
+      } catch (error) {
+        console.error("Error deleting prize:", error);
+        alert("ไม่สามารถลบรางวัลได้ กรุณาลองใหม่");
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
 
     resetNewPrize() {
       this.newPrize = {

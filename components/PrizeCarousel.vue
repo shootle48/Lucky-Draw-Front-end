@@ -10,6 +10,9 @@ const carouselStore = useCarouselStore();
 const route = useRoute();
 const { isLoading } = storeToRefs(prizeStore);
 const currentRoomId = route.params.id as string;
+const editingPrize = ref<prizeType | null>(null);
+const showEditPrizeModal = ref(false);
+const editImagePreview = ref<string | null>(null);
 prizeStore.newPrize.room_id = currentRoomId;
 
 // เริ่มการทำงานของ carousel เมื่อ component ถูกโหลด
@@ -21,54 +24,87 @@ const props = defineProps<{
   prizes: prizeType[];
 }>();
 
+const openEditModal = (prize: prizeType) => {
+  // Create a copy of the prize to edit
+  editingPrize.value = JSON.parse(JSON.stringify(prize));
+  showEditPrizeModal.value = true;
+
+  // Show image preview if available
+  if (prize.image) {
+    editImagePreview.value = getImageSrc(prize.image);
+  }
+};
 // เพิ่มตัวแปรสำหรับเก็บตัวอย่างรูปภาพ
 const imagePreview = ref<string | null>(null);
 
 // ฟังก์ชันจัดการการอัปโหลดรูปภาพ
-const handleImageUpload = (event: Event) => {
+const handleEditImageUpload = (event: Event) => {
   const fileInput = event.target as HTMLInputElement;
   const files = fileInput.files;
 
   if (files && files.length > 0) {
     const file = files[0];
 
-    // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
+    // Check if it's an image
     if (!file.type.startsWith('image/')) {
       alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
       return;
     }
 
-    // กำหนดขนาดไฟล์สูงสุด (5MB)
+    // Set max file size (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       alert('ไฟล์มีขนาดใหญ่เกินไป กรุณาอัปโหลดไฟล์ขนาดไม่เกิน 5MB');
       return;
     }
 
-    // สร้าง URL สำหรับแสดงตัวอย่างรูปภาพ
-    imagePreview.value = URL.createObjectURL(file);
+    // Create URL for image preview
+    if (editImagePreview.value) {
+      URL.revokeObjectURL(editImagePreview.value);
+    }
+    editImagePreview.value = URL.createObjectURL(file);
 
-    // เก็บไฟล์ไว้ใน prize
-    prizeStore.newPrize.image = file;
+    // Store file in editing prize
+    if (editingPrize.value) {
+      editingPrize.value.image = file;
+    }
+  }
+};
+const saveEditedPrize = async () => {
+  if (!editingPrize.value) return;
+
+  try {
+    const prizeId = editingPrize.value.id as string;
+    const updatedData = {
+      name: editingPrize.value.name,
+      quantity: editingPrize.value.quantity,
+      image: editingPrize.value.image,
+      room_id: editingPrize.value.room_id,
+    };
+
+    await prizeStore.updatePrize(prizeId, updatedData);
+    showEditPrizeModal.value = false;
+  } catch (error) {
+    console.error("Error updating prize:", error);
   }
 };
 
 // ฟังก์ชันลบรูปภาพ
-const removeImage = () => {
-  // 👇 revoke URL ที่เคย preview ก่อนล้าง
-  if (imagePreview.value) {
-    URL.revokeObjectURL(imagePreview.value);
+const removeEditImage = () => {
+  if (editImagePreview.value) {
+    URL.revokeObjectURL(editImagePreview.value);
   }
 
-  imagePreview.value = null;
-  prizeStore.newPrize.image = null;
+  editImagePreview.value = null;
+  if (editingPrize.value) {
+    editingPrize.value.image = null;
+  }
 
-  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+  const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
   if (fileInput) {
     fileInput.value = '';
   }
 };
-
 
 const getImageSrc = (image: string | File | null): string => {
   if (!image) return "";
@@ -78,15 +114,10 @@ const getImageSrc = (image: string | File | null): string => {
 
 
 // รีเซ็ตรูปภาพเมื่อปิด modal
-watch(() => prizeStore.showAddPrizeModal, (isOpen) => {
-  if (!isOpen) {
-    removeImage();
-  }
-});
-
-onBeforeUnmount(() => {
-  if (imagePreview.value) {
-    URL.revokeObjectURL(imagePreview.value);
+watch(showEditPrizeModal, (isOpen) => {
+  if (!isOpen && editImagePreview.value) {
+    URL.revokeObjectURL(editImagePreview.value);
+    editImagePreview.value = null;
   }
 });
 </script>
@@ -142,11 +173,12 @@ onBeforeUnmount(() => {
                 class="card bg-base-200 shadow-sm hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
                 <!-- ปุ่มลบรางวัล -->
                 <button @click="prizeStore.deletePrize(prize.id as string)"
-                  class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+                  class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10" :disabled="isLoading">
+                  <svg v-if="!isLoading" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
+                  <span v-else class="loading loading-spinner loading-xs"></span>
                 </button>
 
                 <!-- แถบสีด้านบนการ์ด -->
@@ -156,7 +188,7 @@ onBeforeUnmount(() => {
 
                   <img v-if="prize.image" :src="getImageSrc(prize.image)" :alt="prize.name"
                     class="rounded-xl object-contain h-32 mx-auto" />
-                    
+
                   <div v-else class="bg-base-300 rounded-xl flex items-center justify-center h-32 w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
                       viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +205,7 @@ onBeforeUnmount(() => {
                   </div>
 
                   <div class="card-actions justify-end mt-2">
-                    <button class="btn btn-sm btn-outline btn-info">แก้ไข</button>
+                    <button @click="openEditModal(prize)" class="btn btn-sm btn-outline btn-info">แก้ไข</button>
                   </div>
                 </div>
               </div>
@@ -255,9 +287,9 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="flex w-full gap-2">
-            <input type="file" @change="handleImageUpload" accept="image/*"
+            <input type="file" @change="handleEditImageUpload" accept="image/*"
               class="file-input file-input-bordered file-input-sm w-full" />
-            <button v-if="imagePreview" @click="removeImage" class="btn btn-sm btn-circle btn-error">
+            <button v-if="imagePreview" @click="removeEditImage" class="btn btn-sm btn-circle btn-error">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -270,6 +302,66 @@ onBeforeUnmount(() => {
       <div class="modal-action">
         <button @click="prizeStore.showAddPrizeModal = false" class="btn">ยกเลิก</button>
         <button @click="prizeStore.addPrize" class="btn btn-primary">เพิ่มรางวัล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal แก้ไขรางวัล -->
+  <div class="modal" :class="{ 'modal-open': showEditPrizeModal }">
+    <div class="modal-box edit-form">
+      <h3 class="font-bold text-lg mb-4">แก้ไขรางวัล</h3>
+      <div v-if="editingPrize" class="form-control flex flex-col">
+        <label class="label">
+          <span class="label-text">ชื่อรางวัล</span>
+        </label>
+        <input v-model="editingPrize.name" type="text" placeholder="ชื่อรางวัล" class="input input-bordered w-full" />
+      </div>
+      <div v-if="editingPrize" class="form-control mt-2 flex flex-col">
+        <label class="label">
+          <span class="label-text">จำนวนรางวัล</span>
+        </label>
+        <input v-model="editingPrize.quantity" type="number" min="1" placeholder="จำนวนรางวัล"
+          class="input input-bordered w-full" />
+      </div>
+
+      <!-- ส่วนอัปโหลดรูปภาพสำหรับการแก้ไข -->
+      <div class="form-control mt-2">
+        <label class="label">
+          <span class="label-text">รูปภาพรางวัล</span>
+        </label>
+        <div class="flex flex-col items-center gap-2">
+          <!-- แสดงรูปภาพตัวอย่าง ถ้ามีการเลือกรูป -->
+          <div v-if="editImagePreview"
+            class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center overflow-hidden">
+            <img :src="editImagePreview" class="object-contain max-h-full" />
+          </div>
+          <div v-else class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-18 w-18 text-base-content opacity-30" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+
+          <div class="flex w-full gap-2">
+            <input type="file" @change="handleEditImageUpload" accept="image/*"
+              class="file-input file-input-bordered file-input-sm w-full" />
+            <button v-if="editImagePreview" @click="removeEditImage" class="btn btn-sm btn-circle btn-error">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-action">
+        <button @click="showEditPrizeModal = false" class="btn">ยกเลิก</button>
+        <button @click="saveEditedPrize" class="btn btn-primary" :disabled="isLoading">
+          <span v-if="!isLoading">บันทึก</span>
+          <span v-else class="loading loading-spinner loading-sm"></span>
+        </button>
       </div>
     </div>
   </div>
