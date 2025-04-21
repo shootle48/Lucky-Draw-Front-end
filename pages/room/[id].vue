@@ -1,6 +1,9 @@
 <template>
-    <div class="h-full">
-        <div class="flex flex-col m-6">
+    <div>
+        <div v-if='isLoading'  class="h-full">
+        <LoadingPage/>
+    </div>
+    <div v-else  class="flex flex-col m-6">
             <div class="flex justify-center mb-4">
                 <h1 class="text-3xl font-bold">{{ roomName }}</h1>
             </div>
@@ -27,14 +30,18 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { onMounted } from 'vue';
 import { usePlayerStore } from '@/stores/playerStore';
-import { usePrizeStore } from '@/stores/prizeStore';
 
 const route = useRoute();
 const playerStore = usePlayerStore();
-const prizeStore = usePrizeStore();
-const roomName = route.params.name as string;
+const roomName = playerStore.rooms.name;
+const isLoading = computed(() => playerStore.isLoading)
+
+
+
+onMounted( ()=> {
+     playerStore.fetchRoom(route.params.id as string);
+})
 </script>
 
 <style lang="scss" scoped></style>

@@ -23,7 +23,7 @@ const props = defineProps<{
 
       <figure class="px-4 pt-4">
         <div v-if="prize.image" class="rounded-xl h-32 w-full">
-          <img :src="prize.image" :alt="prize.name" class="rounded-xl object-contain h-32 mx-auto" />
+          <!-- <img :src="prize.image" :alt="prize.name" class="rounded-xl object-contain h-32 mx-auto" /> -->
         </div>
         <div v-else class="bg-base-300 rounded-xl flex items-center justify-center h-32 w-full">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-base-content opacity-30" fill="none"
