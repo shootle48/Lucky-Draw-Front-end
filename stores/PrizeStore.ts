@@ -13,7 +13,7 @@ export const usePrizeStore = defineStore("prize", {
       room_id: "",
     } as prizeType,
     isLoading: false,
-    selectedImage: null as File | null, // ✅ เปลี่ยนตรงนี้
+    selectedImage: null as File | null
   }),
 
   actions: {
@@ -21,9 +21,14 @@ export const usePrizeStore = defineStore("prize", {
       this.isLoading = true;
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API}/prizes/list`
+          `${import.meta.env.VITE_API}/prizes/list`,
+          {
+            params: {
+              search: roomId,
+            },
+          }
         );
-        if (response.data && response.data.data) {
+        if (response.status == 200) {
           this.prizes = response.data.data;
         }
       } catch (error) {
@@ -44,12 +49,12 @@ export const usePrizeStore = defineStore("prize", {
       this.isLoading = true;
       try {
         let imageUrl = "";
-    
+
         // ⬆️ STEP 1: Upload image
         if (this.selectedImage) {
           const uploadForm = new FormData();
           uploadForm.append("file", this.selectedImage);
-    
+
           const uploadRes = await axios.post(
             `${import.meta.env.VITE_API}/prizes/upload`,
             uploadForm,
@@ -57,11 +62,11 @@ export const usePrizeStore = defineStore("prize", {
               headers: { "Content-Type": "multipart/form-data" },
             }
           );
-    
+
           // ✅ ดึงจาก .url ตามที่ Postman แสดง
           imageUrl = uploadRes.data.data.url;
         }
-    
+
         // ⬆️ STEP 2: Create prize
         const response = await axios.post(
           `${import.meta.env.VITE_API}/prizes/create`,
@@ -75,23 +80,23 @@ export const usePrizeStore = defineStore("prize", {
             headers: { "Content-Type": "application/json" },
           }
         );
-    
+
         // ✅ เพิ่มลง local store
         this.prizes.push({
           ...response.data.data,
           image: response.data.data.image_url,
         });
-    
+
         this.showAddPrizeModal = false;
-        this.resetNewPrize();
         this.selectedImage = null;
+        this.resetNewPrize();
       } catch (error) {
         console.error("Error adding prize:", error);
         alert("ไม่สามารถเพิ่มรางวัลได้ กรุณาลองใหม่");
       } finally {
         this.isLoading = false;
       }
-    },    
+    },
 
     async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
       this.isLoading = true;

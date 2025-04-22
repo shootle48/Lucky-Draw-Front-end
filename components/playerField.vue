@@ -1,5 +1,5 @@
 <template>
-    <div class="card bg-base-100 shadow-xl mb-8">
+    <div class="card bg-base-100 z-0 shadow-xl mb-8">
         <div class="card-body">
             <h2 class="card-title mb-4">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
 
@@ -14,7 +14,10 @@
                             </div>
                         </div>
 
-                        <p class="text-sm font-medium truncate">{{ player.firstName }}</p>
+                        <div class="text-lg font-bold">{{ player.fullName }}</div>
+                        <div class="text-sm text-gray-500">
+                            {{ player.position }} | {{ player.member_id }}
+                        </div>
                     </div>
                 </div>
             </div>

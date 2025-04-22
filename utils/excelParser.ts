@@ -25,32 +25,34 @@ export const parsePlayerExcel = (file: File): Promise<playerType[]> => {
         });
 
         const importedPlayer = jsonData.map((row: any): playerType => {
-          let nameField = '';
+          const lowerCasedKeys = Object.fromEntries(
+            Object.entries(row).map(([k, v]) => [k.toLowerCase(), v])
+          );
 
-          for (const [key, value] of Object.entries(row)) {
-            const lowerKey = key.toLowerCase();
-            if (lowerKey.includes('name') || lowerKey.includes('ชื่อ')) {
-              if (typeof value === 'string' && value.trim() !== '') {
-                nameField = value;
-                break;
-              }
-            }
-          }
-
-          if (!nameField && Object.values(row).length > 0) {
-            const firstValue = Object.values(row)[1];
-            if (typeof firstValue === 'string' && firstValue.trim() !== '') {
-              nameField = firstValue;
-            }
-          }
+          const prefix = String(
+            row['prefix'] || row['คำนำหน้า'] || lowerCasedKeys['prefix'] || lowerCasedKeys['คำนำหน้า'] || ''
+          );
+          const firstName = String(
+            row['firstName'] || row['ชื่อ'] || lowerCasedKeys['firstname'] || lowerCasedKeys['ชื่อ'] || ''
+          );
+          const lastName = String(
+            row['lastName'] || row['นามสกุล'] || lowerCasedKeys['lastname'] || lowerCasedKeys['นามสกุล'] || ''
+          );
+          const member_id = String(
+            row['member_id'] || row['รหัสบัตรประชาชน/รหัสสมาชิก'] || lowerCasedKeys['member_id'] || lowerCasedKeys['รหัสบัตรประชาชน/รหัสสมาชิก'] || ''
+          );
+          const position = String(
+            row['position'] || row['สถานะ'] || lowerCasedKeys['position'] || lowerCasedKeys['สถานะ'] || ''
+          );
 
           return {
-            prefix: String(row['prefix'] || row['คำนำหน้า'] || ''),
-            firstName: nameField || 'ไม่ระบุชื่อ',
-            lastName: String(row['lastName'] || row['นามสกุล'] || ''),
-            employeeId: String(row['employeeId'] || row['รหัสพนักงาน'] || ''),
-            role: String(row['role'] || row['ตำแหน่ง'] || ''),
-            image: null
+            prefix,
+            firstName,
+            lastName,
+            member_id,
+            position,
+            image: null,
+            fullName: `${firstName} ${lastName}`.trim()
           };
         }).filter(p => p.firstName && p.firstName !== 'ไม่ระบุชื่อ');
 
@@ -68,4 +70,4 @@ export const parsePlayerExcel = (file: File): Promise<playerType[]> => {
       reader.readAsBinaryString(file);
     }
   });
-}
+};
