@@ -1,5 +1,3 @@
-// src/stores/PrizeStore.ts
-import { defineStore } from "pinia";
 import axios from "axios";
 import type { prizeType } from "@/types/prize";
 
@@ -11,10 +9,11 @@ export const usePrizeStore = defineStore("prize", {
       id: "",
       name: "",
       quantity: 1,
-      image: null,
+      image_url: "",
       room_id: "",
     } as prizeType,
     isLoading: false,
+    selectedImage: null as File | null, // ✅ เปลี่ยนตรงนี้
   }),
 
   actions: {
@@ -22,14 +21,9 @@ export const usePrizeStore = defineStore("prize", {
       this.isLoading = true;
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API}/prizes/list`,
-          {
-            params: {
-              search: roomId,
-            },
-          }
+          `${import.meta.env.VITE_API}/prizes/list`
         );
-        if (response.status === 200) {
+        if (response.data && response.data.data) {
           this.prizes = response.data.data;
         }
       } catch (error) {
@@ -39,52 +33,103 @@ export const usePrizeStore = defineStore("prize", {
       }
     },
 
+    onImageChange(e: Event) {
+      const target = e.target as HTMLInputElement;
+      if (target?.files?.[0]) {
+        this.selectedImage = target.files[0]; // ✅ ใช้แบบไม่ต้อง .value แล้ว
+      }
+    },
+
     async addPrize() {
       this.isLoading = true;
       try {
-        const payload = {
-          name: this.newPrize.name,
-          quantity: this.newPrize.quantity,
-          room_id: this.newPrize.room_id,
-          image_url: "", // ✅ ถ้ายังไม่มีภาพ
-        };
-
+        let imageUrl = "";
+    
+        // ⬆️ STEP 1: Upload image
+        if (this.selectedImage) {
+          const uploadForm = new FormData();
+          uploadForm.append("file", this.selectedImage);
+    
+          const uploadRes = await axios.post(
+            `${import.meta.env.VITE_API}/prizes/upload`,
+            uploadForm,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+    
+          // ✅ ดึงจาก .url ตามที่ Postman แสดง
+          imageUrl = uploadRes.data.data.url;
+        }
+    
+        // ⬆️ STEP 2: Create prize
         const response = await axios.post(
           `${import.meta.env.VITE_API}/prizes/create`,
-          payload,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            name: this.newPrize.name,
+            image_url: imageUrl,
+            quantity: this.newPrize.quantity,
+            room_id: this.newPrize.room_id,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
           }
         );
-
-        this.prizes.push(response.data.data);
+    
+        // ✅ เพิ่มลง local store
+        this.prizes.push({
+          ...response.data.data,
+          image: response.data.data.image_url,
+        });
+    
         this.showAddPrizeModal = false;
         this.resetNewPrize();
+        this.selectedImage = null;
       } catch (error) {
         console.error("Error adding prize:", error);
         alert("ไม่สามารถเพิ่มรางวัลได้ กรุณาลองใหม่");
       } finally {
         this.isLoading = false;
       }
-    },
+    },    
 
     async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
       this.isLoading = true;
       try {
+        let imageUrl = updatedData.image;
+
+        // ⬆️ ถ้ามีรูปแบบใหม่ (File) ให้อัปโหลดก่อน
+        if (updatedData.image instanceof File) {
+          const form = new FormData();
+          form.append("file", updatedData.image);
+
+          const uploadRes = await axios.post(
+            `${import.meta.env.VITE_API}/prizes/upload`,
+            form,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+
+          imageUrl = uploadRes.data.data.url;
+        }
+
+        const payload = {
+          name: updatedData.name,
+          quantity: updatedData.quantity,
+          room_id: updatedData.room_id,
+          image_url: imageUrl,
+        };
+
         const response = await axios.patch(
           `${import.meta.env.VITE_API}/prizes/${prizeId}`,
-          updatedData,
+          payload,
           {
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
           }
         );
-    
+
         if (response.status === 200) {
-          // Update local prize reactively
           const index = this.prizes.findIndex((prize) => prize.id === prizeId);
           if (index !== -1) {
             this.prizes[index] = {
@@ -93,7 +138,7 @@ export const usePrizeStore = defineStore("prize", {
             };
           }
         }
-    
+
         return response.data;
       } catch (error) {
         console.error("Error updating prize:", error);
@@ -103,15 +148,16 @@ export const usePrizeStore = defineStore("prize", {
         this.isLoading = false;
       }
     },
-    
+
     async deletePrize(prizeId: string) {
       this.isLoading = true;
       try {
         const response = await axios.delete(
           `${import.meta.env.VITE_API}/prizes/${prizeId}`
         );
-    
-        if (response.status === 200) {
+
+        if (response.data) {
+          // Remove the prize from the local array
           this.prizes = this.prizes.filter((prize) => prize.id !== prizeId);
         }
       } catch (error) {
@@ -121,15 +167,43 @@ export const usePrizeStore = defineStore("prize", {
         this.isLoading = false;
       }
     },
-    
+
+    async uploadImage(file: File) {
+      this.isLoading = true;
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_API}/prizes/upload`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.data && response.data.data && response.data.data.url) {
+          return response.data.data.url;
+        }
+        return null;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่");
+        return null;
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
     resetNewPrize() {
       this.newPrize = {
         id: "",
         name: "",
         quantity: 1,
+        image_url: "",
         room_id: this.newPrize.room_id,
-        image_url: "", // ไม่จำเป็นก็ได้
       };
     },
   },

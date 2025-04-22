@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
 import type { prizeType } from '@/types/prize';
-import { usePrizeStore } from '@/stores/PrizeStore';
-import { useCarouselStore } from '@/stores/CarouselStore';
-import { storeToRefs } from 'pinia';
 
 const prizeStore = usePrizeStore();
 const carouselStore = useCarouselStore();
@@ -34,42 +30,42 @@ const openEditModal = (prize: prizeType) => {
     editImagePreview.value = getImageSrc(prize.image);
   }
 };
-// เพิ่มตัวแปรสำหรับเก็บตัวอย่างรูปภาพ
 const imagePreview = ref<string | null>(null);
+const handleImageChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const file = target?.files?.[0];
 
-// ฟังก์ชันจัดการการอัปโหลดรูปภาพ
-const handleEditImageUpload = (event: Event) => {
-  const fileInput = event.target as HTMLInputElement;
-  const files = fileInput.files;
+  if (!file) return;
 
-  if (files && files.length > 0) {
-    const file = files[0];
+  // ตรวจสอบว่าเป็นรูปภาพ
+  if (!file.type.startsWith("image/")) {
+    alert("กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น");
+    return;
+  }
 
-    // Check if it's an image
-    if (!file.type.startsWith('image/')) {
-      alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น');
-      return;
-    }
+  // ตรวจสอบขนาด (ไม่เกิน 5MB)
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    alert("ไฟล์มีขนาดใหญ่เกินไป กรุณาอัปโหลดไฟล์ขนาดไม่เกิน 5MB");
+    return;
+  }
 
-    // Set max file size (5MB)
-    const maxSize = 5 * 1024 * 1024;
-    if (file.size > maxSize) {
-      alert('ไฟล์มีขนาดใหญ่เกินไป กรุณาอัปโหลดไฟล์ขนาดไม่เกิน 5MB');
-      return;
-    }
+  // สร้าง preview ใหม่ (และ clear ตัวเก่า)
+  if (imagePreview.value) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+  imagePreview.value = URL.createObjectURL(file);
 
-    // Create URL for image preview
-    if (editImagePreview.value) {
-      URL.revokeObjectURL(editImagePreview.value);
-    }
-    editImagePreview.value = URL.createObjectURL(file);
+  // ✅ กำหนดรูปใน store (ถ้าใช้ Pinia)
+  const prizeStore = usePrizeStore();
+  prizeStore.selectedImage = file;
 
-    // Store file in editing prize
-    if (editingPrize.value) {
-      editingPrize.value.image = file;
-    }
+  // ✅ หากกำลังแก้ไข ให้เก็บไว้ใน editingPrize ด้วย
+  if (editingPrize.value) {
+    editingPrize.value.image = file;
   }
 };
+
 const saveEditedPrize = async () => {
   if (!editingPrize.value) return;
 
@@ -287,7 +283,7 @@ watch(showEditPrizeModal, (isOpen) => {
           </div>
 
           <div class="flex w-full gap-2">
-            <input type="file" @change="handleEditImageUpload" accept="image/*"
+            <input type="file" @change="handleImageChange" accept="image/*"
               class="file-input file-input-bordered file-input-sm w-full" />
             <button v-if="imagePreview" @click="removeEditImage" class="btn btn-sm btn-circle btn-error">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -344,7 +340,7 @@ watch(showEditPrizeModal, (isOpen) => {
           </div>
 
           <div class="flex w-full gap-2">
-            <input type="file" @change="handleEditImageUpload" accept="image/*"
+            <input type="file" @change="handleImageChange" accept="image/*"
               class="file-input file-input-bordered file-input-sm w-full" />
             <button v-if="editImagePreview" @click="removeEditImage" class="btn btn-sm btn-circle btn-error">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
