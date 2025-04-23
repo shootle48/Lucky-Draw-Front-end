@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { usePlayerStore } from '@/stores/playerStore';
-import PrizeModals from '@/components/prize/prizeModal.vue';
+import prizeModal from '@/components/prize/prizeModal.vue';
 import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
@@ -8,7 +7,7 @@ const playerStore = usePlayerStore();
 const selectedPlayer = ref<File | null>(null);
 const roomId = route.params.id as string;
 // ตัวแปรสำหรับ ref ไปยัง PrizeModals component
-const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
+const prizeModalsRef = ref<InstanceType<typeof prizeModal> | null>(null);
 
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
@@ -31,7 +30,7 @@ const handlePlayerChange = async (e: Event) => {
 
     // ✅ ถ้าต้อง export ด้วยก็ทำต่อได้
     if (file) {
-        await playerStore.handlePlayersExport(file);
+        await playerStore.handlePlayersExport(e);
     }
 }
 
@@ -68,8 +67,10 @@ onMounted(async () => {
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full" />
                     </div>
-                    <button @click="handleSubmitImport"
-                        class="btn btn-secondary w-fit mx-auto">เริ่มสุ่มรางวัล!</button>
+                    <NuxtLink :to="`../mainPage/${roomId}`" class="w-fit mx-auto mt-4">
+                        <button @click="handleSubmitImport"
+                            class="btn btn-secondary">เริ่มสุ่มรางวัล!</button>
+                    </NuxtLink>
                 </fieldset>
                 <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
             </div>

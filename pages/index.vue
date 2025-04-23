@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col mx-autos items-center justify-center">
+    <div class="flex flex-col mx-autos items-center justify-center rela">
         <div class="hero bg-base-200 min-h-screen">
             <div class="hero-content text-center">
                 <div>

@@ -1,39 +1,75 @@
 <script setup lang="ts">
+import { ref, computed } from "vue";
+import { useRoute } from "vue-router";
 import type { playerType } from "@/types/player";
-const isShowing = ref<boolean>(false)
+
+const route = useRoute();
+const isShowing = ref<boolean>(false);
 
 const togglePlayer = () => {
-    isShowing.value = !isShowing.value
-}
+    isShowing.value = !isShowing.value;
+};
 
 const props = defineProps<{
     players: playerType[];
 }>();
+
+// ✅ เช็คว่ากำลังอยู่ที่ mainPage หรือไม่
+const isMainPage = computed(() => route.path.startsWith('/mainPage'));
+
+// ✅ สำหรับ mainPage เท่านั้น: เพิ่ม fullName
+const playerListWithFullName = computed(() => {
+    return props.players.map((player) => ({
+        ...player,
+        fullName: `${player.first_name} ${player.last_name}`,
+    }));
+});
 </script>
 
+
 <template>
-    <div class="card bg-base-100 w-full z-0 shadow-xl mb-8">
+    <div class="card bg-base-100 w-full shadow-xl mb-8">
         <div class="card-body">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="card-title">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
+                <h2 class="card-title">
+                    รายชื่อผู้เข้าร่วม ({{ players.length }} คน)
+                </h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent" />
             </div>
 
-            <div v-show="isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div v-for="(player, index) in players" :key="index" class="card bg-base-200 shadow-sm">
+            <!-- ✅ ถ้า path = /mainPage/:id -->
+            <div v-if="isMainPage" v-show="isShowing"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div v-for="(player, index) in playerListWithFullName" :key="index" class="card bg-base-200 shadow-sm">
                     <div class="card-body p-3 text-center relative">
-                        <!-- รูปภาพผู้เข้าร่วม (ใช้รูปแทน) -->
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="player.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(player.firstName)"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name + ' ' + player.last_name)}`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>
 
                         <div class="text-lg font-bold">{{ player.fullName }}</div>
-                        <div class="text-sm text-gray-500">
-                            {{ player.position }}
+                        <div class="text-sm text-gray-500">{{ player.position }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ ถ้า path = /room/:id -->
+            <div v-else v-show="isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div v-for="(player, index) in players" :key="index" class="card bg-base-200 shadow-sm">
+                    <div class="card-body p-3 text-center relative">
+                        <div class="avatar mx-auto mb-2">
+                            <div class="w-14 h-14 rounded-full">
+                                <img :src="player.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.firstName)}`"
+                                    alt="รูปผู้เข้าร่วม" />
+                            </div>
                         </div>
+
+                        <div class="text-lg font-bold">
+                            {{ player.fullName }}
+                        </div>
+                        <div class="text-sm text-gray-500">{{ player.position }}</div>
                     </div>
                 </div>
             </div>

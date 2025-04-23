@@ -2,13 +2,12 @@
 
 const route = useRoute();
 const prizeStore = usePrizeStore();
-
+const isMainPage = computed(() => route.path.startsWith('/mainPage'));
 const { isLoading, prizes } = storeToRefs(prizeStore);
 
 // Carousel config
 const autoplay = ref(true);
 const autoplayDelay = 2000;
-
 
 // สร้าง computed property สำหรับ items ที่จะส่งให้ UCarousel
 const carouselItems = computed(() => {
@@ -49,7 +48,7 @@ const props = defineProps({
                 d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
-          <button @click="prizeStore.showAddPrizeModal = true" class="btn btn-primary btn-sm">
+          <button v-if="!isMainPage" @click="prizeStore.showAddPrizeModal = true" class="btn btn-primary btn-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -61,12 +60,12 @@ const props = defineProps({
 
       <!-- รายการรางวัลแบบ UCarousel -->
       <div v-if="prizes.length > 0" class="mb-4">
-        <UCarousel v-slot="{ item }" :items="carouselItems" :ui="{
+        <UCarousel v-slot="{ item }" :items="carouselItems" class="relative Carousel" :ui="{
           item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
-        }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots class="">
-          <div class="px-2">
-            <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
-          </div>
+        }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots>
+            <div class="px-2">
+              <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
+            </div>
         </UCarousel>
       </div>
 
@@ -81,3 +80,27 @@ const props = defineProps({
     </div>
   </div>
 </template>
+
+<style scoped>
+.Carousel::before,
+.Carousel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.Carousel::before {
+  left: 0;
+  background: linear-gradient(to right, #1e1e2f, transparent);
+}
+
+.Carousel::after {
+  right: 0;
+  background: linear-gradient(to left, #1e1e2f, transparent);
+}
+
+</style>

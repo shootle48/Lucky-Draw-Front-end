@@ -17,9 +17,9 @@ const props = defineProps({
 
 <template>
   <div class="container mx-auto">
-    <fieldset class="fieldset glass rounded-box border p-4">
+    <fieldset class="fieldset bg-base-[#0F172B] p-4">
       <legend class="fieldset-legend">
-        <h2 class="card-title text-3xl">รางวัล</h2>
+        <h2 class="text-4xl mb-2">รางวัล</h2>
       </legend>
       <PrizesCarousel :handleEditPrize="handleEditPrize" />
     </fieldset>

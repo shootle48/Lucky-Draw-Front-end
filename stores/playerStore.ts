@@ -21,12 +21,33 @@ export const usePlayerStore = defineStore("player", {
         const response = await axios.get(
           `${import.meta.env.VITE_API}/rooms/${roomId}`
         );
-        if(response.status == 200){
+        if (response.status == 200) {
           this.rooms = response.data.data;
         }
         this.isLoading = false;
       } catch (error) {
         console.error("Error fetching room:", error);
+      }
+    },
+
+    async fetchPlayers(roomId: string) {
+      try {
+        this.isLoading = true;
+        const response = await axios.get(
+          `${import.meta.env.VITE_API}/players/list`,
+          {
+            params: {
+              search: roomId,
+            },
+          }
+        );
+        if (response.status == 200) {
+          this.players = response.data.data;
+        }
+      } catch (e) {
+        console.log("something went wrong", e);
+      }finally{
+        this.isLoading = false
       }
     },
 
