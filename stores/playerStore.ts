@@ -21,7 +21,9 @@ export const usePlayerStore = defineStore("player", {
         const response = await axios.get(
           `${import.meta.env.VITE_API}/rooms/${roomId}`
         );
-        this.rooms = response.data.data;
+        if(response.status == 200){
+          this.rooms = response.data.data;
+        }
         this.isLoading = false;
       } catch (error) {
         console.error("Error fetching room:", error);

@@ -1,9 +1,25 @@
-<template>
-    <div class="card bg-base-100 z-0 shadow-xl mb-8">
-        <div class="card-body">
-            <h2 class="card-title mb-4">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
+<script setup lang="ts">
+import type { playerType } from "@/types/player";
+const isShowing = ref<boolean>(false)
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+const togglePlayer = () => {
+    isShowing.value = !isShowing.value
+}
+
+const props = defineProps<{
+    players: playerType[];
+}>();
+</script>
+
+<template>
+    <div class="card bg-base-100 w-full z-0 shadow-xl mb-8">
+        <div class="card-body">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="card-title">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
+                <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent" />
+            </div>
+
+            <div v-show="isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div v-for="(player, index) in players" :key="index" class="card bg-base-200 shadow-sm">
                     <div class="card-body p-3 text-center relative">
                         <!-- รูปภาพผู้เข้าร่วม (ใช้รูปแทน) -->
@@ -16,7 +32,7 @@
 
                         <div class="text-lg font-bold">{{ player.fullName }}</div>
                         <div class="text-sm text-gray-500">
-                            {{ player.position }} | {{ player.member_id }}
+                            {{ player.position }}
                         </div>
                     </div>
                 </div>
@@ -24,11 +40,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import type { playerType } from "@/types/player";
-
-const props = defineProps<{
-    players: playerType[];
-}>();
-</script>

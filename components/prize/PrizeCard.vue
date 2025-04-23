@@ -11,13 +11,8 @@ const getImageSrc = (image: string | File | null): string => {
 
 const props = defineProps<{
   prize: prizeType;
+  handleEditPrize: Function
 }>();
-
-const emit = defineEmits(['edit']);
-
-const openEditModal = (prize: prizeType) => {
-  emit('edit', prize);
-};
 </script>
 
 <template>
@@ -54,7 +49,7 @@ const openEditModal = (prize: prizeType) => {
       </div>
 
       <div class="card-actions justify-end mt-2">
-        <button @click="openEditModal(prize)" class="btn btn-sm btn-outline btn-info">แก้ไข</button>
+        <button @click="handleEditPrize(prize)" class="btn btn-sm btn-outline btn-info">แก้ไข</button>
       </div>
     </div>
   </div>

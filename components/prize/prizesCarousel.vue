@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { prizeType } from '@/types/prize';
-import PrizeModals from '@/components/prize/prizeModal.vue';
 
 const route = useRoute();
 const prizeStore = usePrizeStore();
@@ -11,8 +9,6 @@ const { isLoading, prizes } = storeToRefs(prizeStore);
 const autoplay = ref(true);
 const autoplayDelay = 2000;
 
-// ตัวแปรสำหรับ ref ไปยัง PrizeModals component
-const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 
 // สร้าง computed property สำหรับ items ที่จะส่งให้ UCarousel
 const carouselItems = computed(() => {
@@ -30,16 +26,13 @@ const toggleAutoplay = () => {
   autoplay.value = !autoplay.value;
 };
 
-// ฟังก์ชั่นเมื่อคลิกแก้ไขรางวัล
-const handleEditPrize = (prize: prizeType) => {
-  if (prizeModalsRef.value) {
-    prizeModalsRef.value.openEditModal(prize);
-  }
-};
+const props = defineProps({
+  handleEditPrize: Function
+})
 </script>
 
 <template>
-  <div class="card w-full relative px-10">
+  <div class="card w-full px-10">
     <div class="">
       <div class="flex justify-end items-center mb-4">
         <div class="flex gap-2">
@@ -48,12 +41,12 @@ const handleEditPrize = (prize: prizeType) => {
             :class="autoplay ? 'btn-success' : 'btn-outline'">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
-              <path v-if="autoplay" stroke-linecap="round" stroke-linejoin="round"
-                stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path v-if="autoplay" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path v-if="!autoplay" stroke-linecap="round" stroke-linejoin="round"
-                stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path v-if="!autoplay" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
           <button @click="prizeStore.showAddPrizeModal = true" class="btn btn-primary btn-sm">
@@ -67,37 +60,24 @@ const handleEditPrize = (prize: prizeType) => {
       </div>
 
       <!-- รายการรางวัลแบบ UCarousel -->
-      <div v-if="prizes.length > 0" class="relative mb-4">
-        <UCarousel
-          v-slot="{ item }"
-          :items="carouselItems"
-          :ui="{
-            item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
-          }"
-          :autoplay="autoplay ? { delay: autoplayDelay } : false"
-          loop
-          arrows
-          dots
-          class=""
-        >
-        <div class="px-2">
-          <PrizeCard :prize="item" @edit="handleEditPrize" />
-        </div>
+      <div v-if="prizes.length > 0" class="mb-4">
+        <UCarousel v-slot="{ item }" :items="carouselItems" :ui="{
+          item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
+        }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots class="">
+          <div class="px-2">
+            <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
+          </div>
         </UCarousel>
       </div>
 
       <!-- ถ้าไม่มีรางวัล -->
       <div v-if="prizes.length === 0" class="alert alert-info">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-          class="stroke-current shrink-0 w-6 h-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
         <span>ยังไม่มีรางวัล กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการ</span>
       </div>
     </div>
-    
-    <!-- นำเข้า component PrizeModals -->
-    <PrizeModals ref="prizeModalsRef" />
   </div>
 </template>

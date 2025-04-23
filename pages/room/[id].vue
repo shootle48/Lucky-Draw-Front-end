@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { usePlayerStore } from '@/stores/playerStore';
+import PrizeModals from '@/components/prize/prizeModal.vue';
+import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
 const playerStore = usePlayerStore();
 const selectedPlayer = ref<File | null>(null);
 const roomId = route.params.id as string;
+// ตัวแปรสำหรับ ref ไปยัง PrizeModals component
+const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 
-const handlePlayerChange = (e: Event) => {
-    const target = e.target as HTMLInputElement
-    if (target.files && target.files[0]) {
-        selectedPlayer.value = target.files[0]
-        console.log("seletedPlayer: ", selectedPlayer.value, "roomID: ",roomId)
-    }
+const handlePlayerChange = async (e: Event) => {
+    playerStore.handlePlayersExport(e)
 }
 
 const handleSubmitImport = async () => {
@@ -25,6 +25,12 @@ const handleSubmitImport = async () => {
     await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
 };
 
+// ฟังก์ชั่นเมื่อคลิกแก้ไขรางวัล
+const handleEditPrize = (prize: prizeType) => {
+  if (prizeModalsRef.value) {
+    prizeModalsRef.value.openEditModal(prize);
+  }
+};
 
 onMounted(async () => {
     await playerStore.fetchRoom(route.params.id as string);
@@ -39,9 +45,9 @@ onMounted(async () => {
             <div class="flex justify-center">
                 <h1 class="text-3xl font-bold">{{ roomName }}</h1>
             </div>
-            <PrizeField />
-            <div class="flex flex-col justify-center items-center my-6">
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-fit shadow-lg border p-4">
+            <PrizeField :handleEditPrize="handleEditPrize" />
+            <div class="flex flex-col justify-center items-center">
+                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-fit shadow-lg border my-6 p-4">
                     <legend class="fieldset-legend text-left text-3xl">ผู้เล่น</legend>
                     <div class="form-control w-full text-left">
                         <label class="label">
@@ -52,14 +58,16 @@ onMounted(async () => {
                             class="file-input file-input-bordered w-full" />
                     </div>
                 </fieldset>
+                <button @click="handleSubmitImport" class="btn btn-secondary w-fit mx-auto">เริ่มสุ่มรางวัล!</button>
                 <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
             </div>
-            <button @click="handleSubmitImport" class="btn btn-secondary w-fit mx-auto">เริ่มสุ่มรางวัล!</button>
         </div>
     </div>
     <div v-if='isLoading' class="h-full">
         <LoadingPage />
     </div>
+    <!-- นำเข้า component PrizeModals -->
+    <PrizeModals ref="prizeModalsRef" />
 </template>
 
 <style lang="scss" scoped></style>
