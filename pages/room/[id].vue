@@ -13,11 +13,8 @@ const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 
-const handlePlayerChange = async (e: Event) => {
-    playerStore.handlePlayersExport(e)
-}
-
 const handleSubmitImport = async () => {
+    console.log(selectedPlayer.value)
     if (!selectedPlayer.value) {
         alert('กรุณาเลือกไฟล์ก่อนเริ่มสุ่มรางวัล');
         return;
@@ -25,11 +22,25 @@ const handleSubmitImport = async () => {
     await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
 };
 
+const handlePlayerChange = async (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const file = target.files?.[0] ?? null;
+
+    // ✅ เซ็ตค่า
+    selectedPlayer.value = file;
+
+    // ✅ ถ้าต้อง export ด้วยก็ทำต่อได้
+    if (file) {
+        await playerStore.handlePlayersExport(file);
+    }
+}
+
+
 // ฟังก์ชั่นเมื่อคลิกแก้ไขรางวัล
 const handleEditPrize = (prize: prizeType) => {
-  if (prizeModalsRef.value) {
-    prizeModalsRef.value.openEditModal(prize);
-  }
+    if (prizeModalsRef.value) {
+        prizeModalsRef.value.openEditModal(prize);
+    }
 };
 
 onMounted(async () => {
@@ -57,8 +68,9 @@ onMounted(async () => {
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full" />
                     </div>
+                    <button @click="handleSubmitImport"
+                        class="btn btn-secondary w-fit mx-auto">เริ่มสุ่มรางวัล!</button>
                 </fieldset>
-                <button @click="handleSubmitImport" class="btn btn-secondary w-fit mx-auto">เริ่มสุ่มรางวัล!</button>
                 <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
             </div>
         </div>

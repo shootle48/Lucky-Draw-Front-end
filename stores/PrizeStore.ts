@@ -101,7 +101,7 @@ export const usePrizeStore = defineStore("prize", {
     async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
       this.isLoading = true;
       try {
-        let imageUrl = updatedData.image;
+        let imageUrl: string | undefined
 
         // ⬆️ ถ้ามีรูปแบบใหม่ (File) ให้อัปโหลดก่อน
         if (updatedData.image instanceof File) {
@@ -117,7 +117,10 @@ export const usePrizeStore = defineStore("prize", {
           );
 
           imageUrl = uploadRes.data.data.url;
+        }else{
+          imageUrl = updatedData.image_url
         }
+        
 
         const payload = {
           name: updatedData.name,

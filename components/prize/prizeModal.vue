@@ -53,6 +53,7 @@ const openEditModal = (prize: prizeType) => {
         editImagePreview.value = null;
     }
 
+    console.log(prize.image_url)
     selectedEditImage.value = null;
     showEditPrizeModal.value = true;
 };
@@ -95,6 +96,7 @@ const saveEditedPrize = async () => {
         }
 
         await prizeStore.updatePrize(editingPrize.value.id as string, editingPrize.value);
+        await prizeStore.fetchPrizes(prizeStore.newPrize.room_id)
         showEditPrizeModal.value = false;
 
         // รีเซ็ตหลังจากบันทึกเสร็จ
