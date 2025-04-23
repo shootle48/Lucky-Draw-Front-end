@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import prizeModal from '@/components/prize/prizeModal.vue';
+import PrizeModals from '@/components/prize/prizeModal.vue';
 import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
@@ -7,7 +7,7 @@ const playerStore = usePlayerStore();
 const selectedPlayer = ref<File | null>(null);
 const roomId = route.params.id as string;
 // ตัวแปรสำหรับ ref ไปยัง PrizeModals component
-const prizeModalsRef = ref<InstanceType<typeof prizeModal> | null>(null);
+const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
