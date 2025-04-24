@@ -4,6 +4,7 @@ import type { prizeType } from "@/types/prize";
 export const usePrizeStore = defineStore("prize", {
   state: () => ({
     prizes: [] as prizeType[],
+    prize: null as prizeType | null,
     showAddPrizeModal: false,
     newPrize: {
       id: "",
@@ -37,6 +38,24 @@ export const usePrizeStore = defineStore("prize", {
         this.isLoading = false;
       }
     },
+    async getPrize(prizeId: string) {
+      this.isLoading = true;
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API}/prizes/${prizeId}`
+        );
+    
+        if (response.status === 200) {
+          this.prize = response.data.data; // ✅ เก็บ object เดียว
+        }
+      } catch (e) {
+        console.error("Error fetching single prize:", e);
+        this.prize = null; // fallback กรณี error
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
 
     onImageChange(e: Event) {
       const target = e.target as HTMLInputElement;
@@ -211,6 +230,7 @@ export const usePrizeStore = defineStore("prize", {
         name: "",
         quantity: 1,
         image_url: "",
+        image: null,  
         room_id: this.newPrize.room_id,
       };
     },

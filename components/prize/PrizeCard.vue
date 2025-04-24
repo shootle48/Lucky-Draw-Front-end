@@ -6,6 +6,7 @@ const route = useRoute();
 
 const roomID = route.params.id
 const isMainPage = computed(() => route.path.startsWith('/mainPage'));
+const isPrizeChoose = computed(() => route.path.startsWith('/prizeChoose'))
 const getImageSrc = (image: string | File | null): string => {
   if (!image) return "";
   if (typeof image === "string") return image;
@@ -23,12 +24,15 @@ const props = defineProps<{
   <div class="card bg-neutral hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
-    <button v-if="!isMainPage" @click="prizeStore.deletePrize(prize.id as string)"
-      class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
+    <div v-if="!isMainPage">
+      <button @click="prizeStore.deletePrize(prize.id as string)"
+        class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
 
     <!-- แถบสีด้านบนการ์ด -->
     <div class="h-2 w-full bg-primary"></div>
@@ -58,8 +62,7 @@ const props = defineProps<{
             เลือกรางวัลนี้
           </button>
         </NuxtLink>
-
-
+        <div v-else-if="isPrizeChoose"></div>
 
         <!-- ✅ ถ้าอยู่ room → ปุ่มแก้ไข -->
         <button v-else @click="handleEditPrize(prize)" class="btn btn-sm btn-outline btn-info">

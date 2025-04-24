@@ -44,7 +44,7 @@ const playerListWithFullName = computed(() => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name + ' ' + player.last_name)}`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>

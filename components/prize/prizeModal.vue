@@ -13,6 +13,7 @@ const showEditPrizeModal = ref(false);
 const editingPrize = ref<prizeType | null>(null);
 const editImagePreview = ref<string | null>(null);
 const selectedEditImage = ref<File | null>(null);
+const editFileInput = ref<HTMLInputElement | null>(null);
 
 // Watch การเปลี่ยนแปลงของ selectedImage ใน store สำหรับ Add Modal
 watch(() => prizeStore.selectedImage, (newImage) => {
@@ -36,14 +37,15 @@ const removeImage = () => {
     imagePreview.value = null;
     prizeStore.selectedImage = null;
     // รีเซ็ต input file
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
 };
 
 // เปิด Edit Modal พร้อมข้อมูลรางวัลที่ต้องการแก้ไข
 const openEditModal = (prize: prizeType) => {
     editingPrize.value = JSON.parse(JSON.stringify(prize)); // Deep copy
-
+    const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
     // ตั้งค่ารูปภาพตัวอย่าง
     if (prize.image_url) {
         editImagePreview.value = typeof prize.image_url === 'string'
@@ -55,6 +57,9 @@ const openEditModal = (prize: prizeType) => {
 
     console.log(prize.image_url)
     selectedEditImage.value = null;
+    if (editFileInput.value) {
+        editFileInput.value.value = ''; // reset file input
+    }
     showEditPrizeModal.value = true;
 };
 
@@ -103,6 +108,9 @@ const saveEditedPrize = async () => {
         editingPrize.value = null;
         selectedEditImage.value = null;
         editImagePreview.value = null;
+        if (editFileInput.value) {
+            editFileInput.value.value = ''; // reset file input
+        }
     } catch (error) {
         console.error("Error saving edited prize:", error);
     }

@@ -82,7 +82,7 @@ export const usePlayerStore = defineStore("player", {
         formData.append("room_id", roomId); // ✅ ต้องใส่ room_id ใน formData
 
         const response = await axios.post(
-          `${import.meta.env.VITE_API}/players/impost`,
+          `${import.meta.env.VITE_API}/players/import`,
           formData
         );
 
