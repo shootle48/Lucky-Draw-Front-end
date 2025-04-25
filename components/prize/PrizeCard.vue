@@ -24,7 +24,7 @@ const props = defineProps<{
   <div class="card bg-neutral hover:shadow-md transition-shadow duration-200 relative overflow-hidden">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
-    <div v-if="!isMainPage">
+    <div v-if="!isMainPage && !isPrizeChoose">
       <button @click="prizeStore.deletePrize(prize.id as string)"
         class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,14 +55,14 @@ const props = defineProps<{
         จำนวน {{ prize.quantity }} รางวัล
       </div>
 
-      <div class="card-actions justify-center mt-4">
+      <div class="card-actions justify-center">
         <!-- ✅ ถ้าอยู่ mainPage → ปุ่ม "เลือก" กลางการ์ด -->
         <NuxtLink v-if="isMainPage" :to="`/prizeChoose/${roomID}/${prize.id}`">
           <button class="btn btn-primary w-full">
             เลือกรางวัลนี้
           </button>
         </NuxtLink>
-        <div v-else-if="isPrizeChoose"></div>
+        <div v-else-if="isPrizeChoose" class="hidden"></div>
 
         <!-- ✅ ถ้าอยู่ room → ปุ่มแก้ไข -->
         <button v-else @click="handleEditPrize(prize)" class="btn btn-sm btn-outline btn-info">

@@ -25,14 +25,11 @@ export const useDrawConditionStore = defineStore("drawCondition", {
             : [],
         };
 
-        console.log("📦 Payload:", payload);
-
         const res = await axios.post(
           `${import.meta.env.VITE_API}/draw-conditions/preview`,
           payload
         );
 
-        console.log("✅ Response:", res.data);
         this.drawConditions.splice(
           0,
           this.drawConditions.length,
@@ -55,13 +52,14 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       quantity: number;
     }) {
       try {
-        const res = await axios.post<drawConditionType>(
-          `${import.meta.env.VITE_API}/draw-condition/create`,
+        const res = await axios.post(
+          `${import.meta.env.VITE_API}/draw-conditions/create`,
           payload
         );
-        this.drawConditions.push(res.data); // เพิ่มเข้า state
-        return res.data;
+        this.drawConditions.push(res.data.data); // เพิ่มเข้า state
+        return res.data.data;
       } catch (error) {
+        console.log("payload",payload)
         console.error("❌ createDrawCondition error:", error);
         throw error;
       }
@@ -70,7 +68,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
     async deleteDrawCondition(conditionId: string) {
       try {
         await axios.delete(
-          `${import.meta.env.VITE_API}/draw-condition/${conditionId}`
+          `${import.meta.env.VITE_API}/draw-conditions/${conditionId}`
         );
         this.drawConditions = this.drawConditions.filter(
           (dc) => dc.id !== conditionId
