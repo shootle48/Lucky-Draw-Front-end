@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePrizeStore } from '@/stores/PrizeStore';
 import PrizesCarousel from './prizesCarousel.vue';
 
 

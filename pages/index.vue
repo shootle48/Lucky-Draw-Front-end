@@ -1,6 +1,6 @@
 <template>
-    <div class="relative bg-cover bg-no-repeat bg-fixed h-full " :style="`background-image: url('${bgImage}');`">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
+        <div class="absolute inset-0 backdrop-blur-sm"></div>
         <div class="relative z-10 flex flex-col justify-center items-center h-full  px-6 text-white">
             <img :src="logo" alt="Lucky Draw Logo" class="w-90 h-80" />
             <div class="text-center max-w-2xl">
@@ -44,7 +44,6 @@
 <script setup lang="ts">
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
-import bgImage from '@/assets/bg.svg';
 import logo from '@/assets/logo.png';
 
 const Router = useRouter();

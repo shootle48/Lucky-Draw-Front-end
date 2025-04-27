@@ -1,8 +1,9 @@
-// stores/playerStore.ts
-import axios from "axios";
+// เพิ่ม import apiClient
+import apiClient from '@/utils/apiClient'; // <--- เพิ่มบรรทัดนี้ (ตรวจสอบ path ให้ถูกต้อง)
+
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
-import { parsePlayerExcel } from "@/utils/excelParser";
+import { parsePlayerExcel } from "@/utils/excelParser"; // สมมติว่าฟังก์ชันนี้ยังใช้เหมือนเดิม
 
 export const usePlayerStore = defineStore("player", {
   state: () => ({
@@ -16,41 +17,42 @@ export const usePlayerStore = defineStore("player", {
 
   actions: {
     async fetchRoom(roomId: string) {
+      this.isLoading = true; // ย้าย isLoading มาไว้ข้างบน try/catch/finally
       try {
-        this.isLoading = true;
-        const response = await axios.get(
-          `${import.meta.env.VITE_API}/rooms/${roomId}`
-        );
+        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
+        const response = await apiClient.get(`/rooms/${roomId}`); // <--- แก้ไข
         if (response.status == 200) {
           this.rooms = response.data.data;
         }
-        this.isLoading = false;
       } catch (error) {
         console.error("Error fetching room:", error);
+        // พิจารณาการแสดงข้อผิดพลาดให้ผู้ใช้ทราบ
+      } finally {
+        this.isLoading = false; // ใส่ใน finally เพื่อให้ทำงานเสมอ
       }
     },
 
     async fetchPlayers(roomId: string) {
+      this.isLoading = true;
       try {
-        this.isLoading = true;
-        const response = await axios.get(
-          `${import.meta.env.VITE_API}/players/list`,
+        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
+        const response = await apiClient.get( // <--- แก้ไข
+          `/players/list`,
           {
-            params: {
-              search: roomId,
-            },
+            params: { search: roomId },
           }
         );
         if (response.status == 200) {
           this.players = response.data.data;
         }
       } catch (e) {
-        console.log("something went wrong", e);
-      }finally{
-        this.isLoading = false
+        console.log("something went wrong fetching players", e);
+      } finally {
+        this.isLoading = false;
       }
     },
 
+    // ฟังก์ชันนี้ไม่ได้เรียก API โดยตรง ไม่ต้องแก้ส่วน Axios
     async handlePlayersExport(event: Event) {
       const input = event.target as HTMLInputElement;
       if (!input.files || input.files.length === 0) return;
@@ -59,12 +61,13 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
 
       try {
+        // parsePlayerExcel ไม่เกี่ยวกับ Axios
         const players = await parsePlayerExcel(file);
         if (players.length === 0) {
           alert("ไม่พบข้อมูลที่นำเข้า");
         } else {
-          this.players = players;
-          console.log(this.players);
+          this.players = players; // อัปเดต state players ด้วยข้อมูลจาก Excel โดยตรง
+          console.log("Players from Excel:", this.players);
         }
       } catch (error) {
         console.error("Import Error:", error);
@@ -74,23 +77,32 @@ export const usePlayerStore = defineStore("player", {
       }
     },
 
+    // ฟังก์ชันนี้ใช้ import ข้อมูลผู้เล่นผ่าน API
     async handlePlayerImport(file: File, roomId: string) {
       this.isLoading = true;
       try {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("room_id", roomId); // ✅ ต้องใส่ room_id ใน formData
+        formData.append("room_id", roomId);
 
-        const response = await axios.post(
-          `${import.meta.env.VITE_API}/players/import`,
-          formData
+        // เปลี่ยน axios.post เป็น apiClient.post และใช้ path ต่อท้าย
+        // ต้อง override header เป็น multipart/form-data
+        const response = await apiClient.post( // <--- แก้ไข
+          `/players/import`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' } // <--- Override Header
+          }
         );
 
-        console.log("📦 ส่งสำเร็จ", response.data);
-        return response.data; // ✅ ส่งต่อข้อมูลกลับ
-      } catch (e) {
-        console.error("❌ Error importing excel", e);
-        throw e;
+        console.log("📦 Import สำเร็จ", response.data);
+        // พิจารณา: หลังจาก import สำเร็จ ควรจะ fetchPlayers ใหม่หรือไม่?
+        await this.fetchPlayers(roomId); // <-- เรียก fetchPlayers ใหม่เพื่ออัปเดตข้อมูลล่าสุด
+        return response.data;
+      } catch (e: any) { // ระบุ type error เป็น any หรือ AxiosError
+        console.error("❌ Error importing excel", e.response?.data || e.message || e);
+        alert(`เกิดข้อผิดพลาดในการนำเข้า: ${e.response?.data?.message || e.message || 'ไม่ทราบสาเหตุ'}`);
+        throw e; // โยน error ต่อ
       } finally {
         this.isLoading = false;
       }
