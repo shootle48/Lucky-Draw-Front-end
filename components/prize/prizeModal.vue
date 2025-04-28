@@ -7,6 +7,7 @@ const { isLoading } = storeToRefs(prizeStore);
 
 // สำหรับ Add Prize Modal
 const imagePreview = ref<string | null>(null);
+const addFileInput = ref<HTMLInputElement | null>(null);
 
 // สำหรับ Edit Prize Modal
 const showEditPrizeModal = ref(false);
@@ -37,15 +38,14 @@ const removeImage = () => {
     imagePreview.value = null;
     prizeStore.selectedImage = null;
     // รีเซ็ต input file
-    const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    if (addFileInput.value) {
+        addFileInput.value.value = '';
+    }
 };
 
 // เปิด Edit Modal พร้อมข้อมูลรางวัลที่ต้องการแก้ไข
 const openEditModal = (prize: prizeType) => {
     editingPrize.value = JSON.parse(JSON.stringify(prize)); // Deep copy
-    const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
     // ตั้งค่ารูปภาพตัวอย่าง
     if (prize.image_url) {
         editImagePreview.value = typeof prize.image_url === 'string'
@@ -56,9 +56,8 @@ const openEditModal = (prize: prizeType) => {
     }
 
     console.log(prize.image_url)
-    selectedEditImage.value = null;
-    if (editFileInput.value) {
-        editFileInput.value.value = ''; // reset file input
+    if (addFileInput.value) {
+        addFileInput.value.value = '';
     }
     showEditPrizeModal.value = true;
 };
@@ -86,8 +85,9 @@ const removeEditImage = () => {
     }
 
     // รีเซ็ต input file
-    const fileInput = document.querySelector('.edit-form input[type="file"]') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    if (editFileInput.value) {
+        editFileInput.value.value = '';
+    }
 };
 
 // บันทึกการแก้ไขรางวัล
@@ -162,7 +162,7 @@ defineExpose({
                     </div>
 
                     <div class="flex w-full gap-2">
-                        <input type="file" @change="handleImageChange" accept="image/*"
+                        <input ref="addFileInput" type="file" @change="handleImageChange" accept="image/*"
                             class="file-input file-input-bordered file-input-sm w-full" />
                         <button v-if="imagePreview" @click="removeImage" class="btn btn-sm btn-circle btn-error">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -224,7 +224,7 @@ defineExpose({
                     </div>
 
                     <div class="flex w-full gap-2">
-                        <input type="file" @change="handleEditImageChange" accept="image/*"
+                        <input ref="editFileInput" type="file" @change="handleEditImageChange" accept="image/*"
                             class="file-input file-input-bordered file-input-sm w-full" />
                         <button v-if="editImagePreview" @click="removeEditImage"
                             class="btn btn-sm btn-circle btn-error">

@@ -5,5 +5,6 @@ export interface playerType {
     fullName?: string;
     member_id: string;
     position: string;
+    is_active: boolean;
     image: string | null;
 }

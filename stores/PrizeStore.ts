@@ -85,7 +85,7 @@ export const usePrizeStore = defineStore("prize", {
           // Ensure you get the URL correctly based on your API response structure
           if (uploadRes.data?.url) {
             imageUrl = uploadRes.data.url;
-            this.newPrize.image_url = imageUrl
+            this.newPrize.image_url = imageUrl;
           } else {
             console.error(
               "Image upload response did not contain a URL:",
@@ -116,7 +116,7 @@ export const usePrizeStore = defineStore("prize", {
           const createdPrize = response.data.data; // Adjust based on your API response
           this.prizes.push(createdPrize); // Add the newly created prize to the list
           this.showAddPrizeModal = false;
-          this.resetNewPrize(); // Reset form
+          this.resetNewPrize();
         } else {
           console.error("Failed to create prize:", response);
           alert(
@@ -162,8 +162,9 @@ export const usePrizeStore = defineStore("prize", {
             }
           );
           // Update finalImageUrl with the newly uploaded one
-          if (uploadRes.data?.data?.url) {
-            finalImageUrl = uploadRes.data.data.url;
+          if (uploadRes.data?.url) {
+            finalImageUrl = uploadRes.data.url;
+            this.newPrize.image_url = finalImageUrl;
           } else {
             console.error(
               "Image upload response did not contain a URL:",

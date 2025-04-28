@@ -3,6 +3,7 @@ import PrizeModals from '@/components/prize/prizeModal.vue';
 import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
+const router = useRouter()
 const playerStore = usePlayerStore();
 const selectedPlayer = ref<File | null>(null);
 const roomId = route.params.id as string;
@@ -13,12 +14,15 @@ const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 
 const handleSubmitImport = async () => {
-    console.log(selectedPlayer.value)
     if (!selectedPlayer.value) {
         alert('กรุณาเลือกไฟล์ก่อนเริ่มสุ่มรางวัล');
         return;
     }
+
     await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
+
+    // ✅ เงื่อนไขผ่านแล้ว -> ค่อยไปหน้าใหม่
+    router.push(`../mainPage/${roomId}`);
 };
 
 const handlePlayerChange = async (e: Event) => {
@@ -67,10 +71,7 @@ onMounted(async () => {
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full" />
                     </div>
-                    <NuxtLink :to="`../mainPage/${roomId}`" class="w-fit mx-auto mt-4">
-                        <button @click="handleSubmitImport"
-                            class="btn btn-secondary">เริ่มสุ่มรางวัล!</button>
-                    </NuxtLink>
+                    <button @click="handleSubmitImport" class="btn btn-secondary">เริ่มสุ่มรางวัล!</button>
                 </fieldset>
                 <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
             </div>

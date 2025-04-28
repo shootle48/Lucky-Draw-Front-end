@@ -13,7 +13,8 @@ export const useDrawConditionStore = defineStore("drawCondition", {
     async fetchDrawConditions(
       roomId: string,
       filter_status: string,
-      filter_position: string[]
+      filter_position: string[],
+      filter_is_active: boolean,
     ) {
       this.isLoading = true; // ย้ายมาไว้ข้างบน
       try {
@@ -21,6 +22,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           room_id: roomId,
           filter_status,
           filter_position: Array.isArray(filter_position) ? filter_position : [],
+          filter_is_active,
         };
 
         // เปลี่ยน axios.post เป็น apiClient.post และใช้ path ต่อท้าย
@@ -28,10 +30,10 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           `/draw-conditions/preview`,
           payload
           // ไม่ต้อง override header เพราะ payload เป็น JSON (ตาม default ของ apiClient)
-        );
-
+        );     
         // ใช้ res.data.data โดยตรง ไม่ต้อง splice ถ้าต้องการแทนที่ทั้งหมด
         if (res.status === 200 && res.data?.data) {
+
            this.drawConditions = res.data.data;
         } else {
            this.drawConditions = []; // เคลียร์ค่าถ้า response ไม่ถูกต้อง

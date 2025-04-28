@@ -1,89 +1,7 @@
-<template>
-    <div class="p-4">
-        <h2 class="text-2xl text-center font-bold mb-4">ห้อง {{ roomData.name }}</h2>
-
-        <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" class="w-fit mx-auto" />
-
-        <div class="flex flex-col mt-8">
-            <h3 class="font-semibold mb-2">ตั้งเงื่อนไขผู้เล่น 🎯</h3>
-            <div class="flex flex-col lg:flex-row gap-4">
-                <!-- quantity -->
-                <div class="flex flex-col gap-2">
-                    <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
-                    <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit"
-                        placeholder="จำนวนที่ต้องการ" />
-                </div>
-                <!-- filter_status -->
-                <div class="flex flex-col gap-2">
-                    <p class="font-medium">เลือกจาก</p>
-                    <select v-model="filter_status" class="select select-bordered w-full lg:w-fit">
-                        <option value="not_received">ยังไม่ได้รับรางวัล</option>
-                        <option value="received">ได้รับรางวัลแล้ว</option>
-                    </select>
-                </div>
-
-                <!-- filter_position -->
-                <div class="flex flex-col justify-center gap-2">
-                    <p class="font-medium">ตำแหน่ง</p>
-                    <div class="grid grid-cols-2 lg:flex lg:flex-row gap-2">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="selectAll"
-                                :checked="filter_position.length === uniquePositions.length"
-                                @change="toggleAllPositions" class="checkbox checkbox-secondary" />
-                            <label for="selectAll" class="font-medium">เลือกทั้งหมด</label>
-                        </div>
-                        <div v-for="position in uniquePositions" :key="position" class="flex items-center gap-2">
-                            <input type="checkbox" :value="position" v-model="filter_position"
-                                class="checkbox checkbox-primary" :id="`pos-${position}`" />
-                            <label :for="`pos-${position}`" class="text-sm">
-                                {{ position }}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- Button -->
-                <div class="flex items-end pt-4">
-                    <button :disabled="filter_position.length === 0 || !filter_status" @click="handleCreateCondition"
-                        class="btn btn-primary w-full lg:w-fit">
-                        ✅ ยืนยันเงื่อนไข
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- 🔽 แสดงเมื่อมี drawConditions -->
-    <div v-if="drawConditions.length > 0" class="mt-6">
-        <h3 class="font-semibold mb-2">🎯 ผู้เล่นที่ตรงตามเงื่อนไข</h3>
-        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <li v-for="player in drawConditions" :key="player.member_id"
-                class="p-4 border rounded-md shadow-sm bg-white">
-                <p class="text-gray-600"><strong>{{ player.prefix }} {{ player.first_name }} {{ player.last_name
-                        }}</strong></p>
-                <p class="text-sm text-gray-600">รหัสสมาชิก: {{ player.member_id }}</p>
-                <p class="text-sm text-gray-600">ตำแหน่ง: {{ player.position }}</p>
-            </li>
-        </ul>
-    </div>
-
-    <!-- 🟡 เมื่อมีการเลือกแต่ไม่พบข้อมูล -->
-    <div v-else-if="shouldShowEmptyMessage" class="mt-6 text-center text-warning">
-        <div class="inline-flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current w-6 h-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
-        </div>
-    </div>
-    <!-- <PlayerField :players="drawConditions" v-if="drawConditions.length > 0" class="mt-6" /> -->
-</template>
-
-
 <script setup lang="ts">
+import Multiselect from 'vue-multiselect'
+import 'vue-multiselect/dist/vue-multiselect.min.css'
+
 
 const route = useRoute();
 const roomId = route.params.roomId as string;
@@ -94,13 +12,19 @@ const prizeStore = usePrizeStore();
 const drawStore = useDrawConditionStore();
 
 const filter_status = ref("not_received");
-const filter_position = ref<string[]>([]); // ✅ รองรับหลายตำแหน่ง
+const filter_position = ref<string[]>([]);
+const filter_is_active = ref<boolean>(false);
 const quantity = ref(1);
 
 const roomData = storeToRefs(playerStore).rooms;
 const playerData = storeToRefs(playerStore).players;
 const { prize: prizeData } = storeToRefs(prizeStore);
-const { drawConditions } = storeToRefs(drawStore); // ⭐ เพิ่ม
+const { drawConditions } = storeToRefs(drawStore);
+const isShowing = ref<boolean>(false);
+
+const togglePlayer = () => {
+    isShowing.value = !isShowing.value;
+};
 
 const uniquePositions = computed(() =>
     [...new Set(playerData.value.map(p => p.position))].filter(Boolean)
@@ -110,23 +34,22 @@ const shouldShowEmptyMessage = computed(() => {
     return drawConditions.value.length === 0 && (filter_position.value.length > 0 && filter_status.value);
 });
 
-
 onMounted(async () => {
     await playerStore.fetchRoom(roomId);
     await playerStore.fetchPlayers(roomId);
     await prizeStore.getPrize(prizeId);
 
-    filter_position.value = [...uniquePositions.value]
+    filter_position.value = [...uniquePositions.value];
+    console.log(drawConditions)
 });
 
-watch([filter_status, filter_position], () => {
+watch([filter_status, filter_position,filter_is_active], () => {
     if (filter_status.value && filter_position.value.length > 0) {
-        drawStore.fetchDrawConditions(roomId, filter_status.value, filter_position.value);
+        drawStore.fetchDrawConditions(roomId, filter_status.value, filter_position.value,filter_is_active.value);
     } else {
-        drawStore.drawConditions = []; // 👈 รีเซตตรงนี้
+        drawStore.drawConditions = [];
     }
 });
-
 
 const handleCreateCondition = async () => {
     try {
@@ -157,30 +80,124 @@ const handleCreateCondition = async () => {
         alert("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข");
     }
 };
-
-const filteredPlayers = computed(() => {
-    if (!filter_status.value || filter_position.value.length === 0) return [];
-
-    // ใช้ข้อมูลจาก playerStore.players → ทำให้ reusable ได้
-    return playerData.value.filter(player =>
-        filter_position.value.includes(player.position) &&
-        (filter_status.value === 'received'
-            ? player.has_received
-            : !player.has_received)
-    );
-});
-
-
-const toggleAllPositions = () => {
-    if (filter_position.value.length === uniquePositions.value.length) {
-        filter_position.value = []
-        console.log(filter_position.value.length)
-    } else {
-        filter_position.value = [...uniquePositions.value]
-        console.log(filter_position.value.length)
-    }
-}
-
 </script>
+
+
+<template>
+    <div class="p-4">
+        <h2 class="text-2xl text-center font-bold mb-4">ห้อง {{ roomData.name }}</h2>
+
+        <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" class="w-fit mx-auto" />
+
+        <div class="flex flex-col mt-8">
+            <h3 class="font-semibold mb-2">ตั้งเงื่อนไขผู้เล่น 🎯</h3>
+            <div class="flex flex-col lg:flex-row gap-4">
+                <!-- quantity -->
+                <div class="flex flex-col gap-2">
+                    <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
+                    <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit"
+                        placeholder="จำนวนที่ต้องการ" />
+                </div>
+                <!-- filter_status -->
+                <div class="flex flex-col gap-2">
+                    <p class="font-medium">เลือกจาก</p>
+                    <select v-model="filter_status" class="select select-bordered w-full lg:w-fit">
+                        <option value="not_received">ยังไม่ได้รับรางวัล</option>
+                        <option value="received">ได้รับรางวัลแล้ว</option>
+                    </select>
+                </div>
+                <!-- filter_is_active -->
+                <div class="flex flex-col gap-2">
+                    <p class="font-medium">ผู้เข้าร่วม</p>
+                    <select v-model="filter_is_active" class="select select-bordered w-full lg:w-fit">
+                        <option :value=false>ผู้เล่นทั้งหมด</option>
+                        <option :value=true>เฉพาะผู้เข้าร่วม</option>
+                    </select>
+                </div>
+
+                <!-- filter_position -->
+                <div class="flex flex-col justify-center gap-2">
+                    <p class="font-medium mb-1">ตำแหน่ง</p>
+
+                    <!--  Multiselect พร้อม Search -->
+                    <Multiselect v-model="filter_position" :options="uniquePositions" :multiple="true" :taggable="false"
+                        placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." track-by="" label="" class="w-full lg:w-96" />
+                </div>
+
+
+                <!-- Button -->
+                <div class="flex items-end pt-4">
+                    <button :disabled="filter_position.length === 0 || !filter_status" @click="handleCreateCondition"
+                        class="btn btn-primary w-full lg:w-fit">
+                        ✅ ยืนยันเงื่อนไข
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 🔽 แสดงผู้เล่นที่ตรงตามเงื่อนไข -->
+    <div v-if="drawConditions.length > 0" class="card bg-base-100 w-full shadow-xl mb-8">
+        <div class="card-body">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="card-title">
+                    🎯 ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }} คน)
+                </h2>
+                <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent" checked />
+            </div>
+
+            <div v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div v-for="(player, index) in drawConditions" :key="player.member_id"
+                    class="card bg-base-200 shadow-sm">
+                    <div class="card-body p-3 text-center relative">
+                        <div class="avatar mx-auto mb-2">
+                            <div class="w-14 h-14 rounded-full">
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}`"
+                                    alt="รูปผู้เข้าร่วม" />
+                            </div>
+                        </div>
+
+                        <div class="text-lg font-bold">{{ player.prefix }} {{ player.first_name }} {{ player.last_name
+                            }}</div>
+                        <div class="text-sm text-gray-500">{{ player.position }}</div>
+
+                        <!-- ✅ status circle -->
+                        <div class="flex justify-center mt-2">
+                            <div class="w-3 h-3 rounded-full"
+                                :class="player.is_active === true ? 'bg-green-500' : player.is_active === false ? 'bg-red-500' : 'bg-gray-300'"
+                                title="สถานะการเข้าร่วม"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🟡 เมื่อมีการเลือกแต่ไม่พบข้อมูล -->
+    <div v-else-if="shouldShowEmptyMessage" class="mt-6 text-center text-warning">
+        <div class="inline-flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current w-6 h-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
+        </div>
+    </div>
+
+
+    <!-- 🟡 เมื่อมีการเลือกแต่ไม่พบข้อมูล -->
+    <div v-else-if="shouldShowEmptyMessage" class="mt-6 text-center text-warning">
+        <div class="inline-flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current w-6 h-6" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
+        </div>
+    </div>
+    <!-- <PlayerField :players="drawConditions" v-if="drawConditions.length > 0" class="mt-6" /> -->
+</template>
 
 <style scoped></style>
