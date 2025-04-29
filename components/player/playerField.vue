@@ -21,7 +21,7 @@ const isMainPage = computed(() => route.path.startsWith('/mainPage'));
 const playerListWithFullName = computed(() => {
     return props.players.map((player) => ({
         ...player,
-        fullName: `${player.first_name} ${player.last_name}`,
+        fullName: `${player.prefix} ${player.first_name} ${player.last_name}`,
     }));
 });
 </script>
@@ -31,7 +31,7 @@ const playerListWithFullName = computed(() => {
     <div class="card bg-base-100 w-full shadow-xl mb-8">
         <div class="card-body">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="card-title">
+                <h2 class="card-title"> 
                     รายชื่อผู้เข้าร่วม ({{ players.length }} คน)
                 </h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent" checked />
@@ -45,7 +45,7 @@ const playerListWithFullName = computed(() => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>
@@ -69,7 +69,7 @@ const playerListWithFullName = computed(() => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.firstName)}`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.firstName)}&background=random  `"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>

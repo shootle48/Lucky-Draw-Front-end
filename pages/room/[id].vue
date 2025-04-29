@@ -62,7 +62,7 @@ onMounted(async () => {
             <PrizeField :handleEditPrize="handleEditPrize" />
             <div class="flex flex-col justify-center items-center">
                 <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-fit shadow-lg border my-6 p-4">
-                    <legend class="fieldset-legend text-left text-3xl">ผู้เล่น</legend>
+                    <legend class="fieldset-legend text-left text-2xl md:text-3xl">ผู้เล่น</legend>
                     <div class="form-control w-full text-left">
                         <label class="label">
                             <span class="label-text text-lg mb-2">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx,
@@ -71,7 +71,7 @@ onMounted(async () => {
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full" />
                     </div>
-                    <button @click="handleSubmitImport" class="btn btn-secondary">เริ่มสุ่มรางวัล!</button>
+                    <button @click="handleSubmitImport" class="btn btn-secondary">เริ่มจับฉลาก</button>
                 </fieldset>
                 <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
             </div>

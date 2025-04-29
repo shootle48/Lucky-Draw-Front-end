@@ -4,6 +4,7 @@ import apiClient from "@/utils/apiClient"; // <--- เพิ่มบรรท�
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
 import { parsePlayerExcel } from "@/utils/excelParser"; // สมมติว่าฟังก์ชันนี้ยังใช้เหมือนเดิม
+import { tr } from "@nuxt/ui/runtime/locale/index.js";
 
 export const usePlayerStore = defineStore("player", {
   state: () => ({
@@ -127,6 +128,15 @@ export const usePlayerStore = defineStore("player", {
         throw e; // โยน error ต่อ
       } finally {
         this.isLoading = false;
+      }
+    },
+    async addPlayer() {
+      try {
+        this.isLoading = true
+
+        
+      } catch (e) {
+        console.error(e);
       }
     },
   },

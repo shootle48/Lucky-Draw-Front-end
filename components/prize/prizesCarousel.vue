@@ -63,10 +63,16 @@ const props = defineProps({
         <UCarousel v-slot="{ item }" :items="carouselItems" class="relative Carousel" :ui="{
           item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
         }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots>
-            <div class="px-2">
-              <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
+          <div class="relative px-2" :class="{ 'opacity-50 pointer-events-none': item.quantity === 0 }">
+            <!-- Overlay ป้ายหมดแล้ว -->
+            <div v-if="item.quantity === 0"
+              class="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-lg z-20 rounded-lg">
+              หมดแล้ว
             </div>
+            <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
+          </div>
         </UCarousel>
+
       </div>
 
       <!-- ถ้าไม่มีรางวัล -->
@@ -102,5 +108,4 @@ const props = defineProps({
   right: 0;
   background: linear-gradient(to left, #1e1e2f, transparent);
 }
-
 </style>

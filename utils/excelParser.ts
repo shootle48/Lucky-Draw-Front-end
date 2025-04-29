@@ -89,7 +89,7 @@
           position,
           active,
           image: null,
-          fullName: `${firstName} ${lastName}`.trim(),
+          fullName: `${prefix ?? ''} ${firstName ?? ''} ${lastName ?? ''}`.trim(),
         };
       })
       .filter((p) => p.firstName && p.firstName !== "ไม่ระบุชื่อ");

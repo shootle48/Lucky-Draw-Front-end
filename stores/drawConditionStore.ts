@@ -12,15 +12,15 @@ export const useDrawConditionStore = defineStore("drawCondition", {
   actions: {
     async fetchDrawConditions(
       roomId: string,
-      filter_status: string,
+      filter_status: string[],
       filter_position: string[],
       filter_is_active: boolean,
     ) {
-      this.isLoading = true; // ย้ายมาไว้ข้างบน
+      this.isLoading = true; 
       try {
         const payload = {
           room_id: roomId,
-          filter_status,
+          filter_status: Array.isArray(filter_status) ? filter_status : [],
           filter_position: Array.isArray(filter_position) ? filter_position : [],
           filter_is_active,
         };
@@ -34,7 +34,10 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         // ใช้ res.data.data โดยตรง ไม่ต้อง splice ถ้าต้องการแทนที่ทั้งหมด
         if (res.status === 200 && res.data?.data) {
 
-           this.drawConditions = res.data.data;
+           this.drawConditions = res.data.data.map((p:any) => ({
+            ...p,
+            fullName: `${p.prefix ?? ''} ${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(),
+           }));
         } else {
            this.drawConditions = []; // เคลียร์ค่าถ้า response ไม่ถูกต้อง
         }
@@ -55,7 +58,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
     async createDrawCondition(payload: {
       room_id: string;
       prize_id: string;
-      filter_status: string;
+      filter_status: string[];
       filter_position: string[];
       quantity: number;
     }) {

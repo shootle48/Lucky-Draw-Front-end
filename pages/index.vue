@@ -27,7 +27,7 @@
 
                 <!-- ลิงก์ทดสอบ -->
                 <div class="mt-6">
-                    <NuxtLink to="/room/5ba2669d-64ed-4417-9b77-7c3778021942">
+                    <NuxtLink to="/room/b299cae3-5d35-4d8b-9ea4-a93aa44abf60">
                         <button class="btn btn-outline text-white border-white hover:bg-white hover:text-black">
                             ห้องจำลอง
                         </button>

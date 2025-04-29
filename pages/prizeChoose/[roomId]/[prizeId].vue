@@ -11,7 +11,7 @@ const playerStore = usePlayerStore();
 const prizeStore = usePrizeStore();
 const drawStore = useDrawConditionStore();
 
-const filter_status = ref("not_received");
+const filter_status = ref<string[]>(['not_received']);
 const filter_position = ref<string[]>([]);
 const filter_is_active = ref<boolean>(false);
 const quantity = ref(1);
@@ -19,7 +19,7 @@ const quantity = ref(1);
 const roomData = storeToRefs(playerStore).rooms;
 const playerData = storeToRefs(playerStore).players;
 const { prize: prizeData } = storeToRefs(prizeStore);
-const { drawConditions } = storeToRefs(drawStore);
+const { isLoading, drawConditions } = storeToRefs(drawStore);
 const isShowing = ref<boolean>(false);
 
 const togglePlayer = () => {
@@ -43,13 +43,19 @@ onMounted(async () => {
     console.log(drawConditions)
 });
 
-watch([filter_status, filter_position,filter_is_active], () => {
-    if (filter_status.value && filter_position.value.length > 0) {
-        drawStore.fetchDrawConditions(roomId, filter_status.value, filter_position.value,filter_is_active.value);
+watch([filter_status, filter_position, filter_is_active], () => {
+    if (filter_status.value.length > 0 && filter_position.value.length > 0) {
+        drawStore.fetchDrawConditions(
+            roomId,
+            filter_status.value,
+            filter_position.value,
+            filter_is_active.value
+        );
     } else {
         drawStore.drawConditions = [];
     }
 });
+
 
 const handleCreateCondition = async () => {
     try {
@@ -98,14 +104,30 @@ const handleCreateCondition = async () => {
                     <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit"
                         placeholder="จำนวนที่ต้องการ" />
                 </div>
+
                 <!-- filter_status -->
                 <div class="flex flex-col gap-2">
-                    <p class="font-medium">เลือกจาก</p>
-                    <select v-model="filter_status" class="select select-bordered w-full lg:w-fit">
-                        <option value="not_received">ยังไม่ได้รับรางวัล</option>
-                        <option value="received">ได้รับรางวัลแล้ว</option>
-                    </select>
+                    <p class="font-medium mb-1">คนที่มีสิทธิ์</p>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="checkbox checkbox-primary" value="received"
+                                v-model="filter_status" />
+                            <label>ได้รับรางวัลแล้ว</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="checkbox checkbox-primary" value="waive"
+                                v-model="filter_status" />
+                            <label>สละสิทธิ์</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" class="checkbox checkbox-primary" value="no_show"
+                                v-model="filter_status" />
+                            <label>ไม่แสดงตน</label>
+                        </div>
+                    </div>
                 </div>
+
+
                 <!-- filter_is_active -->
                 <div class="flex flex-col gap-2">
                     <p class="font-medium">ผู้เข้าร่วม</p>
@@ -127,10 +149,12 @@ const handleCreateCondition = async () => {
 
                 <!-- Button -->
                 <div class="flex items-end pt-4">
-                    <button :disabled="filter_position.length === 0 || !filter_status" @click="handleCreateCondition"
-                        class="btn btn-primary w-full lg:w-fit">
-                        ✅ ยืนยันเงื่อนไข
-                    </button>
+                    <NuxtLink :to="`/drawRoom/${roomId}`">
+                        <button :disabled="filter_position.length === 0 || filter_status.length === 0"
+                            @click="handleCreateCondition" class="btn btn-primary w-full lg:w-fit">
+                            ✅ สุ่มรางวัล
+                        </button>
+                    </NuxtLink>
                 </div>
             </div>
         </div>
@@ -153,13 +177,12 @@ const handleCreateCondition = async () => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>
 
-                        <div class="text-lg font-bold">{{ player.prefix }} {{ player.first_name }} {{ player.last_name
-                            }}</div>
+                        <div class="text-lg font-bold">{{ player.fullName }}</div>
                         <div class="text-sm text-gray-500">{{ player.position }}</div>
 
                         <!-- ✅ status circle -->
@@ -197,7 +220,6 @@ const handleCreateCondition = async () => {
             <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
         </div>
     </div>
-    <!-- <PlayerField :players="drawConditions" v-if="drawConditions.length > 0" class="mt-6" /> -->
 </template>
 
 <style scoped></style>

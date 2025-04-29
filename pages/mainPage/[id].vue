@@ -27,8 +27,8 @@ const roomName = computed(() => rooms.value.name);
 
 
 onMounted(async () => {
-    await playerStore.fetchRoom(route.params.id as string);
-    await playerStore.fetchPlayers(route.params.id as string)
+    await playerStore.fetchRoom(roomId);
+    await playerStore.fetchPlayers(roomId)
     console.log(playerStore.players)
 });
 </script>
