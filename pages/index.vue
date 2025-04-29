@@ -1,3 +1,36 @@
+<script setup lang="ts">
+import axios from 'axios';
+import type { roomTypes } from '@/types/room';
+import logo from '@/assets/logo.png';
+
+const Router = useRouter();
+
+const RoomData = ref<roomTypes>({
+    id: '',
+    name: '',
+});
+
+const add_room = async () => {
+    try {
+        if (RoomData.value.name !== '') {
+            const response = await axios.post(`${import.meta.env.VITE_API}/rooms/create`, {
+                ...RoomData.value,
+            });
+
+            if (response.status === 200) {
+                const roomId = response.data.data.id;
+                alert('Room created successfully');
+                await Router.push(`/room/${roomId}`);
+            }
+        } else {
+            alert('Please enter room name');
+        }
+    } catch (error) {
+        console.error('Error creating room:', error);
+    }
+};
+</script>
+
 <template>
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
         <div class="absolute inset-0 backdrop-blur-sm"></div>
@@ -37,42 +70,5 @@
         </div>
     </div>
 </template>
-
-
-
-
-<script setup lang="ts">
-import axios from 'axios';
-import type { roomTypes } from '@/types/room';
-import logo from '@/assets/logo.png';
-
-const Router = useRouter();
-
-const RoomData = ref<roomTypes>({
-    id: '',
-    name: '',
-});
-
-const add_room = async () => {
-    try {
-        if (RoomData.value.name !== '') {
-            const response = await axios.post(`${import.meta.env.VITE_API}/rooms/create`, {
-                ...RoomData.value,
-            });
-
-            if (response.status === 200) {
-                const roomId = response.data.data.id;
-                alert('Room created successfully');
-                await Router.push(`/room/${roomId}`);
-            }
-        } else {
-            alert('Please enter room name');
-        }
-    } catch (error) {
-        console.error('Error creating room:', error);
-    }
-};
-</script>
-
 
 <style lang="scss" scoped></style>

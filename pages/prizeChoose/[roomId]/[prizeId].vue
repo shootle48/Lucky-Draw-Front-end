@@ -4,6 +4,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css'
 
 
 const route = useRoute();
+const router = useRouter();
 const roomId = route.params.roomId as string;
 const prizeId = route.params.prizeId as string;
 
@@ -72,7 +73,7 @@ const handleCreateCondition = async () => {
             return;
         }
 
-        await drawStore.createDrawCondition({
+        const createdCondition = await drawStore.createDrawCondition({
             room_id: roomId,
             prize_id: prizeId,
             filter_status: filter_status.value,
@@ -80,12 +81,16 @@ const handleCreateCondition = async () => {
             quantity: quantity.value,
         });
 
-        alert("✅ เพิ่มเงื่อนไขสำเร็จแล้ว");
+        if (createdCondition.id) {
+            alert("✅ เพิ่มเงื่อนไขสำเร็จแล้ว");
+            router.push(`/drawRoom/${createdCondition.id}`);
+        }
 
     } catch {
         alert("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข");
     }
 };
+
 </script>
 
 
@@ -149,12 +154,10 @@ const handleCreateCondition = async () => {
 
                 <!-- Button -->
                 <div class="flex items-end pt-4">
-                    <NuxtLink :to="`/drawRoom/${roomId}`">
-                        <button :disabled="filter_position.length === 0 || filter_status.length === 0"
-                            @click="handleCreateCondition" class="btn btn-primary w-full lg:w-fit">
-                            ✅ สุ่มรางวัล
-                        </button>
-                    </NuxtLink>
+                    <button :disabled="filter_position.length === 0 || filter_status.length === 0"
+                        @click="handleCreateCondition" class="btn btn-primary w-full lg:w-fit">
+                        ✅ สุ่มรางวัล
+                    </button>
                 </div>
             </div>
         </div>

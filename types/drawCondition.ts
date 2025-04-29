@@ -4,5 +4,6 @@ export interface drawConditionType {
     prize_id: string
     filter_status: string[]
     filter_position: string[]
+    filter_is_active: boolean
     quantity: number
 }
