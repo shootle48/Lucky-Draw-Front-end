@@ -22,7 +22,8 @@ onMounted(async () => {
             </div>
             <PrizeField />
             <div class="flex flex-col justify-center items-center">
-                <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
+                <PlayerField :players="playerStore.players" @add="playerStore.addPlayer"
+                    v-if="playerStore.players.length > 0" class="mt-6" />
             </div>
         </div>
     </div>
