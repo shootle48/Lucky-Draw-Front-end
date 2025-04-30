@@ -78,6 +78,7 @@ const handleCreateCondition = async () => {
             prize_id: prizeId,
             filter_status: filter_status.value,
             filter_position: filter_position.value,
+            filter_is_active: filter_is_active.value,
             quantity: quantity.value,
         });
 

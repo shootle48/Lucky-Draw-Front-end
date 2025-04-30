@@ -65,6 +65,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       prize_id: string;
       filter_status: string[];
       filter_position: string[];
+      filter_is_active: boolean;
       quantity: number;
     }) {
       // ไม่ต้องตั้ง isLoading ที่นี่ เพราะมักจะทำใน component ก่อนเรียก action
