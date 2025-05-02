@@ -1,10 +1,10 @@
 export interface playerType {
     prefix: string;
-    firstName: string;
-    lastName: string;
-    fullName?: string;
+    first_name: string;
+    last_name: string;
+    full_name?: string;
     member_id: string;
     position: string;
-    is_active: boolean;
-    image: string | null;
+    is_active?: boolean | false;
+    status?: string
 }

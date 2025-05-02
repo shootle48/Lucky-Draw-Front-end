@@ -38,7 +38,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         if (res.status === 200 && res.data?.data) {
           this.drawConditions = res.data.data.map((p: any) => ({
             ...p,
-            fullName: `${p.prefix ?? ""} ${p.first_name ?? ""} ${
+            full_name: `${p.prefix ?? ""} ${p.first_name ?? ""} ${
               p.last_name ?? ""
             }`.trim(),
           }));
@@ -56,7 +56,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         // ไม่ควร throw error ที่นี่ ถ้าต้องการให้ component ทำงานต่อได้แม้ fetch ล้มเหลว
         // throw error;
       } finally {
-        this.isLoading = false; // ใส่ใน finally
+        this.isLoading = false;
       }
     },
 
@@ -103,6 +103,8 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           }`
         );
         throw error; // โยน error ต่อให้ component จัดการ
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -141,6 +143,8 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           }`
         );
         throw error; // โยน error ต่อ
+      } finally {
+        this.isLoading = false;
       }
     },
   },

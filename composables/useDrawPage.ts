@@ -189,6 +189,7 @@ export function useDrawPage() {
     isDrawing,
     showWinnerModal,
     currentWinner,
+    currentIndex,
     startDrawing,
     submitWinner,
     filterPositions,
@@ -197,5 +198,6 @@ export function useDrawPage() {
     statusMap,
     glowingIndexes,
     glowingTempIndex,
+    isLoading
   };
 }

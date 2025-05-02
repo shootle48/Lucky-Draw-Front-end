@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { useToast } from '@/composables/useToastPage'
 
-
+const { showToast } = useToast()
 const route = useRoute();
 const router = useRouter();
 const roomId = route.params.roomId as string;
@@ -61,7 +62,7 @@ watch([filter_status, filter_position, filter_is_active], () => {
 const handleCreateCondition = async () => {
     try {
         if (!drawStore.drawConditions.length) {
-            alert("❌ ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น");
+            showToast("❌ ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น", "warning");
             return;
         }
 
@@ -69,7 +70,7 @@ const handleCreateCondition = async () => {
         const totalDrawQty = drawStore.drawConditions.reduce((sum, c) => sum + (c.quantity || 0), 0);
 
         if (quantity.value + totalDrawQty > currentPrizeQuantity) {
-            alert(`❌ จำนวนเกินจำนวนรางวัลที่กำหนด(${currentPrizeQuantity})`);
+            showToast(`จำนวนเกินที่กำหนด`, "error");
             return;
         }
 
@@ -83,14 +84,19 @@ const handleCreateCondition = async () => {
         });
 
         if (createdCondition.id) {
-            alert("✅ เพิ่มเงื่อนไขสำเร็จแล้ว");
+            showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "success");
+
+            // รอ 1.5 วิ ให้ user ได้อ่าน toast ก่อนเปลี่ยนหน้า
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+
             router.push(`/drawRoom/${createdCondition.id}`);
         }
 
     } catch {
-        alert("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข");
+        showToast("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "error");
     }
 };
+
 
 </script>
 
@@ -181,12 +187,12 @@ const handleCreateCondition = async () => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.full_name)}&background=random`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>
 
-                        <div class="text-lg font-bold">{{ player.fullName }}</div>
+                        <div class="text-lg font-bold">{{ player.full_name }}</div>
                         <div class="text-sm text-gray-500">{{ player.position }}</div>
 
                         <!-- ✅ status circle -->
@@ -224,6 +230,12 @@ const handleCreateCondition = async () => {
             <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
         </div>
     </div>
+
+    <div v-if="isLoading">
+        <LoadingPage />
+    </div>
+    <div class="toast toast-top toast-end fixed z-[9999]"></div>
+
 </template>
 
 <style scoped></style>

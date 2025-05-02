@@ -1,9 +1,9 @@
 // เพิ่ม import apiClient
-import apiClient from "@/utils/apiClient"; // <--- เพิ่มบรรทัดนี้ (ตรวจสอบ path ให้ถูกต้อง)
+import apiClient from "@/utils/apiClient";
 
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
-import { parsePlayerExcel } from "@/utils/excelParser"; // สมมติว่าฟังก์ชันนี้ยังใช้เหมือนเดิม
+import { parsePlayerExcel } from "@/utils/excelParser"; //
 import { tr } from "@nuxt/ui/runtime/locale/index.js";
 
 export const usePlayerStore = defineStore("player", {
@@ -29,7 +29,7 @@ export const usePlayerStore = defineStore("player", {
         console.error("Error fetching room:", error);
         // พิจารณาการแสดงข้อผิดพลาดให้ผู้ใช้ทราบ
       } finally {
-        this.isLoading = false; // ใส่ใน finally เพื่อให้ทำงานเสมอ
+        this.isLoading = false;
       }
     },
 
@@ -67,15 +67,15 @@ export const usePlayerStore = defineStore("player", {
         if (players.length === 0) {
           alert("ไม่พบข้อมูลที่นำเข้า");
         } else {
-          // 🔥 ปรับให้ตรง playerType: is_active (ไม่ใช่ isActive)
+          // 🔥 ปรับให้ตรง playerType: is_active
           const mappedPlayers = players.map((player) => ({
             ...player,
             is_active: ["เข้า", "เข้าร่วม", "มา", "ลงทะเบียน"].includes(
-              String((player as any).active || "").trim()
+              String((player as any).status || "").trim()
             )
               ? true
               : ["ไม่เข้า", "ไม่เข้าร่วม", "ไม่มา", "ไม่ลงทะเบียน"].includes(
-                  String((player as any).active || "").trim()
+                  String((player as any).status || "").trim()
                 )
               ? false
               : false,
@@ -99,44 +99,34 @@ export const usePlayerStore = defineStore("player", {
         formData.append("file", file);
         formData.append("room_id", roomId);
 
-        // เปลี่ยน axios.post เป็น apiClient.post และใช้ path ต่อท้าย
-        // ต้อง override header เป็น multipart/form-data
-        const response = await apiClient.post(
-          // <--- แก้ไข
-          `/players/import`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" }, // <--- Override Header
-          }
-        );
+        const response = await apiClient.post(`/players/import`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
-        console.log("📦 Import สำเร็จ", response.data);
-        // พิจารณา: หลังจาก import สำเร็จ ควรจะ fetchPlayers ใหม่หรือไม่?
-        await this.fetchPlayers(roomId); // <-- เรียก fetchPlayers ใหม่เพื่ออัปเดตข้อมูลล่าสุด
-        return response.data;
+        await this.fetchPlayers(roomId); // รีเฟรชข้อมูล
+
+        return response.data; // ✅ ให้ component นำไปใช้แสดง toast
       } catch (e: any) {
-        // ระบุ type error เป็น any หรือ AxiosError
-        console.error(
-          "❌ Error importing excel",
-          e.response?.data || e.message || e
-        );
-        alert(
-          `เกิดข้อผิดพลาดในการนำเข้า: ${
-            e.response?.data?.message || e.message || "ไม่ทราบสาเหตุ"
-          }`
-        );
-        throw e; // โยน error ต่อ
+        // โยน error ให้ภายนอกจัดการ toast
+        throw e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
       } finally {
         this.isLoading = false;
       }
     },
-    async addPlayer() {
-      try {
-        this.isLoading = true
 
-        
+    async addPlayer(newPlayers: playerType[], roomId: string) {
+      this.isLoading = true;
+      try {
+        const response = await apiClient.post("/players/create", {
+          room_id: roomId,
+          players: newPlayers,
+        });
+        return response.data;
       } catch (e) {
-        console.error(e);
+        console.error("❌ Error adding players:", e);
+        throw e;
+      } finally {
+        this.isLoading = false;
       }
     },
   },

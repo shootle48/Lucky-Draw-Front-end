@@ -1,6 +1,6 @@
 <template>
     <div class="card bg-base-200 shadow-sm" :class="{
-        glow: glowingIndexes.includes(player.member_id),
+        'glow': glowingIndexes.includes(player.id),
         'glow-temp': isDrawing && index === glowingTempIndex
     }">
         <div class="card-body p-3 text-center">
