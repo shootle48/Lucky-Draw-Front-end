@@ -50,13 +50,13 @@
             lowerCasedKeys["prefix"] ||
             ""
         );
-        const firstName = String(
+        const first_name = String(
           row["firstName"] ||
             row["ชื่อ"] ||
             lowerCasedKeys["firstname"] ||
             ""
         );
-        const lastName = String(
+        const last_name = String(
           row["lastName"] ||
             row["นามสกุล"] ||
             lowerCasedKeys["lastname"] ||
@@ -74,7 +74,7 @@
             lowerCasedKeys["position"] ||
             ""
         );
-        const active = String(
+        const status = String(
           row["active"] ||
             row["เข้าร่วม"] ||
             lowerCasedKeys["active"] ||
@@ -83,16 +83,16 @@
 
         return {
           prefix,
-          firstName,
-          lastName,
+          first_name,
+          last_name,
           member_id,
           position,
-          active,
+          status,
           image: null,
-          fullName: `${prefix ?? ''} ${firstName ?? ''} ${lastName ?? ''}`.trim(),
+          full_name: `${prefix ?? ''} ${first_name ?? ''} ${last_name ?? ''}`.trim(),
         };
       })
-      .filter((p) => p.firstName && p.firstName !== "ไม่ระบุชื่อ");
+      .filter((p) => p.first_name && p.first_name !== "ไม่ระบุชื่อ");
 
     return importedPlayer;
   };

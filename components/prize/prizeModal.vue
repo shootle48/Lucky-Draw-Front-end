@@ -25,6 +25,16 @@ watch(() => prizeStore.selectedImage, (newImage) => {
     }
 });
 
+watch(() => prizeStore.showAddPrizeModal, (newVal) => {
+    if(!newVal){
+        imagePreview.value = null
+        prizeStore.selectedImage = null
+        if( addFileInput.value) {
+            addFileInput.value.value = ''
+        }
+    }
+})
+
 // Handle การเปลี่ยนรูปภาพสำหรับ Add Modal
 const handleImageChange = (e: Event) => {
     const target = e.target as HTMLInputElement;

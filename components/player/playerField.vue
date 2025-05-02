@@ -18,7 +18,7 @@ const isMainPage = computed(() => route.path.startsWith('/mainPage'))
 const playerListWithFullName = computed(() =>
     props.players.map((player) => ({
         ...player,
-        fullName: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+        full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
     }))
 )
 
@@ -53,7 +53,7 @@ const handleAddPlayer = (newPlayer: playerType) => {
                                         :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`" />
                                 </div>
                             </div>
-                            <div class="text-lg font-bold">{{ player.fullName }}</div>
+                            <div class="text-lg font-bold">{{ player.full_name }}</div>
                             <div class="text-sm text-gray-500">{{ player.position }}</div>
                             <div class="flex justify-center mt-2">
                                 <div class="w-3 h-3 rounded-full"
@@ -71,10 +71,10 @@ const handleAddPlayer = (newPlayer: playerType) => {
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
                                 <img
-                                    :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.firstName)}&background=random`" />
+                                    :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`" />
                             </div>
                         </div>
-                        <div class="text-lg font-bold">{{ player.fullName }}</div>
+                        <div class="text-lg font-bold">{{ player.full_name }}</div>
                         <div class="text-sm text-gray-500">{{ player.position }}</div>
                         <div class="flex justify-center mt-2">
                             <div class="w-3 h-3 rounded-full" :class="player.is_active ? 'bg-green-500' : 'bg-red-500'"

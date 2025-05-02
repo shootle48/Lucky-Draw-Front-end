@@ -11,6 +11,7 @@ const {
     isDrawing,
     showWinnerModal,
     currentWinner,
+    currentIndex,
     startDrawing,
     submitWinner,
     filterPositions,
@@ -19,6 +20,7 @@ const {
     statusMap,
     glowingIndexes,
     glowingTempIndex,
+    isLoading
 } = useDrawPage()
 </script>
 
@@ -47,6 +49,9 @@ const {
 
     <WinnerModal v-if="showWinnerModal && currentWinner" :currentWinner="currentWinner" :currentIndex="currentIndex"
         :prizeData="prizeData" @submitWinner="submitWinner" />
+    <div v-if="isLoading">
+        <LoadingPage />
+    </div>
 </template>
 
 <style>

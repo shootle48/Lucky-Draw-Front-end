@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { useToast } from '@/composables/useToastPage';
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/logo.png';
 
 const Router = useRouter();
-
+const { showToast } = useToast();
 const RoomData = ref<roomTypes>({
     id: '',
     name: '',
@@ -19,17 +20,21 @@ const add_room = async () => {
 
             if (response.status === 200) {
                 const roomId = response.data.data.id;
-                alert('Room created successfully');
+
+                showToast('สร้างห้องสำเร็จแล้ว!', 'success');
+                await new Promise((resolve) => setTimeout(resolve, 1500));
                 await Router.push(`/room/${roomId}`);
             }
         } else {
-            alert('Please enter room name');
+            showToast('กรุณากรอกชื่อห้อง', 'warning');
         }
     } catch (error) {
         console.error('Error creating room:', error);
+        showToast('ไม่สามารถสร้างห้องได้ กรุณาลองใหม่', 'error');
     }
 };
 </script>
+
 
 <template>
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
@@ -69,6 +74,7 @@ const add_room = async () => {
             </div>
         </div>
     </div>
+    <div class="toast toast-top toast-end fixed z-[9999]"></div>
 </template>
 
 <style lang="scss" scoped></style>

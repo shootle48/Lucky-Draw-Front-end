@@ -6,4 +6,8 @@ export interface drawConditionType {
     filter_position: string[]
     filter_is_active: boolean
     quantity: number
+    is_active?: boolean
+    full_name?: string
+    position?: string
+    member_id?: string
 }

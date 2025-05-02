@@ -20,7 +20,10 @@ export const useWinnerStore = defineStore("winner", {
       try {
         const response = await apiClient.post(`winners/create`, payload);
         // ตรวจสอบ response ก่อน push
-        if (response.status === 200 || (response.status === 201 && response.data?.data)) {
+        if (
+          response.status === 200 ||
+          (response.status === 201 && response.data?.data)
+        ) {
           this.winners.push(response.data.data); // เพิ่มเข้า state
           return response.data.data; // คืนค่าที่สร้างสำเร็จ
         } else {
@@ -35,6 +38,8 @@ export const useWinnerStore = defineStore("winner", {
         }
       } catch (e) {
         console.error(e);
+      } finally {
+        this.isLoading = false;
       }
     },
   },

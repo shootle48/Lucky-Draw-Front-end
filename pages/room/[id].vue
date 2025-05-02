@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import PrizeModals from '@/components/prize/prizeModal.vue';
+import { useToast } from '@/composables/useToastPage';
 import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
 const router = useRouter()
+const { showToast } = useToast();
 const playerStore = usePlayerStore();
+const prizeStore = usePrizeStore();
+
 const selectedPlayer = ref<File | null>(null);
 const roomId = route.params.id as string;
 // ตัวแปรสำหรับ ref ไปยัง PrizeModals component
@@ -13,17 +17,30 @@ const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 
+
 const handleSubmitImport = async () => {
     if (!selectedPlayer.value) {
-        alert('กรุณาเลือกไฟล์ก่อนเริ่มสุ่มรางวัล');
+        showToast("กรุณาเลือกไฟล์ก่อน", "warning");
         return;
     }
 
-    await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
+    // 🔴 เช็คว่ามีของรางวัลหรือยัง
+    if (prizeStore.prizes.length === 0) {
+        showToast("กรุณาเพิ่มของรางวัลก่อน", "warning");
+        return;
+    }
 
-    // ✅ เงื่อนไขผ่านแล้ว -> ค่อยไปหน้าใหม่
-    router.push(`../mainPage/${roomId}`);
+    try {
+        await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
+        showToast("นำเข้ารายชื่อเรียบร้อยแล้ว", "success");
+
+        // ✅ ไปหน้าถัดไปได้
+        router.push(`../mainPage/${roomId}`);
+    } catch (_) {
+        showToast("อุ๊ย...เกิดข้อผิดพลาด ลองใหม่อีกครั้ง", "error");
+    }
 };
+
 
 const handlePlayerChange = async (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -82,6 +99,10 @@ onMounted(async () => {
     </div>
     <!-- นำเข้า component PrizeModals -->
     <PrizeModals ref="prizeModalsRef" />
+    <!-- Global toast container -->
+    <div class="toast toast-top toast-end fixed z-[9999]"></div>
+
+
 </template>
 
 <style lang="scss" scoped></style>
