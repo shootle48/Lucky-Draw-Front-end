@@ -16,7 +16,6 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       filter_position: string[],
       filter_is_active: boolean
     ) {
-      this.isLoading = true;
       try {
         const payload = {
           room_id: roomId,
@@ -55,8 +54,6 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         this.drawConditions = []; // เคลียร์ค่าเมื่อเกิด error
         // ไม่ควร throw error ที่นี่ ถ้าต้องการให้ component ทำงานต่อได้แม้ fetch ล้มเหลว
         // throw error;
-      } finally {
-        this.isLoading = false;
       }
     },
 
