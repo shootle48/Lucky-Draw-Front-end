@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import type { playerType } from '@/types/player'
 
 const emit = defineEmits(['submit', 'close'])
@@ -60,4 +60,4 @@ const submitForm = () => {
       </div>
     </div>
   </dialog>
-</template>
+</template> -->
