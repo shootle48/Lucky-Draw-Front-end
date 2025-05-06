@@ -81,7 +81,7 @@ const props = defineProps({
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span>ยังไม่มีรางวัล กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการ</span>
+        <span>ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการก่อนเริ่มใช้งาน</span>
       </div>
     </div>
   </div>

@@ -1,5 +1,7 @@
 import apiClient from "~/utils/apiClient";
 import type { prizeType } from "@/types/prize";
+import { getToast } from "@/composables/useToastPage";
+const { showToast } = getToast();
 
 export const usePrizeStore = defineStore("prize", {
   state: () => ({
@@ -61,8 +63,7 @@ export const usePrizeStore = defineStore("prize", {
     async addPrize() {
       this.isLoading = true;
       if (!this.newPrize.room_id) {
-        console.error("Room ID is missing for new prize.");
-        alert("เกิดข้อผิดพลาด: ไม่ได้ระบุห้อง");
+        showToast("กรุณาระบุห้องก่อนเพิ่มของรางวัล", "alert-warning");
         this.isLoading = false;
         return;
       }
@@ -82,7 +83,7 @@ export const usePrizeStore = defineStore("prize", {
             imageUrl = uploadRes.data.url;
             this.newPrize.image_url = imageUrl;
           } else {
-            console.error("Image upload response did not contain a URL:", uploadRes.data);
+            showToast("อัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
             throw new Error("Image upload failed to return a URL.");
           }
         }
@@ -101,21 +102,19 @@ export const usePrizeStore = defineStore("prize", {
           this.prizes.push(createdPrize);
           this.showAddPrizeModal = false;
           this.resetNewPrize();
+          showToast("เพิ่มของรางวัลสำเร็จ", "alert-success");
         } else {
-          console.error("Failed to create prize:", response);
-          alert(
-            "ไม่สามารถเพิ่มรางวัลได้ กรุณาลองใหม่ (รหัสข้อผิดพลาด: " +
-              response.status +
-              ")"
+          showToast(
+            `ไม่สามารถเพิ่มของรางวัลได้ (รหัส: ${response.status})`,
+            "alert-error"
           );
         }
       } catch (error: any) {
-        console.error("Error adding prize:", error);
         const message =
           error.response?.data?.message ||
           error.message ||
-          "ไม่สามารถเพิ่มรางวัลได้ กรุณาลองใหม่";
-        alert(message);
+          "เกิดข้อผิดพลาดขณะเพิ่มของรางวัล กรุณาลองใหม่";
+        showToast(message, "alert-error");
       } finally {
         this.isLoading = false;
       }
@@ -141,8 +140,10 @@ export const usePrizeStore = defineStore("prize", {
             finalImageUrl = uploadRes.data.url;
             this.newPrize.image_url = finalImageUrl;
           } else {
-            console.error("Image upload response did not contain a URL:", uploadRes.data);
-            throw new Error("Image upload failed to return a URL during update.");
+            showToast("อัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
+            throw new Error(
+              "Image upload failed to return a URL during update."
+            );
           }
         }
 
@@ -152,7 +153,10 @@ export const usePrizeStore = defineStore("prize", {
           image_url: finalImageUrl,
         };
 
-        const response = await apiClient.patch(`/prizes/${prizeId}`, updatePayload);
+        const response = await apiClient.patch(
+          `/prizes/${prizeId}`,
+          updatePayload
+        );
 
         if (response.status === 200) {
           const updatedPrizeFromServer = response.data.data;
@@ -166,19 +170,21 @@ export const usePrizeStore = defineStore("prize", {
           if (this.prize && this.prize.id === prizeId) {
             this.prize = { ...this.prize, ...updatedPrizeFromServer };
           }
+          showToast("อัปเดตรางวัลเรียบร้อยแล้ว", "alert-success");
           return updatedPrizeFromServer;
         } else {
-          console.error("Failed to update prize:", response);
-          alert("ไม่สามารถอัปเดตรางวัลได้ (รหัสข้อผิดพลาด: " + response.status + ")");
+          showToast(
+            `ไม่สามารถอัปเดตรางวัลได้ (รหัส: ${response.status})`,
+            "alert-error"
+          );
           throw new Error("Update failed with status: " + response.status);
         }
       } catch (error: any) {
-        console.error("Error updating prize:", error);
         const message =
           error.response?.data?.message ||
           error.message ||
-          "ไม่สามารถอัปเดตรางวัลได้ กรุณาลองใหม่";
-        alert(message);
+          "เกิดข้อผิดพลาดขณะอัปเดตรางวัล กรุณาลองใหม่";
+        showToast(message, "alert-error");
         throw error;
       } finally {
         this.isLoading = false;
@@ -195,17 +201,19 @@ export const usePrizeStore = defineStore("prize", {
           if (this.prize && this.prize.id === prizeId) {
             this.prize = null;
           }
+          showToast("ลบรางวัลเรียบร้อยแล้ว", "alert-success");
         } else {
-          console.error("Failed to delete prize:", response);
-          alert("ไม่สามารถลบรางวัลได้ (รหัสข้อผิดพลาด: " + response.status + ")");
+          showToast(
+            `ไม่สามารถลบรางวัลได้ (รหัส: ${response.status})`,
+            "alert-error"
+          );
         }
       } catch (error: any) {
-        console.error("Error deleting prize:", error);
         const message =
           error.response?.data?.message ||
           error.message ||
-          "ไม่สามารถลบรางวัลได้ กรุณาลองใหม่";
-        alert(message);
+          "เกิดข้อผิดพลาดขณะลบรางวัล กรุณาลองใหม่";
+        showToast(message, "alert-error");
       } finally {
         this.isLoading = false;
       }
@@ -224,16 +232,14 @@ export const usePrizeStore = defineStore("prize", {
         if (response.data?.data?.url) {
           return response.data.data.url;
         }
-        console.error("Upload response missing URL:", response.data);
-        alert("การอัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL");
+        showToast("การอัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
         return null;
       } catch (error: any) {
-        console.error("Error uploading image:", error);
         const message =
           error.response?.data?.message ||
           error.message ||
           "ไม่สามารถอัปโหลดรูปภาพได้";
-        alert(message);
+        showToast(message, "alert-error");
         return null;
       } finally {
         this.isLoading = false;

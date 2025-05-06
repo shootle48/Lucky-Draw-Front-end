@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import PrizeModals from '@/components/prize/prizeModal.vue';
-import { useToast } from '@/composables/useToastPage';
+import { getToast } from "@/composables/useToastPage";
 import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
 const router = useRouter()
-const { showToast } = useToast();
+const { showToast } = getToast();
 const playerStore = usePlayerStore();
 const prizeStore = usePrizeStore();
 
@@ -20,24 +20,24 @@ const roomName = computed(() => rooms.value.name);
 
 const handleSubmitImport = async () => {
     if (!selectedPlayer.value) {
-        showToast("กรุณาเลือกไฟล์ก่อน", "warning");
+        showToast("กรุณาเลือกไฟล์ก่อน", "alert-warning");
         return;
     }
 
     // 🔴 เช็คว่ามีของรางวัลหรือยัง
     if (prizeStore.prizes.length === 0) {
-        showToast("กรุณาเพิ่มของรางวัลก่อน", "warning");
+        showToast("ยังไม่มีรางวัลในห้องนี้ กรุณาเพิ่มรางวัลก่อนเริ่มจับฉลาก", "alert-warning");
         return;
     }
 
     try {
         await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
-        showToast("นำเข้ารายชื่อเรียบร้อยแล้ว", "success");
+        showToast("นำเข้ารายชื่อเรียบร้อยแล้ว", "alert-success");
 
         // ✅ ไปหน้าถัดไปได้
         router.push(`../mainPage/${roomId}`);
     } catch (_) {
-        showToast("อุ๊ย...เกิดข้อผิดพลาด ลองใหม่อีกครั้ง", "error");
+        showToast("เกิดข้อผิดพลาดระหว่างการนำเข้ารายชื่อ ลองใหม่อีกครั้ง", "alert-error");
     }
 };
 
@@ -71,6 +71,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped></style>
 <template>
+    <div v-if='isLoading' class="h-full">
+        <LoadingPage />
+    </div>
     <div>
         <div class="flex flex-col m-6">
             <div class="flex justify-center">
@@ -94,13 +97,10 @@ onMounted(async () => {
             </div>
         </div>
     </div>
-    <div v-if='isLoading' class="h-full">
-        <LoadingPage />
-    </div>
     <!-- นำเข้า component PrizeModals -->
     <PrizeModals ref="prizeModalsRef" />
     <!-- Global toast container -->
-    <div class="toast toast-top toast-end fixed z-[9999]"></div>
+    <div class="toast toast-top toast-start fixed z-[9999]"></div>
 
 
 </template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
-import { useToast } from '@/composables/useToastPage'
+import { getToast } from "@/composables/useToastPage";
 
-const { showToast } = useToast()
+
+const { showToast } = getToast();
 const route = useRoute();
 const router = useRouter();
 const roomId = route.params.roomId as string;
@@ -62,7 +63,7 @@ watch([filter_status, filter_position, filter_is_active], () => {
 const handleCreateCondition = async () => {
     try {
         if (!drawStore.drawConditions.length) {
-            showToast("❌ ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น", "warning");
+            showToast("❌ ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น", "alert-warning");
             return;
         }
 
@@ -70,7 +71,7 @@ const handleCreateCondition = async () => {
         const totalDrawQty = drawStore.drawConditions.reduce((sum, c) => sum + (c.quantity || 0), 0);
 
         if (quantity.value + totalDrawQty > currentPrizeQuantity) {
-            showToast(`จำนวนเกินที่กำหนด`, "error");
+            showToast(`จำนวนเกินที่กำหนด`, "alert-error");
             return;
         }
 
@@ -84,7 +85,7 @@ const handleCreateCondition = async () => {
         });
 
         if (createdCondition.id) {
-            showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "success");
+            showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "alert-success");
 
             // รอ 1.5 วิ ให้ user ได้อ่าน toast ก่อนเปลี่ยนหน้า
             await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -93,7 +94,7 @@ const handleCreateCondition = async () => {
         }
 
     } catch {
-        showToast("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "error");
+        showToast("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "alert-error");
     }
 };
 
@@ -234,7 +235,7 @@ const handleCreateCondition = async () => {
     <div v-if="isLoading">
         <LoadingPage />
     </div>
-    <div class="toast toast-top toast-end fixed z-[9999]"></div>
+    <div class="toast toast-top toast-start fixed z-[9999]"></div>
 
 </template>
 
