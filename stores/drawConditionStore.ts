@@ -48,7 +48,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         }
       } catch (error: any) {
         console.error(
-          "❌ fetchDrawConditions error:",
+          "fetchDrawConditions error:",
           error.response?.data || error.message || error
         );
         this.drawConditions = []; // เคลียร์ค่าเมื่อเกิด error
@@ -80,7 +80,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           return res.data.data; // คืนค่าที่สร้างสำเร็จ
         } else {
           console.error(
-            "❌ createDrawCondition failed with status:",
+            "createDrawCondition failed with status:",
             res.status,
             res.data
           );
@@ -91,7 +91,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       } catch (error: any) {
         console.log("payload for createDrawCondition:", payload);
         console.error(
-          "❌ createDrawCondition error:",
+          "createDrawCondition error:",
           error.response?.data || error.message || error
         );
         alert(

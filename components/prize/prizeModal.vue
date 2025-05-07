@@ -26,14 +26,31 @@ watch(() => prizeStore.selectedImage, (newImage) => {
 });
 
 watch(() => prizeStore.showAddPrizeModal, (newVal) => {
-    if(!newVal){
+    if (!newVal) {
+        
         imagePreview.value = null
         prizeStore.selectedImage = null
-        if( addFileInput.value) {
+        if (addFileInput.value) {
             addFileInput.value.value = ''
         }
     }
 })
+
+const isAddFormValid = computed(() => {
+    return (
+        prizeStore.newPrize.name.trim() !== '' &&
+        Number(prizeStore.newPrize.quantity) > 0
+    );
+});
+
+const isEditFormValid = computed(() => {
+    return (
+        editingPrize.value !== null &&
+        editingPrize.value.name.trim() !== '' &&
+        Number(editingPrize.value.quantity) > 0
+    );
+});
+
 
 // Handle การเปลี่ยนรูปภาพสำหรับ Add Modal
 const handleImageChange = (e: Event) => {
@@ -187,10 +204,11 @@ defineExpose({
 
             <div class="modal-action">
                 <button @click="prizeStore.showAddPrizeModal = false" class="btn">ยกเลิก</button>
-                <button @click="prizeStore.addPrize" class="btn btn-primary" :disabled="isLoading">
+                <button @click="prizeStore.addPrize" class="btn btn-primary" :disabled="!isAddFormValid || isLoading">
                     <span v-if="!isLoading">เพิ่มรางวัล</span>
                     <span v-else class="loading loading-spinner loading-sm"></span>
                 </button>
+
             </div>
         </div>
     </div>
@@ -250,11 +268,12 @@ defineExpose({
 
             <div class="modal-action">
                 <button @click="showEditPrizeModal = false" class="btn">ยกเลิก</button>
-                <button @click="saveEditedPrize" class="btn btn-primary" :disabled="isLoading">
+                <button @click="saveEditedPrize" class="btn btn-primary" :disabled="!isEditFormValid || isLoading">
                     <span v-if="!isLoading">บันทึก</span>
                     <span v-else class="loading loading-spinner loading-sm"></span>
                 </button>
             </div>
+
         </div>
     </div>
 </template>

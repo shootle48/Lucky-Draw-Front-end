@@ -37,13 +37,7 @@ const handleAddPlayer = (newPlayer: playerType) => {
             </div>
             <!-- แสดง player ตามหน้า -->
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
-                <div class="flex justify-end">
-                    <button @click="isModalOpen = true" class="btn btn-sm btn-primary shadow">
-                        ➕ เพิ่มผู้เล่น
-                    </button>
-                </div>
-                <div 
-                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div v-for="(player, index) in playerListWithFullName" :key="index"
                         class="card bg-base-200 shadow-sm">
                         <div class="card-body p-3 text-center">
@@ -89,3 +83,9 @@ const handleAddPlayer = (newPlayer: playerType) => {
         <AddPlayerModal v-if="isModalOpen" @close="isModalOpen = false" @submit="handleAddPlayer" />
     </div>
 </template>
+
+<!-- <div class="flex justify-end">
+    <button @click="isModalOpen = true" class="btn btn-sm btn-primary shadow">
+        ➕ เพิ่มผู้เล่น
+    </button>
+</div> -->

@@ -87,14 +87,14 @@ const handleCreateCondition = async () => {
         if (createdCondition.id) {
             showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "alert-success");
 
-            // รอ 1.5 วิ ให้ user ได้อ่าน toast ก่อนเปลี่ยนหน้า
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            // // รอ 1.5 วิ ให้ user ได้อ่าน toast ก่อนเปลี่ยนหน้า
+            // await new Promise((resolve) => setTimeout(resolve, 1500));
 
             router.push(`/drawRoom/${createdCondition.id}`);
         }
 
     } catch {
-        showToast("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "alert-error");
+        showToast("เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "alert-error");
     }
 };
 
@@ -188,7 +188,7 @@ const handleCreateCondition = async () => {
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.full_name)}&background=random`"
+                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`"
                                     alt="รูปผู้เข้าร่วม" />
                             </div>
                         </div>

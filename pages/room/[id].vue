@@ -93,7 +93,8 @@ onMounted(async () => {
                     </div>
                     <button @click="handleSubmitImport" class="btn btn-secondary">เริ่มจับฉลาก</button>
                 </fieldset>
-                <PlayerField :players="playerStore.players" v-if="playerStore.players.length > 0" class="mt-6" />
+                <PlayerField :players="playerStore.players" v-if="selectedPlayer && playerStore.players.length > 0"
+                    class="mt-6" />
             </div>
         </div>
     </div>
