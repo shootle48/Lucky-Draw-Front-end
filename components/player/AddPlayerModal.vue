@@ -1,21 +1,43 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import type { playerType } from '@/types/player'
 
 const emit = defineEmits(['submit', 'close'])
 
+const props = defineProps<{
+  roomId: string
+}>()
+
 const newPlayer = ref<playerType>({
-  prefix: 'นาย',
+  id: '',
+  prefix: '',
   first_name: '',
   last_name: '',
   member_id: '',
   position: '',
-  room_id: '',
-  is_active: false,
+  room_id: props.roomId,
+  is_active: true,
   status: 'not_received'
 })
 
+const resetForm = () => {
+  newPlayer.value = {
+    id: '',
+    prefix: '',
+    first_name: '',
+    last_name: '',
+    member_id: '',
+    position: '',
+    room_id: '',
+    is_active: true,
+    status: 'not_received'
+  }
+}
+
+
 const submitForm = () => {
-  emit('submit', newPlayer.value)
+  console.log("🧪 newPlayer submitting:", newPlayer.value)
+  emit('submit', { ...newPlayer.value })
+  resetForm()
 }
 </script>
 
@@ -40,7 +62,7 @@ const submitForm = () => {
       </div>
 
       <div class="form-control mb-2">
-        <label class="label">รหัสสมาชิก (รหัสนักศึกษา)</label>
+        <label class="label">รหัสสมาชิก/รหัสประชาชน</label>
         <input v-model="newPlayer.member_id" class="input input-bordered" />
       </div>
 
@@ -49,15 +71,10 @@ const submitForm = () => {
         <input v-model="newPlayer.position" class="input input-bordered" />
       </div>
 
-      <div class="form-control mb-4">
-        <label class="label">รหัสห้อง (room_id)</label>
-        <input v-model="newPlayer.room_id" class="input input-bordered" />
-      </div>
-
       <div class="modal-action flex justify-between">
         <button @click="emit('close')" class="btn">ยกเลิก</button>
         <button @click="submitForm" class="btn btn-primary">บันทึก</button>
       </div>
     </div>
   </dialog>
-</template> -->
+</template>

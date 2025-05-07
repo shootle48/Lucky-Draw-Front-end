@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { playerType } from '@/types/player'
+import AddPlayerModal from './AddPlayerModal.vue'
+import EditPlayerModal from './EditPlayerModal.vue'
 
 const route = useRoute()
 const isShowing = ref<boolean>(false)
 const isModalOpen = ref(false)
+const selectedPlayer = ref<playerType | null>(null)
+const isEditModalOpen = ref(false)
 
 const togglePlayer = () => isShowing.value = !isShowing.value
 
@@ -11,7 +15,7 @@ const props = defineProps<{
     players: playerType[]
 }>()
 
-const emit = defineEmits(['add'])
+const emit = defineEmits(['add', 'edit'])
 
 const isMainPage = computed(() => route.path.startsWith('/mainPage'))
 
@@ -26,6 +30,16 @@ const handleAddPlayer = (newPlayer: playerType) => {
     emit('add', newPlayer)
     isModalOpen.value = false
 }
+
+const openEditModal = (player: playerType) => {
+    selectedPlayer.value = player
+    isEditModalOpen.value = true
+}
+
+const handleEditPlayer = (updatedPlayer: playerType) => {
+    emit('edit', updatedPlayer)
+    isEditModalOpen.value = false
+}
 </script>
 
 <template>
@@ -37,10 +51,19 @@ const handleAddPlayer = (newPlayer: playerType) => {
             </div>
             <!-- แสดง player ตามหน้า -->
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
+                <div class="flex justify-end">
+                    <button @click="isModalOpen = true" class="btn btn-sm btn-primary shadow">
+                        ➕ เพิ่มผู้เล่น
+                    </button>
+                </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div v-for="(player, index) in playerListWithFullName" :key="index"
                         class="card bg-base-200 shadow-sm">
                         <div class="card-body p-3 text-center">
+                            <button @click="openEditModal(player)" class="btn btn-sm btn-warning shadow">
+                                แก้ไข
+                            </button>
+
                             <div class="avatar mx-auto mb-2">
                                 <div class="w-14 h-14 rounded-full">
                                     <img
@@ -80,12 +103,11 @@ const handleAddPlayer = (newPlayer: playerType) => {
         </div>
 
         <!-- Modal -->
-        <AddPlayerModal v-if="isModalOpen" @close="isModalOpen = false" @submit="handleAddPlayer" />
+        <AddPlayerModal v-if="isModalOpen" :room-id="props.players[0]?.room_id || ''" @close="isModalOpen = false"
+            @submit="handleAddPlayer" />
+
+        <EditPlayerModal v-if="isEditModalOpen" :room-id="props.players[0]?.room_id || ''"
+            :player-to-edit="selectedPlayer" @close="isEditModalOpen = false" @submit="handleEditPlayer" />
+
     </div>
 </template>
-
-<!-- <div class="flex justify-end">
-    <button @click="isModalOpen = true" class="btn btn-sm btn-primary shadow">
-        ➕ เพิ่มผู้เล่น
-    </button>
-</div> -->

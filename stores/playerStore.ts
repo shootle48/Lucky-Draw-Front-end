@@ -75,10 +75,10 @@ export const usePlayerStore = defineStore("player", {
             )
               ? true
               : ["ไม่เข้า", "ไม่เข้าร่วม", "ไม่มา", "ไม่ลงทะเบียน"].includes(
-                  String((player as any).status || "").trim()
-                )
-              ? false
-              : false,
+                String((player as any).status || "").trim()
+              )
+                ? false
+                : false,
           }));
 
           this.players = mappedPlayers;
@@ -114,20 +114,46 @@ export const usePlayerStore = defineStore("player", {
       }
     },
 
-    async addPlayer(newPlayers: playerType[], roomId: string) {
+    async addPlayer(newPlayer: playerType, roomId: string) {
       this.isLoading = true;
       try {
+        console.log("🛠 ส่งไปที่ backend:", newPlayer);
         const response = await apiClient.post("/players/create", {
           room_id: roomId,
-          players: newPlayers,
+          prefix: newPlayer.prefix,
+          first_name: newPlayer.first_name,
+          last_name: newPlayer.last_name,
+          member_id: newPlayer.member_id,
+          position: newPlayer.position,
+          is_active: newPlayer.is_active,
+          status: newPlayer.status,
         });
         return response.data;
       } catch (e) {
-        console.error("❌ Error adding players:", e);
+        console.error("❌ Error adding player:", e);
         throw e;
       } finally {
         this.isLoading = false;
       }
     },
+
+    async editPlayer(updatedPlayer: playerType) {
+      console.log("send to backend:", updatedPlayer)
+      this.isLoading = true
+      try {
+        const response = await apiClient.patch(`/players/${updatedPlayer.id}`, {
+          updatedPlayer
+        });
+        if (response.status === 200) {
+          console.log("แก้ไขผู้เล่นสำเร็จ");
+        }
+      } catch (error) {
+        console.error("Error editing player:", error);
+        throw error; // โยนกลับไปให้ [id].vue จัดการ alert
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
   },
 });
