@@ -2,7 +2,7 @@
   <div>
     <UApp>
       <NuxtLayout>
-        <NuxtPage class="font-display" />
+        <NuxtPage/>
       </NuxtLayout>
     </UApp>
   </div>

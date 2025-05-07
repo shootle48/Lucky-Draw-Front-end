@@ -4,7 +4,94 @@
 @plugin "daisyui" {
   themes: dracula --default;
 }
-
 @theme {
+  --color-my-custom-bg: #ffe168;
   --font-display: "Mitr", sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-display);
+    @apply bg-fixed bg-no-repeat bg-cover;
+
+    /* 💛 พื้นหลังไล่สีหลัก */
+    background-image: radial-gradient(
+        circle at 10% 10%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 10% 100%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 70% 10%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 30% 50%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 60% 70%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 90% 50%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 75% 115%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      linear-gradient(90deg, #f9f871 0%, #ffe171 33%, #ffca80 67%, #ffb896 100%);
+  }
+
+  body {
+    @apply bg-fixed bg-no-repeat bg-cover;
+
+    /* 💛 พื้นหลังไล่สีหลัก */
+    background-image: radial-gradient(
+        circle at 10% 10%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 10% 100%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 70% 10%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 30% 50%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 60% 70%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 90% 50%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      radial-gradient(
+        circle at 75% 115%,
+        rgba(255, 192, 203, 1) 10%,
+        transparent 15%
+      ),
+      linear-gradient(90deg, #f9f871 0%, #ffe171 33%, #ffca80 67%, #ffb896 100%);
+  }
 }
