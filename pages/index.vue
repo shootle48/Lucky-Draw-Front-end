@@ -2,7 +2,7 @@
 import { getToast } from "@/composables/useToastPage";
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
-import logo from '@/assets/2.png';
+import logo from '@/assets/6.png';
 
 const { showToast } = getToast();
 const Router = useRouter();
@@ -40,8 +40,8 @@ const add_room = async () => {
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
         <div class="absolute inset-0 backdrop-blur-sm"></div>
         <div class="relative z-10 flex flex-col justify-center items-center h-full  px-6 text-white">
-            <div>
-                <img :src="logo" alt="Lucky Draw Logo" class="w-140 h-100 my-10" />
+            <div style="border-radius: 39% 61% 37% 63% / 54% 47% 53% 46%  ;" class="bg-[rgba(255, 192, 203, 1)] my-6">
+                <img :src="logo" alt="Lucky Draw Logo" class="w-170 h-120" />
             </div>
             <div class="text-center max-w-2xl">
 

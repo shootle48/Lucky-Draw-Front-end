@@ -77,7 +77,7 @@ onMounted(async () => {
     <div>
         <div class="flex flex-col m-6">
             <div class="flex justify-center">
-                <h1 class="text-3xl font-bold">{{ roomName }}</h1>
+                <h1 class="text-white text-3xl font-bold drop-shadow-lg">{{ roomName }}</h1>
             </div>
             <PrizeField :handleEditPrize="handleEditPrize" />
             <div class="flex flex-col justify-center items-center">
@@ -91,7 +91,13 @@ onMounted(async () => {
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
                             class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff]" />
                     </div>
-                    <button @click="handleSubmitImport" class="btn btn-secondary bg-[#f7d99a] border-0 drop-shadow-lg text-[#161618] text-drop-shadow-lg rounded-lg">เริ่มจับฉลาก</button>
+                    <button @click="handleSubmitImport"
+                        class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-2 mt-4 border-0 rounded-[2rem] w-fit text-white">
+                        <div class="bg-[#ffae02] px-6 py-3 rounded-[2rem] text-lg font-semibold">
+                            <p class="drop-shadow-lg">เริ่มจับฉลาก</p>
+                        </div>
+                    </button>
+
                 </fieldset>
                 <PlayerField :players="playerStore.players" v-if="selectedPlayer && playerStore.players.length > 0"
                     class="mt-6" />
@@ -107,7 +113,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-#file-upload-button{
-background-color: aqua;
+#file-upload-button {
+    background-color: aqua;
 }
 </style>
