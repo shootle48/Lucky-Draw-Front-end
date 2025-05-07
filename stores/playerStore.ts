@@ -1,143 +1,159 @@
-// stores/playerStore.ts
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
+// เพิ่ม import apiClient
+import apiClient from "@/utils/apiClient";
+
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
+import { parsePlayerExcel } from "@/utils/excelParser"; //
+import { tr } from "@nuxt/ui/runtime/locale/index.js";
 
-export const usePlayerStore = defineStore('player', {
+export const usePlayerStore = defineStore("player", {
   state: () => ({
     isLoading: false,
     rooms: {
-      id: '',
-      name: '',
+      id: "",
+      name: "",
     } as roomTypes,
     players: [] as playerType[],
   }),
-  
+
   actions: {
     async fetchRoom(roomId: string) {
+      this.isLoading = true; // ย้าย isLoading มาไว้ข้างบน try/catch/finally
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API}/rooms/${roomId}`);
-        this.rooms = response.data.data;
-        console.log("Room fetched successfully:", this.rooms);
+        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
+        const response = await apiClient.get(`/rooms/${roomId}`); // <--- แก้ไข
+        if (response.status == 200) {
+          this.rooms = response.data.data;
+        }
       } catch (error) {
         console.error("Error fetching room:", error);
+        // พิจารณาการแสดงข้อผิดพลาดให้ผู้ใช้ทราบ
+      } finally {
+        this.isLoading = false;
       }
     },
 
-    async handlePlayersImport(event: Event) {
+    async fetchPlayers(roomId: string) {
+      this.isLoading = true;
+      try {
+        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
+        const response = await apiClient.get(
+          // <--- แก้ไข
+          `/players/list`,
+          {
+            params: { search: roomId },
+          }
+        );
+        if (response.status == 200) {
+          this.players = response.data.data;
+        }
+      } catch (e) {
+        console.log("something went wrong fetching players", e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    // ฟังก์ชันนี้ไม่ได้เรียก API โดยตรง ไม่ต้องแก้ส่วน Axios
+    async handlePlayersExport(event: Event) {
       const input = event.target as HTMLInputElement;
       if (!input.files || input.files.length === 0) return;
-      
+
       const file = input.files[0];
       this.isLoading = true;
 
       try {
-        // อ่านไฟล์ด้วย FileReader
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          const data = e.target?.result;
-
-          // กำหนดตัวเลือกเพื่อรองรับภาษาไทย
-          const workbook = XLSX.read(data, {
-            type: 'binary',
-            codepage: 874, // รหัสหน้า Thai (Windows-874)
-            cellText: true, // ให้อ่านเซลล์เป็นข้อความ
-            cellDates: true, // แปลงวันที่เป็นวัตถุวันที่
-            cellNF: false,
-            raw: true // ใช้ค่าดิบโดยไม่แปลงรูปแบบ
-          });
-
-          // ดึงข้อมูลจาก sheet แรก
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-
-          // แปลงข้อมูลเป็น JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-            raw: false, // ไม่ใช้ค่าดิบเพื่อให้แปลงรูปแบบ
-            defval: '', // ค่าเริ่มต้นสำหรับเซลล์ว่าง
-            blankrows: false // ไม่รวมแถวว่าง
-          });
-
-          console.log('ข้อมูลที่อ่านได้:', jsonData);
-
-          // ตรวจสอบว่ามีข้อมูลหรือไม่
-          if (jsonData.length > 0) {
-            // แปลงข้อมูลเป็นรูปแบบที่ต้องการ
-            const importedPlayer = jsonData.map((row: any) => {
-              // หาคอลัมน์ชื่อ - ลองหลายรูปแบบที่เป็นไปได้
-              // แสดงค่าทั้งหมดในแถวเพื่อดีบัก
-              console.log('ค่าในแถว:', Object.entries(row));
-
-              // ตรวจสอบว่า column ชื่อมีอยู่หรือไม่ (ปรับตามชื่อ column ในไฟล์)
-              let nameField = '';
-
-              // ลองหาคอลัมน์ชื่อภาษาไทยหรืออังกฤษ
-              for (const [key, value] of Object.entries(row)) {
-                if (typeof key === 'string') {
-                  const lowerKey = key.toLowerCase();
-                  if (lowerKey.includes('name') ||
-                      lowerKey.includes('ชื่อ') ||
-                      lowerKey === 'name' ||
-                      lowerKey === 'ชื่อ') {
-                    if (typeof value === 'string' && value.trim() !== '') {
-                      nameField = value.toString();
-                      break;
-                    }
-                  }
-                }
-              }
-
-              // ถ้าไม่พบคอลัมน์ชื่อ ให้ใช้ค่าแรกในแถว
-              if (!nameField && Object.values(row).length > 0) {
-                const firstValue = Object.values(row)[1];
-                if (firstValue && typeof firstValue === 'string' && firstValue.trim() !== '') {
-                  nameField = firstValue.toString();
-                }
-              }
-
-              return {
-                prefix: String(row['prefix']) || String(row['คำนำหน้า']) || '', // ใช้คอลัมน์คำนำหน้าถ้ามี
-                firstName: nameField || 'ไม่ระบุชื่อ',
-                lastName: String(row['lastName']) || String(row['นามสกุล']) || '', // ใช้คอลัมน์นามสกุลถ้ามี
-                employeeId: String(row['employeeId']) || String(row['รหัสพนักงาน']) || '', // ใช้คอลัมน์รหัสพนักงานถ้ามี
-                role: String(row['role']) || String(row['ตำแหน่ง']) || '', // ใช้คอลัมน์ตำแหน่งถ้ามี
-                image: null,
-              };
-            }).filter(p => p.firstName && p.firstName !== 'ไม่ระบุชื่อ'); // กรองเฉพาะที่มีชื่อ
-
-            if (importedPlayer.length > 0) {
-              this.players = importedPlayer;
-            } else {
-              alert('ไม่พบข้อมูลชื่อในไฟล์ โปรดตรวจสอบรูปแบบไฟล์ของคุณ');
-            }
-          } else {
-            alert('ไม่พบข้อมูลในไฟล์ โปรดตรวจสอบไฟล์ของคุณ');
-          }
-
-          this.isLoading = false;
-        };
-
-        reader.onerror = () => {
-          console.error('เกิดข้อผิดพลาดในการอ่านไฟล์');
-          alert('เกิดข้อผิดพลาดในการอ่านไฟล์ โปรดลองอีกครั้ง');
-          this.isLoading = false;
-        };
-
-        // สำหรับไฟล์ .csv ให้ใช้ readAsText พร้อมกำหนด encoding เป็น UTF-8
-        if (file.name.toLowerCase().endsWith('.csv')) {
-          reader.readAsText(file, 'UTF-8');
+        const players = await parsePlayerExcel(file);
+        if (players.length === 0) {
+          alert("ไม่พบข้อมูลที่นำเข้า");
         } else {
-          // สำหรับไฟล์ Excel (.xls, .xlsx) ให้ใช้ readAsBinaryString
-          reader.readAsBinaryString(file);
+          // 🔥 ปรับให้ตรง playerType: is_active
+          const mappedPlayers = players.map((player) => ({
+            ...player,
+            is_active: ["เข้า", "เข้าร่วม", "มา", "ลงทะเบียน"].includes(
+              String((player as any).status || "").trim()
+            )
+              ? true
+              : ["ไม่เข้า", "ไม่เข้าร่วม", "ไม่มา", "ไม่ลงทะเบียน"].includes(
+                String((player as any).status || "").trim()
+              )
+                ? false
+                : false,
+          }));
+
+          this.players = mappedPlayers;
+          console.log("Players from Excel:", this.players);
         }
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการนำเข้าข้อมูล:', error);
-        alert('เกิดข้อผิดพลาดในการนำเข้าข้อมูล: ' + (error instanceof Error ? error.message : 'โปรดลองอีกครั้ง'));
+        console.error("Import Error:", error);
+        alert("เกิดข้อผิดพลาดในการนำเข้าข้อมูล");
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    // ฟังก์ชันนี้ใช้ import ข้อมูลผู้เล่นผ่าน API
+    async handlePlayerImport(file: File, roomId: string) {
+      this.isLoading = true;
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("room_id", roomId);
+
+        const response = await apiClient.post(`/players/import`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        await this.fetchPlayers(roomId); // รีเฟรชข้อมูล
+
+        return response.data; // ✅ ให้ component นำไปใช้แสดง toast
+      } catch (e: any) {
+        // โยน error ให้ภายนอกจัดการ toast
+        throw e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async addPlayer(newPlayer: playerType, roomId: string) {
+      this.isLoading = true;
+      try {
+        console.log("🛠 ส่งไปที่ backend:", newPlayer);
+        const response = await apiClient.post("/players/create", {
+          room_id: roomId,
+          prefix: newPlayer.prefix,
+          first_name: newPlayer.first_name,
+          last_name: newPlayer.last_name,
+          member_id: newPlayer.member_id,
+          position: newPlayer.position,
+          is_active: newPlayer.is_active,
+          status: newPlayer.status,
+        });
+        return response.data;
+      } catch (e) {
+        console.error("❌ Error adding player:", e);
+        throw e;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async editPlayer(updatedPlayer: playerType) {
+      console.log("send to backend:", updatedPlayer)
+      this.isLoading = true
+      try {
+        const response = await apiClient.patch(`/players/${updatedPlayer.id}`, {
+          updatedPlayer
+        });
+        if (response.status === 200) {
+          console.log("แก้ไขผู้เล่นสำเร็จ");
+        }
+      } catch (error) {
+        console.error("Error editing player:", error);
+        throw error; // โยนกลับไปให้ [id].vue จัดการ alert
+      } finally {
         this.isLoading = false;
       }
     }
-  }
+
+  },
 });
