@@ -77,21 +77,27 @@ onMounted(async () => {
     <div>
         <div class="flex flex-col m-6">
             <div class="flex justify-center">
-                <h1 class="text-3xl font-bold">{{ roomName }}</h1>
+                <h1 class="text-white text-3xl font-bold drop-shadow-lg">{{ roomName }}</h1>
             </div>
             <PrizeField :handleEditPrize="handleEditPrize" />
             <div class="flex flex-col justify-center items-center">
-                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-fit shadow-lg border my-6 p-4">
-                    <legend class="fieldset-legend text-left text-2xl md:text-3xl">ผู้เล่น</legend>
+                <fieldset class="fieldset bg-[#ffffff98] rounded-box w-fit shadow-lg border my-6 p-4">
+                    <legend class="fieldset-legend text-left text-2xl md:text-3xl text-[#000000]">ผู้เล่น</legend>
                     <div class="form-control w-full text-left">
                         <label class="label">
-                            <span class="label-text text-lg mb-2">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx,
+                            <span class="label-text text-lg mb-2 text-[#000000]">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx,
                                 .csv)</span>
                         </label>
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
-                            class="file-input file-input-bordered w-full" />
+                            class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff]" />
                     </div>
-                    <button @click="handleSubmitImport" class="btn btn-secondary">เริ่มจับฉลาก</button>
+                    <button @click="handleSubmitImport"
+                        class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-2 mt-4 border-0 rounded-[2rem] w-fit text-white">
+                        <div class="bg-[#ffae02] px-6 py-3 rounded-[2rem] text-lg font-semibold">
+                            <p class="drop-shadow-lg">เริ่มจับฉลาก</p>
+                        </div>
+                    </button>
+
                 </fieldset>
                 <PlayerField :players="playerStore.players" v-if="selectedPlayer && playerStore.players.length > 0"
                     class="mt-6" />
@@ -106,4 +112,8 @@ onMounted(async () => {
 
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+#file-upload-button {
+    background-color: aqua;
+}
+</style>
