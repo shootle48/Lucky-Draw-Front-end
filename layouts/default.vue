@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import logo from '@/assets/7.png';
+import logo from '@/assets/logo.png';
 const Year = new Date().getFullYear();
 </script>
 <template>
