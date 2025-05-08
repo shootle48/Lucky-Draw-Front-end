@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const formPlayer = ref<playerType>({
-    prefix: '',
+    prefix: 'testt',
     first_name: '',
     last_name: '',
     position: '',
