@@ -1,57 +1,74 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import type { playerType } from '@/types/player'
 
 const emit = defineEmits(['submit', 'close'])
 
+const props = defineProps<{
+  roomId: string
+}>()
+
 const newPlayer = ref<playerType>({
-  prefix: 'นาย',
+  id: '',
+  prefix: '',
   first_name: '',
   last_name: '',
   member_id: '',
   position: '',
-  room_id: '',
-  is_active: false,
+  room_id: props.roomId,
+  is_active: true,
   status: 'not_received'
 })
 
+const resetForm = () => {
+  newPlayer.value = {
+    id: '',
+    prefix: '',
+    first_name: '',
+    last_name: '',
+    member_id: '',
+    position: '',
+    room_id: '',
+    is_active: true,
+    status: 'not_received'
+  }
+}
+
+
 const submitForm = () => {
-  emit('submit', newPlayer.value)
+  console.log("🧪 newPlayer submitting:", newPlayer.value)
+  emit('submit', { ...newPlayer.value })
+  resetForm()
 }
 </script>
 
 <template>
   <dialog open class="modal modal-open">
     <div class="modal-box">
-      <h3 class="font-bold text-lg mb-4">เพิ่มผู้เล่นใหม่</h3>
+      <h3 class="font-bold text-lg mb-4 text-center">เพิ่มผู้เล่น</h3>
 
       <div class="form-control mb-2">
-        <label class="label">คำนำหน้า</label>
-        <input v-model="newPlayer.prefix" class="input input-bordered" placeholder="นาย / นางสาว ..." />
+        <label class="label-text mb-1">คำนำหน้า</label>
+        <input v-model="newPlayer.prefix" class="input input-bordered w-full" placeholder="นาย / นางสาว ..." />
       </div>
 
       <div class="form-control mb-2">
-        <label class="label">ชื่อ</label>
-        <input v-model="newPlayer.first_name" class="input input-bordered" />
+        <label class="label-text mb-1">ชื่อ</label>
+        <input v-model="newPlayer.first_name" class="input input-bordered w-full" />
       </div>
 
       <div class="form-control mb-2">
-        <label class="label">นามสกุล</label>
-        <input v-model="newPlayer.last_name" class="input input-bordered" />
+        <label class="label-text mb-1">นามสกุล</label>
+        <input v-model="newPlayer.last_name" class="input input-bordered w-full" />
       </div>
 
       <div class="form-control mb-2">
-        <label class="label">รหัสสมาชิก (รหัสนักศึกษา)</label>
-        <input v-model="newPlayer.member_id" class="input input-bordered" />
+        <label class="label-text mb-1">รหัสสมาชิก/รหัสประชาชน</label>
+        <input v-model="newPlayer.member_id" class="input input-bordered w-full" />
       </div>
 
       <div class="form-control mb-2">
-        <label class="label">ตำแหน่ง</label>
-        <input v-model="newPlayer.position" class="input input-bordered" />
-      </div>
-
-      <div class="form-control mb-4">
-        <label class="label">รหัสห้อง (room_id)</label>
-        <input v-model="newPlayer.room_id" class="input input-bordered" />
+        <label class="label-text mb-1">ตำแหน่ง</label>
+        <input v-model="newPlayer.position" class="input input-bordered w-full" />
       </div>
 
       <div class="modal-action flex justify-between">
@@ -60,4 +77,4 @@ const submitForm = () => {
       </div>
     </div>
   </dialog>
-</template> -->
+</template>

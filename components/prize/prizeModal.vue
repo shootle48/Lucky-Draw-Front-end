@@ -27,7 +27,7 @@ watch(() => prizeStore.selectedImage, (newImage) => {
 
 watch(() => prizeStore.showAddPrizeModal, (newVal) => {
     if (!newVal) {
-
+        
         imagePreview.value = null
         prizeStore.selectedImage = null
         if (addFileInput.value) {
@@ -152,33 +152,45 @@ defineExpose({
 <template>
     <!-- Modal เพิ่มรางวัล -->
     <div class="modal" :class="{ 'modal-open': prizeStore.showAddPrizeModal }">
-        <div class="modal-box bg-[#ffffff98] text-black/60 shadow-xl rounded-xl mx-auto flex flex-col gap-4">
+        <div class="modal-box">
             <h3 class="font-bold text-lg mb-4">เพิ่มรางวัล</h3>
+            <div class="form-control flex flex-col">
+                <label class="label">
+                    <span class="label-text">ชื่อรางวัล</span>
+                </label>
+                <input v-model="prizeStore.newPrize.name" type="text" placeholder="ชื่อรางวัล"
+                    class="input input-bordered w-full" />
+            </div>
+            <div class="form-control mt-2 flex flex-col">
+                <label class="label">
+                    <span class="label-text">จำนวนรางวัล</span>
+                </label>
+                <input v-model="prizeStore.newPrize.quantity" type="number" min="1" placeholder="จำนวนรางวัล"
+                    class="input input-bordered w-full" />
+            </div>
+
             <!-- เพิ่มส่วนอัปโหลดรูปภาพ -->
             <div class="form-control mt-2">
                 <label class="label">
                     <span class="label-text">รูปภาพรางวัล</span>
                 </label>
-                <div class="flex flex-col items-center">
+                <div class="flex flex-col items-center gap-2">
                     <!-- แสดงรูปภาพตัวอย่าง ถ้ามีการเลือกรูป -->
-                    <div class="flex justify-center mb-4 relative">
-                        <div v-if="imagePreview"
-                            class="w-60 h-60 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                            <img :src="imagePreview" class="object-cover w-full h-full" />
-                        </div>
-                        <div v-else
-                            class="w-60 h-60 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
+                    <div v-if="imagePreview"
+                        class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img :src="imagePreview" class="object-contain max-h-full" />
+                    </div>
+                    <div v-else class="w-full h-40 bg-base-300 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-18 w-18 text-base-content opacity-30"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                     </div>
 
                     <div class="flex w-full gap-2">
                         <input ref="addFileInput" type="file" @change="handleImageChange" accept="image/*"
-                            class="file-input file-input-bordered file-input-sm w-full text-white" />
+                            class="file-input file-input-bordered file-input-sm w-full" />
                         <button v-if="imagePreview" @click="removeImage" class="btn btn-sm btn-circle btn-error">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
@@ -188,20 +200,6 @@ defineExpose({
                         </button>
                     </div>
                 </div>
-            </div>
-            <div class="form-control flex flex-col">
-                <label class="label">
-                    <span class="label-text">ชื่อรางวัล</span>
-                </label>
-                <input v-model="prizeStore.newPrize.name" type="text" placeholder="ชื่อรางวัล"
-                    class="input input-bordered w-full text-white" />
-            </div>
-            <div class="form-control mt-2 flex flex-col">
-                <label class="label">
-                    <span class="label-text">จำนวนรางวัล</span>
-                </label>
-                <input v-model="prizeStore.newPrize.quantity" type="number" min="1" placeholder="จำนวนรางวัล"
-                    class="input input-bordered w-full text-white" />
             </div>
 
             <div class="modal-action">
