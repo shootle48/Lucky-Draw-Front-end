@@ -57,44 +57,44 @@ const submitForm = () => {
 <template>
     <dialog open class="modal modal-open">
         <div class="modal-box">
-            <h3 class="font-bold text-lg mb-4">เพิ่มผู้เล่นใหม่</h3>
+            <h3 class="font-bold text-lg mb-4 text-center">แก้ไขผู้เเล่น</h3>
 
             <div class="form-control mb-2">
-                <label class="label">คำนำหน้า</label>
-                <input v-model="formPlayer.prefix" class="input input-bordered" placeholder="นาย / นางสาว ..." />
+                <label class="label-text mb-1">คำนำหน้า</label>
+                <input v-model="formPlayer.prefix" class="input input-bordered w-full" placeholder="นาย / นางสาว ..." />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label">ชื่อ</label>
-                <input v-model="formPlayer.first_name" class="input input-bordered" />
+                <label class="label-text mb-1">ชื่อ</label>
+                <input v-model="formPlayer.first_name" class="input input-bordered  w-full" />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label">นามสกุล</label>
-                <input v-model="formPlayer.last_name" class="input input-bordered" />
+                <label class="label-text mb-1">นามสกุล</label>
+                <input v-model="formPlayer.last_name" class="input input-bordered w-full" />
             </div>
 
             <!-- เพิ่ม field สำหรับ member_id ที่ไม่ให้ user แก้ไข -->
             <div class="form-control mb-2">
-                <label class="label">รหัสสมาชิก (member ID)</label>
-                <input v-model="formPlayer.member_id" class="input input-bordered" readonly disabled />
+                <label class="label-text mb-1">รหัสสมาชิก (member ID)</label>
+                <input v-model="formPlayer.member_id" class="input input-bordered w-full" readonly disabled />
             </div>
 
 
             <div class="form-control mb-2">
-                <label class="label">ตำแหน่ง</label>
-                <input v-model="formPlayer.position" class="input input-bordered" />
+                <label class="label-text mb-1">ตำแหน่ง</label>
+                <input v-model="formPlayer.position" class="input input-bordered w-full" />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label">เข้าร่วม</label>
+                <label class="label-text mb-1">เข้าร่วม</label>
                 <input type="checkbox" v-model="formPlayer.is_active"
-                    class="checkbox border-red-600 bg-red-500 checked:border-green-500 checked:bg-green-400 checked:text-orange-800" />
+                    class="checkbox border-red-600 bg-red-500 checked:border-green-500 checked:bg-green-400 checked:text-orange-800 ml-2" />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label">สถานะ</label>
-                <input v-model="formPlayer.status" class="input input-bordered" />
+                <label class="label-text mb-1">สถานะ</label>
+                <input v-model="formPlayer.status" class="input input-bordered w-full" />
             </div>
 
             <div class="modal-action flex justify-between">

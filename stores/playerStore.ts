@@ -36,12 +36,13 @@ export const usePlayerStore = defineStore("player", {
     async fetchPlayers(roomId: string) {
       this.isLoading = true;
       try {
-        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
         const response = await apiClient.get(
           // <--- แก้ไข
           `/players/list`,
           {
-            params: { search: roomId },
+            params: {
+              room_id: roomId,
+            },
           }
         );
         if (response.status == 200) {
@@ -142,7 +143,14 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true
       try {
         const response = await apiClient.patch(`/players/${updatedPlayer.id}`, {
-          updatedPlayer
+          prefix: updatedPlayer.prefix,
+          first_name: updatedPlayer.first_name,
+          last_name: updatedPlayer.last_name,
+          member_id: updatedPlayer.member_id,
+          position: updatedPlayer.position,
+          is_active: updatedPlayer.is_active,
+          status: updatedPlayer.status,
+          room_id: updatedPlayer.room_id,
         });
         if (response.status === 200) {
           console.log("แก้ไขผู้เล่นสำเร็จ");
