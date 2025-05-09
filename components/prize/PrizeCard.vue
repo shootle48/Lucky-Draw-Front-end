@@ -22,7 +22,7 @@ const props = defineProps<{
 
 <template>
   <div
-    class="card bg-[#ffffff98] border rounded-box hover:shadow-md transition-shadow duration-200 relative overflow-hidden min-w-[200px] w-full  mx-auto mb-4">
+    class="card bg-[#ffffff98] border rounded-box hover:shadow-md transition-shadow duration-200 relative overflow-hidden min-w-[200px] w-full  mx-auto ">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
     <div v-if="!isMainPage && !isPrizeChoose">

@@ -69,12 +69,19 @@ const props = defineProps({
       </div>
 
       <!-- รายการรางวัลแบบ UCarousel -->
-      <div v-if="prizes.length > 0" class="mb-4">
-        <UCarousel v-slot="{ item }" :items="carouselItems" class="relative Carousel" :ui="{
+      <div v-if="prizes.length > 0" class="relative">
+        <div class="absolute left-0 top-0 bottom-0 w-24 z-20 pointer-events-none
+                 bg-gradient-to-r from-white via-white/80 to-transparent blur-[6px]">
+        </div>
+
+        <div class="absolute right-0 top-0 bottom-0 w-24 z-20 pointer-events-noneห
+                 bg-gradient-to-l from-white via-white/80 to-transparent blur-[6px]">
+        </div>
+
+        <UCarousel v-slot="{ item }" :items="carouselItems" class="relative" :ui="{
           item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
         }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots>
           <div class="relative px-2" :class="{ 'opacity-50 pointer-events-none': item.quantity === 0 }">
-            <!-- Overlay ป้ายหมดแล้ว -->
             <div v-if="item.quantity === 0"
               class="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-lg z-20 rounded-lg">
               หมดแล้ว
@@ -82,41 +89,21 @@ const props = defineProps({
             <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
           </div>
         </UCarousel>
-
       </div>
 
+
+
       <!-- ถ้าไม่มีรางวัล -->
-      <div v-if="prizes.length === 0" class="alert bg-[#ffffff98] border-0">
+      <div v-if="prizes.length === 0"
+        class="badge badge-outline badge-primary shadow-md w-full h-40 flex items-center justify-center gap-4 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 24 24"
           class="stroke-current shrink-0 w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span class="text-black">ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการก่อนเริ่มใช้งาน</span>
+        <span class=" text-xl font-bold drop-shadow-2xl">ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย 1
+          รายการก่อนเริ่มใช้งาน</span>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.Carousel::before,
-.Carousel::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.Carousel::before {
-  left: 0;
-  background: linear-gradient(to right, transparent);
-}
-
-.Carousel::after {
-  right: 0;
-  background: linear-gradient(to left, transparent);
-}
-</style>
