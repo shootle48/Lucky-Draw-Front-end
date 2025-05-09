@@ -88,19 +88,21 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                     </svg>
                                 </label>
                             </button>
-
-                            <div class="avatar mx-auto mb-2">
-                                <div class="w-14 h-14 rounded-full">
-                                    <img
-                                        :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`" />
-                                </div>
+                            <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
+                                :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม">
                             </div>
-                            <div class="text-lg font-bold">{{ player.full_name }}</div>
-                            <div class="text-sm text-gray-500">{{ player.position }}</div>
-                            <div class="flex justify-center mt-2">
-                                <div class="w-3 h-3 rounded-full"
-                                    :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม">
+
+                            <div class="card-body p-3 text-center text-black">
+                                <div class="avatar mx-auto mb-2">
+                                    <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
+                                        :style="{ backgroundColor: getRandomBgColor(index) }">
+                                        <img :src="getProfileImage(index)" class="w-full h-full object-cover"
+                                            alt="profile" />
+                                    </div>
+
                                 </div>
+                                <div class="text-lg font-bold">{{ player.full_name }}</div>
+                                <div class="text-sm text-gray-500">{{ player.position }}</div>
                             </div>
                         </div>
                     </div>
