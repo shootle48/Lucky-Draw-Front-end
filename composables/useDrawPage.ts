@@ -5,13 +5,14 @@ export function useDrawPage() {
   const playerStore = usePlayerStore();
   const prizeStore = usePrizeStore();
   const drawConditionStore = useDrawConditionStore();
-  const winnerStore = useWinnerStore()
+  const winnerStore = useWinnerStore();
 
   const { rooms } = storeToRefs(playerStore);
   const { prize } = storeToRefs(prizeStore);
   const { drawConditions, isLoading } = storeToRefs(drawConditionStore);
 
   const roomName = computed(() => rooms.value?.name || "ไม่พบชื่อห้อง");
+  const roomId = computed(() => rooms.value?.id || "");
   const prizeData = computed(() => prize.value);
   const filteredPlayers = computed(() => drawConditions.value || []);
   const drawConditionID = route.params.id as string;
@@ -25,6 +26,7 @@ export function useDrawPage() {
   const glowingTempIndex = ref<number | null>(null);
   const glowingIndexes = ref<number[]>([]);
   const remainingPlayers = ref<any[]>([]);
+  const isFinished = ref(false); // ✅ เพิ่มตรงนี้
 
   // เพิ่มตัวแปรเก็บ ID ของผู้เล่นที่เคยถูกสุ่มแล้ว
   const drawnPlayerIds = ref<Set<number | string>>(new Set());
@@ -58,6 +60,9 @@ export function useDrawPage() {
       alert("จำนวนผู้เล่นไม่พอสำหรับสุ่มรางวัล");
       return;
     }
+
+    isFinished.value = false; // ✅ Reset ตอนเริ่มสุ่มใหม่
+    isDrawing.value = true;
 
     isDrawing.value = true;
     drawnWinners.value = [];
@@ -128,7 +133,7 @@ export function useDrawPage() {
       player_status: status,
     };
 
-    await winnerStore.createWinner(payload)
+    await winnerStore.createWinner(payload);
     console.log("📦 ส่งข้อมูลผู้โชคดี:", payload);
     showWinnerModal.value = false;
 
@@ -151,7 +156,7 @@ export function useDrawPage() {
       setTimeout(() => drawNextRound(), 500);
     } else {
       // สุ่มครบตามจำนวนแล้ว - แสดงข้อความสุ่มครบ
-      alert("🎉 สุ่มครบทั้งหมดแล้ว!");
+      isFinished.value = true;
     }
   };
 
@@ -175,7 +180,7 @@ export function useDrawPage() {
         filter_position,
         filter_is_active
       );
-      console.log(drawConditionStore.drawConditions)
+      console.log(drawConditionStore.drawConditions);
     } else {
       drawConditionStore.drawConditions = [];
     }
@@ -183,6 +188,7 @@ export function useDrawPage() {
 
   return {
     roomName,
+    roomId,
     prizeData,
     filteredPlayers,
     drawQuantity,
@@ -198,6 +204,7 @@ export function useDrawPage() {
     statusMap,
     glowingIndexes,
     glowingTempIndex,
-    isLoading
+    isLoading,
+    isFinished,
   };
 }
