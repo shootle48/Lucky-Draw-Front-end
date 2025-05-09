@@ -1,7 +1,6 @@
 <template>
-    <div
-        class="fixed top-0 left-0 z-[9999] w-screen h-screen bg-[#ffffff98] flex justify-center items-center overflow-hidden">
-        <!-- Hamster loader -->
+    <div class="top-0 left-0 flex justify-center items-center absolute bg-black min-w-full min-h-full z-100">
+        <!-- From Uiverse.io by Nawsome -->
         <div aria-label="Orange and tan hamster running in a metal wheel" role="img" class="wheel-and-hamster">
             <div class="wheel"></div>
             <div class="hamster">
@@ -22,7 +21,6 @@
         </div>
     </div>
 </template>
-
 
 <style scoped>
 /* From Uiverse.io by Nawsome */

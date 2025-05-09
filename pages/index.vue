@@ -2,7 +2,7 @@
 import { getToast } from "@/composables/useToastPage";
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
-import logo from '@/assets/fullLogo.png';
+import logo from '@/assets/6.png';
 
 const { showToast } = getToast();
 const Router = useRouter();
@@ -40,14 +40,16 @@ const add_room = async () => {
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
         <div class="absolute inset-0 backdrop-blur-sm"></div>
         <div class="relative z-10 flex flex-col justify-center items-center h-full  px-6 text-white">
-            <img :src="logo" alt="Lucky Draw Logo" class=" md:w-170 md:h-120" />
+            <div style="border-radius: 39% 61% 37% 63% / 54% 47% 53% 46%  ;" class="bg-[rgba(255, 192, 203, 1)] my-6">
+                <img :src="logo" alt="Lucky Draw Logo" class="w-170 h-120" />
+            </div>
             <div class="text-center max-w-2xl">
 
                 <!-- ฟอร์มสร้างห้อง -->
                 <form @submit.prevent="add_room" class="w-full flex flex-col items-center gap-4">
                     <fieldset
                         class="w-fit max-w-md bg-white/20 border border-white/50 p-6 rounded-xl shadow-md backdrop-blur-3xl">
-                        <legend class="text-2xl font-semibold drop-shadow-sm">สร้างห้องสุ่มรางวัล</legend>
+                        <legend class="text-lg font-semibold drop-shadow-sm">สร้างห้องสุ่มรางวัล</legend>
                         <div class="join ">
                             <input type="text" class="input w-fit bg-white/80 text-black mr-4 rounded-lg"
                                 placeholder="ชื่อห้องสุ่มรางวัล" v-model="RoomData.name" />
@@ -66,7 +68,7 @@ const add_room = async () => {
                         </button>
                     </NuxtLink>
                 </div>
-                <p class="mt-6 text-md md:text-2xl py-6 border p-2 rounded-2xl font-medium leading-relaxed drop-shadow-lg">
+                <p class="mt-6 text-base md:text-lg py-6 font-medium leading-relaxed drop-shadow-lg">
                     บริหารรางวัล รายชื่อ และการสุ่ม ได้อย่างเป็นระบบ<br />
                     รองรับทุกขั้นตอน ใช้งานง่าย เหมาะสำหรับทุกกิจกรรมภายในองค์กร
                 </p>
