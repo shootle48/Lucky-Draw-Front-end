@@ -92,8 +92,8 @@ onUnmounted(() => {
                 <img :src="logo" alt="Lucky Draw Logo" class="w-70 h-50 md:w-100 md:h-70" />
             </div>
             <div
-                class="bg-[#ffffff98] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
-                <h1 class="text-black/70 text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomName }}</h1>
+                class="bg-[#ffffff69] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
+                <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomName }}</h1>
             </div>
 
             <PrizeField :handleEditPrize="handleEditPrize" />

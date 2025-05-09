@@ -46,11 +46,19 @@ const handleEditPlayer = async (updatedPlayer: playerType) => {
                 <img :src="logo" alt="Lucky Draw Logo" class="w-70 h-50 md:w-100 md:h-70" />
             </div>
             <div
-                class="bg-[#ffffff98] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
-                <h1 class="text-black/70 text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomName }}</h1>
+                class="bg-[#ffffff69] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
+                <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomName }}</h1>
             </div>
-            <PrizeField />
+            <!-- ปุ่มลอยบนขวา -->
+            <button @click="$router.push(`/dashboard/${roomId}`)"
+                class="fixed top-4 right-4 z-50 p-2 border-0 rounded-[2rem] shadow-black shadow-sm bg-gradient-to-t from-[#0066ff] to-[#029aff] cursor-pointer">
+                <div class="bg-[#0267ff] px-6 py-3 rounded-[2rem] text-lg font-semibold text-white drop-shadow-lg">
+                    สรุปผลรางวัล
+                </div>
+            </button>
+
             <div class="flex flex-col justify-center items-center">
+                <PrizeField />
                 <PlayerField :players="players" @add="handleAddPlayer" @edit="handleEditPlayer"
                     v-if="playerStore.players.length > 0" class="mt-6" />
 
