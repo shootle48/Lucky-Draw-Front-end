@@ -35,7 +35,7 @@ const add_room = async () => {
 };
 </script>
 
-
+<!-- testtt -->
 <template>
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
         <div class="absolute inset-0 backdrop-blur-sm"></div>
