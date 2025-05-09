@@ -88,21 +88,47 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                     </button>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
-                        <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
-                            :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม"></div>
+                    <div v-for="(player, index) in playerListWithFullName" :key="index"
+                        class="card bg-base-200 shadow-sm">
+                        <div class="card-body p-3 text-center">
+                            <button class="ml-auto" :class="{ 'swap-active': isBurgerOpen === player.id }"
+                                @click="openEditModal(player)">
+                                <label class="btn btn-circle swap swap-rotate">
+                                    <!-- this hidden checkbox controls the state -->
+                                    <input type="checkbox" class="hidden" :checked="isBurgerOpen === player.id"
+                                        @change="openEditModal(player)" />
 
-                        <div class="card-body p-3 text-center text-black">
-                            <div class="avatar mx-auto mb-2">
-                                <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
-                                    :style="{ backgroundColor: getRandomBgColor(index) }">
-                                    <img :src="getProfileImage(index)" class="w-full h-full object-cover"
-                                        alt="profile" />
-                                </div>
+                                    <!-- hamburger icon -->
+                                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="32"
+                                        height="32" viewBox="0 0 512 512">
+                                        <path
+                                            d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+                                    </svg>
 
+                                    <!-- close icon -->
+                                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="32"
+                                        height="32" viewBox="0 0 512 512">
+                                        <polygon
+                                            points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
+                                    </svg>
+                                </label>
+                            </button>
+                            <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
+                                :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม">
                             </div>
-                            <div class="text-lg font-bold">{{ player.full_name }}</div>
-                            <div class="text-sm text-gray-500">{{ player.position }}</div>
+
+                            <div class="card-body p-3 text-center text-black">
+                                <div class="avatar mx-auto mb-2">
+                                    <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
+                                        :style="{ backgroundColor: getRandomBgColor(index) }">
+                                        <img :src="getProfileImage(index)" class="w-full h-full object-cover"
+                                            alt="profile" />
+                                    </div>
+
+                                </div>
+                                <div class="text-lg font-bold">{{ player.full_name }}</div>
+                                <div class="text-sm text-gray-500">{{ player.position }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -122,8 +148,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                             </div>
 
                         </div>
-                        <div class="text-lg font-bold">{{ player.prefix }} {{ player.first_name }} {{ player.last_name
-                            }}</div>
+                        <div class="text-lg font-bold">{{ player.full_name }}</div>
                         <div class="text-sm text-gray-500">{{ player.position }}</div>
                     </div>
                 </div>
