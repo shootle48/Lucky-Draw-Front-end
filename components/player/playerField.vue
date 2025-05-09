@@ -20,11 +20,23 @@ const emit = defineEmits(['add', 'edit'])
 
 const isMainPage = computed(() => route.path.startsWith('/mainPage'))
 
-// ✅ ใช้ภาพ local จาก assets
-const getProfileImage = (index: number) => {
-    const imageIndex = (index % 10) + 1
-    return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href
-}
+// ✅ สร้าง hash จาก string
+const hashString = (str: string): number => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // แปลงเป็น 32bit int
+    }
+    return Math.abs(hash);
+};
+
+// ✅ คืน path ของภาพตาม hash ที่สุ่ม
+const getProfileImage = (playerId: string): string => {
+    const hash = hashString(playerId);
+    const imageIndex = (hash % 10) + 1;
+    return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
+};
+
 
 const bgColors = [
     '#F44336', // red
@@ -117,8 +129,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                 <div class="avatar mx-auto mb-2">
                                     <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                         :style="{ backgroundColor: getRandomBgColor(index) }">
-                                        <img :src="getProfileImage(index)" class="w-full h-full object-cover"
+                                        <img :src="getProfileImage(player.id ?? '')" class="w-full h-full object-cover"
                                             alt="profile" />
+
                                     </div>
 
                                 </div>
@@ -140,7 +153,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                         <div class="avatar mx-auto mb-2">
                             <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                 :style="{ backgroundColor: getRandomBgColor(index) }">
-                                <img :src="getProfileImage(index)" class="w-full h-full object-cover" alt="profile" />
+                                <img :src="getProfileImage(player.id ?? '')" class="w-full h-full object-cover"
+                                    alt="profile" />
+
                             </div>
 
                         </div>
