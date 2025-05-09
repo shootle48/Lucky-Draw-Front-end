@@ -8,7 +8,7 @@ const { showToast } = getToast();
 const route = useRoute();
 const router = useRouter();
 const roomId = route.params.roomId as string;
-const prizeId = route.params.prizeId as string;
+const prizeId = route.params.id as string;
 
 const playerStore = usePlayerStore();
 const prizeStore = usePrizeStore();
@@ -108,7 +108,7 @@ const filteredDrawConditions = computed(() =>
 
 
 <template>
-    <div class="p-4">
+    <div class="p-4 text-black">
         <h2 class="text-2xl text-center font-bold mb-4">ห้อง {{ roomData.name }}</h2>
 
         <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" class="w-fit mx-auto" />
@@ -119,7 +119,7 @@ const filteredDrawConditions = computed(() =>
                 <!-- quantity -->
                 <div class="flex flex-col gap-2">
                     <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
-                    <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit"
+                    <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit text-white"
                         placeholder="จำนวนที่ต้องการ" />
                 </div>
 
@@ -149,7 +149,7 @@ const filteredDrawConditions = computed(() =>
                 <!-- filter_is_active -->
                 <div class="flex flex-col gap-2">
                     <p class="font-medium">ผู้เข้าร่วม</p>
-                    <select v-model="filter_is_active" class="select select-bordered w-full lg:w-fit">
+                    <select v-model="filter_is_active" class="select select-bordered w-full lg:w-fit text-white">
                         <option :value=false>ผู้เล่นทั้งหมด</option>
                         <option :value=true>เฉพาะผู้เข้าร่วม</option>
                     </select>

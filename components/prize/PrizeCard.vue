@@ -59,8 +59,11 @@ const props = defineProps<{
         <div class="card-actions justify-center">
           <!-- ✅ ถ้าอยู่ mainPage → ปุ่ม "เลือก" กลางการ์ด -->
           <NuxtLink v-if="isMainPage" :to="`/prizeChoose/${roomID}/${prize.id}`">
-            <button class="btn btn-primary w-full">
-              เลือกรางวัลนี้
+            <button
+              class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 px-2 border-0 rounded-[2rem]  text-white shadow-black shadow-sm mt-4">
+              <div class="bg-[#3fc028] rounded-[2rem] p-1 px-4 text-lg font-medium flex items-center gap-1">
+                <p class="drop-shadow-lg">เลือก</p>
+              </div>
             </button>
           </NuxtLink>
           <div v-else-if="isPrizeChoose" class="hidden"></div>
