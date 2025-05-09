@@ -61,17 +61,17 @@ const submitForm = () => {
 
             <div class="form-control mb-2">
                 <label class="label-text mb-1">คำนำหน้า</label>
-                <input v-model="formPlayer.prefix" class="input input-bordered w-full" placeholder="นาย / นางสาว ..." />
+                <input v-model="formPlayer.prefix" class="input input-bordered w-full" placeholder="นาย / นางสาว ..." readonly disabled/>
             </div>
 
             <div class="form-control mb-2">
                 <label class="label-text mb-1">ชื่อ</label>
-                <input v-model="formPlayer.first_name" class="input input-bordered  w-full" />
+                <input v-model="formPlayer.first_name" class="input input-bordered  w-full" readonly disabled />
             </div>
 
             <div class="form-control mb-2">
                 <label class="label-text mb-1">นามสกุล</label>
-                <input v-model="formPlayer.last_name" class="input input-bordered w-full" />
+                <input v-model="formPlayer.last_name" class="input input-bordered w-full" readonly disabled />
             </div>
 
             <!-- เพิ่ม field สำหรับ member_id ที่ไม่ให้ user แก้ไข -->
@@ -83,7 +83,7 @@ const submitForm = () => {
 
             <div class="form-control mb-2">
                 <label class="label-text mb-1">ตำแหน่ง</label>
-                <input v-model="formPlayer.position" class="input input-bordered w-full" />
+                <input v-model="formPlayer.position" class="input input-bordered w-full" readonly disabled />
             </div>
 
             <div class="form-control mb-2">
@@ -92,10 +92,10 @@ const submitForm = () => {
                     class="checkbox border-red-600 bg-red-500 checked:border-green-500 checked:bg-green-400 checked:text-orange-800 ml-2" />
             </div>
 
-            <div class="form-control mb-2">
+            <!-- <div class="form-control mb-2">
                 <label class="label-text mb-1">สถานะ</label>
                 <input v-model="formPlayer.status" class="input input-bordered w-full" />
-            </div>
+            </div> -->
 
             <div class="modal-action flex justify-between">
                 <button @click="emit('close')" class="btn">ยกเลิก</button>
