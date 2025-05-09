@@ -98,6 +98,11 @@ const handleCreateCondition = async () => {
     }
 };
 
+const filteredDrawConditions = computed(() =>
+    drawConditions.value.filter(player => Object.keys(player).length > 1)
+);
+
+
 
 </script>
 
@@ -183,8 +188,9 @@ const handleCreateCondition = async () => {
             </div>
 
             <div v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div v-for="(player, index) in drawConditions" :key="player.member_id"
+                <div v-for="(player, index) in filteredDrawConditions" :key="player.member_id"
                     class="card bg-base-200 shadow-sm">
+
                     <div class="card-body p-3 text-center relative">
                         <div class="avatar mx-auto mb-2">
                             <div class="w-14 h-14 rounded-full">

@@ -3,8 +3,13 @@ import PrizeInfo from '@/components/drawRoom/PrizeInfo.vue'
 import DrawConditions from '@/components/drawRoom/DrawConditions.vue'
 import PlayerGrid from '@/components/drawRoom/PlayerGrid.vue'
 import WinnerModal from '@/components/drawRoom/WinnerModal.vue'
+const router = useRouter();
+
+const isPrizeExhausted = computed(() => (prizeData.value?.quantity || 0) <= 0);
+
 const {
     roomName,
+    roomId,
     prizeData,
     filteredPlayers,
     drawQuantity,
@@ -20,7 +25,8 @@ const {
     statusMap,
     glowingIndexes,
     glowingTempIndex,
-    isLoading
+    isLoading,
+    isFinished,
 } = useDrawPage()
 </script>
 
@@ -49,6 +55,20 @@ const {
 
     <WinnerModal v-if="showWinnerModal && currentWinner" :currentWinner="currentWinner" :currentIndex="currentIndex"
         :prizeData="prizeData" @submitWinner="submitWinner" />
+
+    <!-- ❌ เมื่อรางวัลหมด หรือสุ่มครบแล้ว -->
+    <div v-if="(isPrizeExhausted || isFinished) && !isLoading"
+        class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white">
+        <div class="text-2xl font-bold mb-4">
+            🎁 {{ isPrizeExhausted ? 'รางวัลหมดแล้ว' : 'สุ่มครบตามจำนวนแล้ว' }}
+        </div>
+        <button class="btn btn-accent" @click="router.push(`/mainPage/${roomId}`)">
+            🔙 กลับไปเลือกของรางวัล
+        </button>
+    </div>
+
+
+
     <div v-if="isLoading">
         <LoadingPage />
     </div>
