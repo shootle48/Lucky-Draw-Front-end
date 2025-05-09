@@ -47,7 +47,7 @@ const add_room = async () => {
                 <form @submit.prevent="add_room" class="w-full flex flex-col items-center gap-4  ">
                     <div
                         class="w-fit max-w-md bg-white/20 border border-white/50 p-6 rounded-xl shadow-md backdrop-blur-3xl">
-                        <legend class="text-2xl text-[#000000] font-semibold drop-shadow-sm pb-4">สร้างห้องสุ่มรางวัล
+                        <legend class="text-2xl text-black/70 font-semibold drop-shadow-lg pb-4">สร้างห้องสุ่มรางวัล
                         </legend>
                         <div class="join ">
                             <input type="text" class="input w-fit bg-white/80 text-black mr-4 rounded-lg"
