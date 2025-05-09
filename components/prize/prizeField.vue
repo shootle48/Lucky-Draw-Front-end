@@ -22,7 +22,7 @@ const props = defineProps({
   <div class="container mx-auto">
     <fieldset class="fieldset bg-base-[#0F172B] p-4">
       <legend class="fieldset-legend">
-        <h2 class="text-2xl md:text-4xl mb-2 text-white text-shadow-md">รางวัล ({{ prizesQuantity }} ชิ้น)</h2>
+        <h2 class="text-2xl md:text-4xl mb-2 text-black text-shadow-md">รางวัล ({{ prizesQuantity }} ชิ้น)</h2>
       </legend>
       <PrizesCarousel :handleEditPrize="handleEditPrize" />
     </fieldset>

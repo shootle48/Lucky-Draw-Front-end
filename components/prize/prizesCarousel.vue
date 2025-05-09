@@ -38,7 +38,7 @@ const props = defineProps({
 
           <!-- ปุ่มเปิด/ปิดการเลื่อนอัตโนมัติ -->
           <button @click="toggleAutoplay"
-            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white"
+            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm"
             :class="autoplay ? 'btn-success' : 'btn-outline'">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -53,7 +53,7 @@ const props = defineProps({
 
 
           <button v-if="!isMainPage" @click="prizeStore.showAddPrizeModal = true"
-            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white">
+            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
             <div class="bg-[#3fc028] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
               <p class="drop-shadow-lg">เพิ่มรางวัล</p>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

@@ -67,7 +67,7 @@ const props = defineProps<{
 
           <!-- ✅ ถ้าอยู่ room → ปุ่มแก้ไข -->
           <button v-else @click="handleEditPrize(prize)"
-            class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-1 sm:p-2 mt-4 border-0 rounded-[1.5rem] w-full sm:w-fit text-white">
+            class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-1 sm:p-2 mt-4 border-0 rounded-[1.5rem] w-full sm:w-fit text-white shadow-black shadow-sm">
             <div class="bg-[#ffae02] px-4 py-2 sm:px-6 sm:py-3 rounded-[1.5rem] font-medium text-center">
               <p class="drop-shadow-lg">แก้ไข</p>
             </div>
