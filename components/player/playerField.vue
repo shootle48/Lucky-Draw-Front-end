@@ -81,38 +81,35 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- mainPage layout -->
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
-                <div class="flex justify-end">
-                    <button @click="isModalOpen = true" class="btn btn-sm btn-primary shadow">
-                        ➕ เพิ่มผู้เล่น
+                <div class="flex justify-end ">
+                    <button @click="isModalOpen = true"
+                        class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white">
+                        <div class="bg-[#3fc028] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
+
+                            <p class="drop-shadow-lg">เพิ่มผู้เล่น</p>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                            </svg>
+
+                        </div>
                     </button>
+
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    <div v-for="(player, index) in playerListWithFullName" :key="index"
-                        class="card bg-base-200 shadow-sm">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
                         <div class="card-body p-3 text-center">
-                            <button class="ml-auto" :class="{ 'swap-active': isBurgerOpen === player.id }"
+                            <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
-                                <label class="btn btn-circle swap swap-rotate">
-                                    <!-- this hidden checkbox controls the state -->
-                                    <input type="checkbox" class="hidden" :checked="isBurgerOpen === player.id"
-                                        @change="openEditModal(player)" />
-
-                                    <!-- hamburger icon -->
-                                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="32"
-                                        height="32" viewBox="0 0 512 512">
-                                        <path
-                                            d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
-                                    </svg>
-
-                                    <!-- close icon -->
-                                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="32"
-                                        height="32" viewBox="0 0 512 512">
-                                        <polygon
-                                            points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
-                                    </svg>
-                                </label>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-700">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+                                </svg>
                             </button>
-                            <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
+
+                            <div class="absolute top-5 right-2 w-3 h-3 rounded-full shadow"
                                 :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม">
                             </div>
 
