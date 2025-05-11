@@ -102,13 +102,46 @@ const filteredDrawConditions = computed(() =>
     drawConditions.value.filter(player => Object.keys(player).length > 1)
 );
 
+// ✅ สร้าง hash จาก string
+const hashString = (str: string): number => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // แปลงเป็น 32bit int
+    }
+    return Math.abs(hash);
+};
 
+// ✅ คืน path ของภาพตาม hash ที่สุ่ม
+const getProfileImage = (memberId: string): string => {
+    const hash = hashString(memberId);
+    const imageIndex = (hash % 10) + 1;
+    return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
+};
+
+
+const bgColors = [
+    '#F44336', // red
+    '#E91E63', // pink
+    '#9C27B0', // purple
+    '#3F51B5', // indigo
+    '#2196F3', // blue
+    '#009688', // teal
+    '#4CAF50', // green
+    '#FF9800', // orange
+    '#795548', // brown
+    '#607D8B'  // blue gray
+]
+
+const getRandomBgColor = (index: number): string => {
+    return bgColors[index % bgColors.length]
+}
 
 </script>
 
 
 <template>
-    <div class="p-4 text-black">
+    <div class="p-4 text-black flex flex-col mx-auto">
         <h2 class="text-2xl text-center font-bold mb-4">ห้อง {{ roomData.name }}</h2>
 
         <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" class="w-fit mx-auto" />
@@ -119,8 +152,8 @@ const filteredDrawConditions = computed(() =>
                 <!-- quantity -->
                 <div class="flex flex-col gap-2">
                     <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
-                    <input type="number" min="1" v-model.number="quantity" class="input input-bordered w-full lg:w-fit text-white"
-                        placeholder="จำนวนที่ต้องการ" />
+                    <input type="number" min="1" v-model.number="quantity"
+                        class="input input-bordered w-full lg:w-fit text-white" placeholder="จำนวนที่ต้องการ" />
                 </div>
 
                 <!-- filter_status -->
@@ -176,42 +209,36 @@ const filteredDrawConditions = computed(() =>
         </div>
     </div>
 
-
     <!-- 🔽 แสดงผู้เล่นที่ตรงตามเงื่อนไข -->
-    <div v-if="drawConditions.length > 0" class="card bg-base-100 w-full shadow-xl mb-8">
+    <div v-if="drawConditions.length > 0" class="card bg-[#ffffff98] w-full shadow-xl mb-8 rounded-lg">
         <div class="card-body">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="card-title">
-                    🎯 ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }} คน)
-                </h2>
-                <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent" checked />
+                <h2 class="card-title text-black">🎯 ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }} คน)</h2>
+                <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
             </div>
 
             <div v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div v-for="(player, index) in filteredDrawConditions" :key="player.member_id"
-                    class="card bg-base-200 shadow-sm">
+                    class="card shadow-sm relative bg-white/70 rounded-lg backdrop-blur-md">
+                    <!-- Status Circle -->
+                    <div class="absolute top-3 right-3 w-3 h-3 rounded-full shadow"
+                        :class="player.is_active === true ? 'bg-green-500' : player.is_active === false ? 'bg-red-500' : 'bg-gray-300'"
+                        title="สถานะการเข้าร่วม"></div>
 
-                    <div class="card-body p-3 text-center relative">
+                    <div class="card-body p-3 text-center text-black">
                         <div class="avatar mx-auto mb-2">
-                            <div class="w-14 h-14 rounded-full">
-                                <img :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(player.first_name)}&background=random`"
-                                    alt="รูปผู้เข้าร่วม" />
+                            <div class="w-20 h-20 rounded-full overflow-hidden"
+                                :style="{ backgroundColor: getRandomBgColor(index) }">
+                                <img :src="getProfileImage(player.member_id ?? '')" alt="รูปผู้เข้าร่วม"
+                                    class="w-full h-full object-cover" />
                             </div>
                         </div>
 
                         <div class="text-lg font-bold">{{ player.full_name }}</div>
                         <div class="text-sm text-gray-500">{{ player.position }}</div>
-
-                        <!-- ✅ status circle -->
-                        <div class="flex justify-center mt-2">
-                            <div class="w-3 h-3 rounded-full"
-                                :class="player.is_active === true ? 'bg-green-500' : player.is_active === false ? 'bg-red-500' : 'bg-gray-300'"
-                                title="สถานะการเข้าร่วม"></div>
-                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -226,17 +253,6 @@ const filteredDrawConditions = computed(() =>
         </div>
     </div>
 
-
-    <!-- 🟡 เมื่อมีการเลือกแต่ไม่พบข้อมูล -->
-    <div v-else-if="shouldShowEmptyMessage" class="mt-6 text-center text-warning">
-        <div class="inline-flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current w-6 h-6" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="text-lg font-medium">ไม่พบผู้เล่นที่ตรงตามเงื่อนไขที่เลือก</span>
-        </div>
-    </div>
 
     <div v-if="isLoading">
         <LoadingPage />

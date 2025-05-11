@@ -71,11 +71,11 @@ export const usePlayerStore = defineStore("player", {
           // 🔥 ปรับให้ตรง playerType: is_active
           const mappedPlayers = players.map((player) => ({
             ...player,
-            is_active: ["เข้า", "เข้าร่วม", "มา", "ลงทะเบียน"].includes(
+            is_active: ["เข้าร่วม"].includes(
               String((player as any).status || "").trim()
             )
               ? true
-              : ["ไม่เข้า", "ไม่เข้าร่วม", "ไม่มา", "ไม่ลงทะเบียน"].includes(
+              : ["ไม่เข้าร่วม"].includes(
                 String((player as any).status || "").trim()
               )
                 ? false

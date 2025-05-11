@@ -152,7 +152,7 @@ defineExpose({
 <template>
     <!-- Modal เพิ่มรางวัล -->
     <div class="modal" :class="{ 'modal-open': prizeStore.showAddPrizeModal }">
-        <div class="modal-box bg-[#ffffff]/85 text-black/60 shadow-xl rounded-xl mx-auto flex flex-col gap-4">
+        <div class="modal-box bg-[#ffffff] text-black/60 shadow-xl rounded-xl mx-auto flex flex-col gap-4">
             <h3 class="font-bold text-lg mb-4">เพิ่มรางวัล</h3>
             <!-- เพิ่มส่วนอัปโหลดรูปภาพ -->
             <div class="form-control mt-2">
@@ -227,7 +227,7 @@ defineExpose({
 
     <!-- Modal แก้ไขรางวัล -->
     <div class="modal" :class="{ 'modal-open': showEditPrizeModal }">
-        <div class="modal-box bg-[#ffffff]/85 text-black/60 shadow-xl rounded-xl mx-auto flex flex-col gap-4">
+        <div class="modal-box bg-[#ffffff] text-black/60 shadow-xl rounded-xl mx-auto flex flex-col gap-4">
             <h3 class="font-bold text-lg mb-4">แก้ไขรางวัล</h3>
 
             <!-- อัปโหลดรูปภาพ -->

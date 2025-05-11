@@ -31,8 +31,8 @@ const hashString = (str: string): number => {
 };
 
 // ✅ คืน path ของภาพตาม hash ที่สุ่ม
-const getProfileImage = (playerId: string): string => {
-    const hash = hashString(playerId);
+const getProfileImage = (memberId: string): string => {
+    const hash = hashString(memberId);
     const imageIndex = (hash % 10) + 1;
     return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
 };
@@ -96,7 +96,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                 <div class="flex justify-end ">
                     <button @click="isModalOpen = true"
                         class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
-                        <div class="bg-[#3fc028] rounded-[2rem] p-1 text-xs font-medium flex items-center gap-1">
+                        <div class="bg-[#3fc028] rounded-[2rem] p-1 text-sm md:text-md font-medium flex items-center gap-1">
 
                             <p class="drop-shadow-lg">เพิ่มผู้เล่น</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.0"
@@ -129,8 +129,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                 <div class="avatar mx-auto mb-2">
                                     <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                         :style="{ backgroundColor: getRandomBgColor(index) }">
-                                        <img :src="getProfileImage(player.id ?? '')" class="w-full h-full object-cover"
-                                            alt="profile" />
+                                        <img :src="getProfileImage(player.member_id ?? '')"
+                                            class="w-full h-full object-cover" alt="profile" />
 
                                     </div>
 
@@ -153,7 +153,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                         <div class="avatar mx-auto mb-2">
                             <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                 :style="{ backgroundColor: getRandomBgColor(index) }">
-                                <img :src="getProfileImage(player.id ?? '')" class="w-full h-full object-cover"
+                                <img :src="getProfileImage(player.member_id ?? '')" class="w-full h-full object-cover"
                                     alt="profile" />
 
                             </div>
