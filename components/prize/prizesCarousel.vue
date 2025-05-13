@@ -34,9 +34,11 @@ const props = defineProps({
   <div class="card w-full px-10">
     <div class="">
       <div class="flex justify-end items-center mb-4">
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
+
           <!-- ปุ่มเปิด/ปิดการเลื่อนอัตโนมัติ -->
-          <button @click="toggleAutoplay" class="btn btn-sm btn-circle"
+          <button @click="toggleAutoplay"
+            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm"
             :class="autoplay ? 'btn-success' : 'btn-outline'">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -48,23 +50,38 @@ const props = defineProps({
                 d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
-          <button v-if="!isMainPage" @click="prizeStore.showAddPrizeModal = true" class="btn btn-primary btn-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            เพิ่มรางวัล
+
+
+          <button v-if="!isMainPage" @click="prizeStore.showAddPrizeModal = true"
+            class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
+            <div class="bg-[#3fc028] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
+              <p class="drop-shadow-lg">เพิ่มรางวัล</p>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+              </svg>
+
+
+            </div>
           </button>
         </div>
       </div>
 
       <!-- รายการรางวัลแบบ UCarousel -->
-      <div v-if="prizes.length > 0" class="mb-4">
-        <UCarousel v-slot="{ item }" :items="carouselItems" class="relative Carousel" :ui="{
+      <div v-if="prizes.length > 0" class="relative">
+        <div class="absolute left-0 top-0 bottom-0 w-24 z-20 pointer-events-none
+                 bg-gradient-to-r from-white via-white/80 to-transparent blur-[6px]">
+        </div>
+
+        <div class="absolute right-0 top-0 bottom-0 w-24 z-20 pointer-events-noneห
+                 bg-gradient-to-l from-white via-white/80 to-transparent blur-[6px]">
+        </div>
+
+        <UCarousel v-slot="{ item }" :items="carouselItems" class="relative" :ui="{
           item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
         }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots>
           <div class="relative px-2" :class="{ 'opacity-50 pointer-events-none': item.quantity === 0 }">
-            <!-- Overlay ป้ายหมดแล้ว -->
             <div v-if="item.quantity === 0"
               class="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-lg z-20 rounded-lg">
               หมดแล้ว
@@ -72,40 +89,21 @@ const props = defineProps({
             <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
           </div>
         </UCarousel>
-
       </div>
 
+
+
       <!-- ถ้าไม่มีรางวัล -->
-      <div v-if="prizes.length === 0" class="alert bg-[#ddd9c15e] border-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+      <div v-if="prizes.length === 0"
+        class="badge badge-outline badge-primary shadow-md w-full h-40 flex items-center justify-center gap-4 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 24 24"
+          class="stroke-current shrink-0 w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span>ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย 1 รายการก่อนเริ่มใช้งาน</span>
+        <span class=" text-xl font-bold drop-shadow-2xl">ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย 1
+          รายการก่อนเริ่มใช้งาน</span>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.Carousel::before,
-.Carousel::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.Carousel::before {
-  left: 0;
-  background: linear-gradient(to right, #1e1e2f, transparent);
-}
-
-.Carousel::after {
-  right: 0;
-  background: linear-gradient(to left, #1e1e2f, transparent);
-}
-</style>

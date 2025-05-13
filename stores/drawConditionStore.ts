@@ -77,7 +77,7 @@ export const useDrawConditionStore = defineStore("drawCondition", {
         // ตรวจสอบ response ก่อน push
         if (res.status === 200 || (res.status === 201 && res.data?.data)) {
           this.drawConditions.push(res.data.data); // เพิ่มเข้า state
-          // return res.data.data; // คืนค่าที่สร้างสำเร็จ
+          return res.data.data; // คืนค่าที่สร้างสำเร็จ
         } else {
           console.error(
             "createDrawCondition failed with status:",
