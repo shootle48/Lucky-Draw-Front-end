@@ -41,12 +41,16 @@ const hashString = (str: string): number => {
     }
     return Math.abs(hash);
 };
-
-// คืน path ของภาพตาม hash ที่สุ่ม
+const imageCache = new Map<string, string>();
 const getProfileImage = (memberId: string): string => {
+    if (imageCache.has(memberId)) return imageCache.get(memberId)!;
+
     const hash = hashString(memberId);
     const imageIndex = (hash % 10) + 1;
-    return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
+    const imagePath = new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
+
+    imageCache.set(memberId, imagePath);
+    return imagePath;
 };
 
 

@@ -34,8 +34,6 @@ const add_room = async () => {
     }
 };
 </script>
-
-<!-- testtt -->
 <template>
     <div class="relative bg-cover bg-no-repeat bg-fixed h-full ">
         <div class="absolute inset-0 backdrop-blur-sm"></div>
@@ -61,7 +59,7 @@ const add_room = async () => {
 
                 <!-- ลิงก์ทดสอบ -->
                 <div class="mt-4">
-                    <NuxtLink to="/mainPage/b299cae3-5d35-4d8b-9ea4-a93aa44abf60">
+                    <NuxtLink to="/mainPage/86053268-6699-4f67-ad1d-a96bf5b02b69p">
                         <button class="btn btn-outline text-ffffff border-ffffff hover:bg-ffffff hover:text-ffffff">
                             ห้องจำลอง
                         </button>

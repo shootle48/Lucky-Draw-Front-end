@@ -21,8 +21,37 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div
-    class="card bg-[#ffffff98] border rounded-box hover:shadow-md transition-shadow duration-200 relative overflow-hidden min-w-[200px] w-full  mx-auto ">
+  <div v-if="isPrizeChoose" class="w-fit mx-auto">
+
+
+    <figure class="px-4 pt-4 w-fit mx-auto">
+      <div v-if="prize.image_url" class="w-60 h-60 rounded-full overflow-hidden border-4 border-white drop-shadow-lg">
+        <img :src="getImageSrc(prize.image_url)" :alt="prize.name" class="object-cover w-full h-full" />
+      </div>
+      <div v-else class="w-60 h-60 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+    </figure>
+
+
+    <div class="p-4 flex flex-col items-center gap-2">
+      <label class="text-black/50">รางวัล</label>
+      <div class="bg-[#ffffff69] rounded-box max-w-md shadow-lg p-4 text-center ">
+        <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ prize.name }}</h1>
+      </div>
+      <div class="">
+        <div class="text-black font-semibold text-sm lg:text-lg md:text-sm">
+          จำนวน {{ prize.quantity }} รางวัล
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-else class="card bg-[#ffffff98] border rounded-box relative overflow-hidden min-w-[200px] w-full  mx-auto ">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
     <div v-if="!isMainPage && !isPrizeChoose">
@@ -36,9 +65,9 @@ const props = defineProps<{
 
 
 
-    <figure class="px-4 pt-4 flex justify-center">
+    <figure class="px-4 pt-4 w-fit mx-auto">
       <div v-if="prize.image_url"
-        class="w-60 h-60 rounded-full overflow-hidden border-4 border-white shadow-lg flex items-center justify-center">
+        class="w-60 h-60 rounded-full overflow-hidden border-4 border-white flex items-center justify-center">
         <img :src="getImageSrc(prize.image_url)" :alt="prize.name" class="object-cover w-full h-full" />
       </div>
       <div v-else class="w-60 h-60 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
@@ -82,4 +111,5 @@ const props = defineProps<{
       </div>
     </div>
   </div>
+
 </template>
