@@ -41,8 +41,8 @@ const handleEditPlayer = async (updatedPlayer: playerType) => {
 
 <template>
     <div>
-        <div class="flex flex-col items-center">
-            <div>
+        <div class="flex flex-col">
+            <div class="mx-auto">
                 <img :src="logo" alt="Lucky Draw Logo" class="w-70 h-50 md:w-100 md:h-70" />
             </div>
             <div

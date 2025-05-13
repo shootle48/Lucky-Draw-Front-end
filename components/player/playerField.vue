@@ -9,6 +9,7 @@ import EditPlayerModal from './EditPlayerModal.vue'
 
 // store
 const playerStore = usePlayerStore()
+const playerList = playerStore.players
 const { players } = storeToRefs(playerStore)
 
 // route
@@ -103,9 +104,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 </script>
 
 <template>
-    <div class="card bg-[#ffffff98] w-full shadow-xl mb-8">
+    <div class="card bg-[#ffffff98] shadow-xl mb-8 mx-4">
         <div class="card-body">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4 md:min-w-[700px] gap-10">
                 <h2 class="card-title text-black">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
             </div>
@@ -177,7 +178,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- other pages -->
             <div v-else v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div v-for="(player, index) in players" :key="index" class="card shadow-sm relative">
+                <div v-for="(player, index) in playerList" :key="index" class="card shadow-sm relative">
                     <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
                         :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม"></div>
 

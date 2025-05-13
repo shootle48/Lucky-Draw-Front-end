@@ -229,7 +229,7 @@ const getRandomBgColor = (index: number): string => {
         <!-- 🔽 แสดงผู้เล่นที่ตรงตามเงื่อนไข -->
         <div v-if="drawConditions.length > 0" class="card bg-[#ffffff98] shadow-xl mb-8 mx-4 md:mx-0 rounded-lg">
             <div class="card-body">
-                <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center justify-between mb-2 md:min-w-[700px]">
                     <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }} คน)
                     </h2>
                     <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
