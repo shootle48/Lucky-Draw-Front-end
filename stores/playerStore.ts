@@ -33,20 +33,46 @@ export const usePlayerStore = defineStore("player", {
       }
     },
 
-    async fetchPlayers(roomId: string) {
+    async fetchPlayers(
+      roomId: string,
+      filters?: {
+        search?: String;
+        sortBy?: string;
+        orderBy?: "asc" | "desc";
+      }
+    ) {
       this.isLoading = true;
+
+      // 🔸 Step 1: เก็บลำดับ id เดิมไว้
+      const originalOrder = this.players.map(p => p.id);
+
       try {
-        const response = await apiClient.get(
-          // <--- แก้ไข
-          `/players/list`,
-          {
-            params: {
-              room_id: roomId,
-            },
-          }
-        );
+        const response = await apiClient.get(`/players/list`, {
+          params: {
+            room_id: roomId,
+            ...filters,
+            search: filters?.search || "",
+            sort_by: filters?.sortBy || "created_at",
+            order_by: filters?.orderBy || "asc"
+          },
+        });
+
         if (response.status == 200) {
-          this.players = response.data.data;
+          const fetchedPlayers = response.data.data as playerType[];
+
+          // 🔸 Step 2: สร้าง Map จาก id -> player
+          const playerMap = new Map(fetchedPlayers.map(p => [p.id, p]));
+
+          // 🔸 Step 3: เรียงลำดับใหม่ตาม originalOrder
+          const reorderedPlayers = originalOrder
+            .map(id => playerMap.get(id))
+            .filter((p): p is playerType => !!p); // กรอง undefined
+
+          // 🔸 Step 4: กรณีมี player ใหม่ที่ไม่มีใน originalOrder
+          const newPlayers = fetchedPlayers.filter(p => !originalOrder.includes(p.id));
+
+          // 🔸 Step 5: รวมผลลัพธ์และ set ค่า
+          this.players = [...reorderedPlayers, ...newPlayers];
         }
       } catch (e) {
         console.log("something went wrong fetching players", e);
@@ -54,6 +80,7 @@ export const usePlayerStore = defineStore("player", {
         this.isLoading = false;
       }
     },
+
 
     // ฟังก์ชันนี้ไม่ได้เรียก API โดยตรง ไม่ต้องแก้ส่วน Axios
     async handlePlayersExport(event: Event) {

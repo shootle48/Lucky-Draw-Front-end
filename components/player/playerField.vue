@@ -1,26 +1,38 @@
 <script setup lang="ts">
+import { usePlayerStore } from '@/stores/playerStore' // import store
+import { storeToRefs } from 'pinia' // ให้ reactive
+import { onMounted, ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import type { playerType } from '@/types/player'
 import AddPlayerModal from './AddPlayerModal.vue'
 import EditPlayerModal from './EditPlayerModal.vue'
 
+// store
+const playerStore = usePlayerStore()
+const { players } = storeToRefs(playerStore)
+
+// route
 const route = useRoute()
+const roomId = route.params.id as string
+
+// modal
 const isShowing = ref<boolean>(false)
 const isModalOpen = ref(false)
 const selectedPlayer = ref<playerType | null>(null)
 const isEditModalOpen = ref(false)
 const isBurgerOpen = ref<string | null>(null)
 
-const togglePlayer = () => isShowing.value = !isShowing.value
+// filter
+const nameSearch = ref<string>('')
+const isNoResults = ref<boolean>(false)
 
-const props = defineProps<{
-    players: playerType[]
-}>()
+const togglePlayer = () => isShowing.value = !isShowing.value
 
 const emit = defineEmits(['add', 'edit'])
 
 const isMainPage = computed(() => route.path.startsWith('/mainPage'))
 
-// ✅ สร้าง hash จาก string
+// สร้าง hash จาก string
 const hashString = (str: string): number => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -30,7 +42,7 @@ const hashString = (str: string): number => {
     return Math.abs(hash);
 };
 
-// ✅ คืน path ของภาพตาม hash ที่สุ่ม
+// คืน path ของภาพตาม hash ที่สุ่ม
 const getProfileImage = (memberId: string): string => {
     const hash = hashString(memberId);
     const imageIndex = (hash % 10) + 1;
@@ -56,11 +68,30 @@ const getRandomBgColor = (index: number): string => {
 }
 
 const playerListWithFullName = computed(() =>
-    props.players.map((player) => ({
+    players.value.map((player) => ({
         ...player,
         full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
     }))
 )
+
+// เรียก API เมื่อ filter เปลี่ยน
+watch(nameSearch, async () => {
+    try {
+        const query = nameSearch.value.trim()
+        await playerStore.fetchPlayers(roomId, query ? { search: query } : undefined)
+
+        isNoResults.value = players.value.length === 0
+    } catch (err: any) {
+        isNoResults.value = true
+        console.error("Fetch players error:", err)
+    }
+})
+
+
+// ดึงข้อมูลรอบแรก
+onMounted(() => {
+    playerStore.fetchPlayers(roomId)
+})
 
 const handleAddPlayer = (newPlayer: playerType) => {
     emit('add', newPlayer)
@@ -93,10 +124,14 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- mainPage layout -->
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
-                <div class="flex justify-end ">
+                <div class="flex justify-between ">
+                    <!-- ฟิลเตอร์ -->
+                    <input v-model="nameSearch" type="text" placeholder="ค้นหาชื่อ"
+                        class="input input-bordered input-sm" />
                     <button @click="isModalOpen = true"
                         class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
-                        <div class="bg-[#3fc028] rounded-[2rem] p-1 text-sm md:text-md font-medium flex items-center gap-1">
+                        <div
+                            class="bg-[#3fc028] rounded-[2rem] p-1 text-sm md:text-md font-medium flex items-center gap-1">
 
                             <p class="drop-shadow-lg">เพิ่มผู้เล่น</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.0"
@@ -104,12 +139,13 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                             </svg>
-
                         </div>
                     </button>
-
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
+                        ไม่พบข้อมูลผู้เล่นที่ค้นหา
+                    </div>
                     <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
@@ -167,11 +203,10 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
         </div>
 
         <!-- Modal -->
-        <AddPlayerModal v-if="isModalOpen" :room-id="props.players[0]?.room_id || ''" @close="isModalOpen = false"
-            @submit="handleAddPlayer" />
+        <AddPlayerModal v-if="isModalOpen" :room-id="roomId" @close="isModalOpen = false" @submit="handleAddPlayer" />
 
-        <EditPlayerModal v-if="isEditModalOpen" :room-id="props.players[0]?.room_id || ''"
-            :player-to-edit="selectedPlayer" @close="isEditModalOpen = false" @submit="handleEditPlayer" />
+        <EditPlayerModal v-if="isEditModalOpen" :room-id="roomId" :player-to-edit="selectedPlayer"
+            @close="isEditModalOpen = false" @submit="handleEditPlayer" />
 
     </div>
 </template>
