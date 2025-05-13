@@ -65,7 +65,7 @@ const props = defineProps<{
 
 
 
-    <figure class="px-4 pt-4 w-fit mx-auto">
+    <figure class="px-4 pt-4">
       <div v-if="prize.image_url"
         class="w-60 h-60 rounded-full overflow-hidden border-4 border-white flex items-center justify-center">
         <img :src="getImageSrc(prize.image_url)" :alt="prize.name" class="object-cover w-full h-full" />
