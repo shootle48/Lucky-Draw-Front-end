@@ -50,8 +50,14 @@ const add_room = async () => {
                         <div class="join ">
                             <input type="text" class="input w-fit bg-white/80 text-black mr-4 rounded-lg"
                                 placeholder="ชื่อห้องสุ่มรางวัล" v-model="RoomData.name" />
-                            <button type="submit" class="btn  btn-accent text-[#ffffff] drop-shadow-lg rounded-lg">
+                            <!-- <button type="submit" class="btn  btn-accent text-[#ffffff] drop-shadow-lg rounded-lg">
                                 <p class="text-lg font-medium ">สร้างห้อง</p>
+                            </button> -->
+                            <button type="submit"
+                                class="btn h-fit bg-gradient-to-t from-[#ff8f00] to-[#ffd902] p-2 border-0 rounded-[2rem] text-white shadow-black shadow-sm">
+                                <div class="bg-[#ffae02] px-2.5 py-0.25 rounded-[2rem] text-lg font-semibold">
+                                    <p class="drop-shadow-lg">สร้างห้อง</p>
+                                </div>
                             </button>
                         </div>
                     </div>

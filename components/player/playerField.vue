@@ -115,7 +115,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
                 <div class="flex justify-between ">
                     <!-- ฟิลเตอร์ -->
-                    <label class="input input-bordered input-sm bg-[#c2787898] text-black">
+                    <label
+                        class="input input-bordered max-w-[200px] md:max-w-[275px] input-sm bg-[#c2787898] text-black">
                         <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
                                 stroke="currentColor">
