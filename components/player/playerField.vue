@@ -114,8 +114,16 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
                 <div class="flex justify-between ">
                     <!-- ฟิลเตอร์ -->
-                    <input v-model="nameSearch" type="text" placeholder="ค้นหาชื่อ"
-                        class="input input-bordered input-sm" />
+                    <label class="input input-bordered input-sm bg-[#c2787898] text-black">
+                        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                                stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </g>
+                        </svg>
+                        <input v-model="nameSearch" type="text" placeholder="ค้นหาชื่อ" />
+                    </label>
                     <button @click="isModalOpen = true"
                         class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
                         <div
@@ -134,8 +142,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index"
-                        class="card shadow-sm relative">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
