@@ -201,8 +201,17 @@ const getRandomBgColor = (index: number): string => {
 
                         <!--  Multiselect พร้อม Search -->
                         <Multiselect v-model="filter_position" :options="uniquePositions" :multiple="true"
-                            :taggable="false" placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." track-by="" label=""
-                            class="max-w-4" />
+                            :taggable="false" placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." class="max-w-96">
+                            <template #tag="{ index }">
+                                <template v-if="index === 0">
+                                    <span
+                                        class="multiselect__tag px-3 py-1 bg-green-500 text-white rounded-full text-sm shadow-sm">
+                                        ทั้งหมด {{ filter_position.length }} ตำแหน่ง
+                                    </span>
+                                </template>
+                            </template>
+                        </Multiselect>
+
                     </div>
 
 

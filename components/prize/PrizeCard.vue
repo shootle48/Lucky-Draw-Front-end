@@ -51,7 +51,7 @@ const props = defineProps<{
     </div>
   </div>
 
-  <div v-else class="card bg-[#ffffff98] border rounded-box relative overflow-hidden min-w-[200px] w-full  mx-auto ">
+  <div v-else class="card bg-[#ffffff98] border rounded-box relative overflow-hidden min-w-[215px] ">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
     <div v-if="!isMainPage && !isPrizeChoose">

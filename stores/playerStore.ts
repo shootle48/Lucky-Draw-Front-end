@@ -9,6 +9,7 @@ import { tr } from "@nuxt/ui/runtime/locale/index.js";
 export const usePlayerStore = defineStore("player", {
   state: () => ({
     isLoading: false,
+    currentRoomId: "",
     rooms: {
       id: "",
       name: "",
@@ -17,17 +18,22 @@ export const usePlayerStore = defineStore("player", {
   }),
 
   actions: {
+    setRoomId(roomId: string) {
+      this.currentRoomId = roomId;
+    },
+    clearRoomId() {
+      this.currentRoomId = "";
+    },
     async fetchRoom(roomId: string) {
-      this.isLoading = true; // ย้าย isLoading มาไว้ข้างบน try/catch/finally
+      this.isLoading = true;
       try {
-        // เปลี่ยน axios.get เป็น apiClient.get และใช้ path ต่อท้าย
-        const response = await apiClient.get(`/rooms/${roomId}`); // <--- แก้ไข
-        if (response.status == 200) {
+        const response = await apiClient.get(`/rooms/${roomId}`);
+        if (response.status === 200) {
           this.rooms = response.data.data;
+          this.currentRoomId = roomId; // 🆕 Set roomId ที่นี่เลย
         }
       } catch (error) {
         console.error("Error fetching room:", error);
-        // พิจารณาการแสดงข้อผิดพลาดให้ผู้ใช้ทราบ
       } finally {
         this.isLoading = false;
       }
@@ -44,7 +50,7 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
 
       // 🔸 Step 1: เก็บลำดับ id เดิมไว้
-      const originalOrder = this.players.map(p => p.id);
+      const originalOrder = this.players.map((p) => p.id);
 
       try {
         const response = await apiClient.get(`/players/list`, {
@@ -53,7 +59,7 @@ export const usePlayerStore = defineStore("player", {
             ...filters,
             search: filters?.search || "",
             sort_by: filters?.sortBy || "created_at",
-            order_by: filters?.orderBy || "asc"
+            order_by: filters?.orderBy || "asc",
           },
         });
 
@@ -61,15 +67,17 @@ export const usePlayerStore = defineStore("player", {
           const fetchedPlayers = response.data.data as playerType[];
 
           // 🔸 Step 2: สร้าง Map จาก id -> player
-          const playerMap = new Map(fetchedPlayers.map(p => [p.id, p]));
+          const playerMap = new Map(fetchedPlayers.map((p) => [p.id, p]));
 
           // 🔸 Step 3: เรียงลำดับใหม่ตาม originalOrder
           const reorderedPlayers = originalOrder
-            .map(id => playerMap.get(id))
+            .map((id) => playerMap.get(id))
             .filter((p): p is playerType => !!p); // กรอง undefined
 
           // 🔸 Step 4: กรณีมี player ใหม่ที่ไม่มีใน originalOrder
-          const newPlayers = fetchedPlayers.filter(p => !originalOrder.includes(p.id));
+          const newPlayers = fetchedPlayers.filter(
+            (p) => !originalOrder.includes(p.id)
+          );
 
           // 🔸 Step 5: รวมผลลัพธ์และ set ค่า
           this.players = [...reorderedPlayers, ...newPlayers];
@@ -80,7 +88,6 @@ export const usePlayerStore = defineStore("player", {
         this.isLoading = false;
       }
     },
-
 
     // ฟังก์ชันนี้ไม่ได้เรียก API โดยตรง ไม่ต้องแก้ส่วน Axios
     async handlePlayersExport(event: Event) {
@@ -103,10 +110,10 @@ export const usePlayerStore = defineStore("player", {
             )
               ? true
               : ["ไม่เข้า"].includes(
-                String((player as any).status || "").trim()
-              )
-                ? false
-                : false,
+                  String((player as any).status || "").trim()
+                )
+              ? false
+              : false,
           }));
 
           this.players = mappedPlayers;
@@ -166,8 +173,8 @@ export const usePlayerStore = defineStore("player", {
     },
 
     async editPlayer(updatedPlayer: playerType) {
-      console.log("send to backend:", updatedPlayer)
-      this.isLoading = true
+      console.log("send to backend:", updatedPlayer);
+      this.isLoading = true;
       try {
         const response = await apiClient.patch(`/players/${updatedPlayer.id}`, {
           prefix: updatedPlayer.prefix,
@@ -188,7 +195,6 @@ export const usePlayerStore = defineStore("player", {
       } finally {
         this.isLoading = false;
       }
-    }
-
+    },
   },
 });

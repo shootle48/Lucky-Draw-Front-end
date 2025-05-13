@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import logo from '@/assets/7.png';
 const Year = new Date().getFullYear();
-const route = useRoute()
-const roomId = route.params.id as string
+const playerStore = usePlayerStore();
+const roomId = computed(() => playerStore.currentRoomId);
+
 </script>
 <template>
     <div class="flex flex-col h-screen justify-between">

@@ -23,8 +23,19 @@ const isEditModalOpen = ref(false)
 
 // filter
 const nameSearch = ref<string>('')
-const isNoResults = ref<boolean>(false)
 
+const playerListWithFullName = computed(() => {
+    return players.value
+        .map((player) => ({
+            ...player,
+            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+        }))
+        .filter((player) =>
+            player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
+        )
+})
+
+const isNoResults = computed(() => playerListWithFullName.value.length === 0 && nameSearch.value.length > 0)
 const togglePlayer = () => isShowing.value = !isShowing.value
 
 const emit = defineEmits(['add', 'edit'])
@@ -69,17 +80,6 @@ const bgColors = [
 const getRandomBgColor = (index: number): string => {
     return bgColors[index % bgColors.length]
 }
-
-const playerListWithFullName = computed(() => {
-    return players.value
-        .map((player) => ({
-            ...player,
-            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
-        }))
-        .filter((player) =>
-            player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
-        )
-})
 
 // ดึงข้อมูลรอบแรก
 onMounted(() => {
@@ -134,7 +134,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index"
+                        class="card shadow-sm relative">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
