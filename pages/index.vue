@@ -59,7 +59,7 @@ const add_room = async () => {
 
                 <!-- ลิงก์ทดสอบ -->
                 <div class="mt-4">
-                    <NuxtLink to="/mainPage/86053268-6699-4f67-ad1d-a96bf5b02b69p">
+                    <NuxtLink to="/mainPage/86053268-6699-4f67-ad1d-a96bf5b02b69">
                         <button class="btn btn-outline text-ffffff border-ffffff hover:bg-ffffff hover:text-ffffff">
                             ห้องจำลอง
                         </button>

@@ -20,7 +20,6 @@ const isShowing = ref<boolean>(false)
 const isModalOpen = ref(false)
 const selectedPlayer = ref<playerType | null>(null)
 const isEditModalOpen = ref(false)
-const isBurgerOpen = ref<string | null>(null)
 
 // filter
 const nameSearch = ref<string>('')
@@ -71,26 +70,16 @@ const getRandomBgColor = (index: number): string => {
     return bgColors[index % bgColors.length]
 }
 
-const playerListWithFullName = computed(() =>
-    players.value.map((player) => ({
-        ...player,
-        full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
-    }))
-)
-
-// เรียก API เมื่อ filter เปลี่ยน
-watch(nameSearch, async () => {
-    try {
-        const query = nameSearch.value.trim()
-        await playerStore.fetchPlayers(roomId, query ? { search: query } : undefined)
-
-        isNoResults.value = players.value.length === 0
-    } catch (err: any) {
-        isNoResults.value = true
-        console.error("Fetch players error:", err)
-    }
+const playerListWithFullName = computed(() => {
+    return players.value
+        .map((player) => ({
+            ...player,
+            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+        }))
+        .filter((player) =>
+            player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
+        )
 })
-
 
 // ดึงข้อมูลรอบแรก
 onMounted(() => {
@@ -105,12 +94,7 @@ const handleAddPlayer = (newPlayer: playerType) => {
 const openEditModal = (player: playerType) => {
     selectedPlayer.value = player
     isEditModalOpen.value = true
-    isBurgerOpen.value = player.id ?? null
 }
-
-watch(isEditModalOpen, (val) => {
-    if (!val) isBurgerOpen.value = null
-})
 
 const handleEditPlayer = (updatedPlayer: playerType) => {
     emit('edit', updatedPlayer)
