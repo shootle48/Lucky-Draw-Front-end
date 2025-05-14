@@ -25,6 +25,7 @@ const playerData = storeToRefs(playerStore).players;
 const { prize: prizeData } = storeToRefs(prizeStore);
 const { isLoading, drawConditions } = storeToRefs(drawStore);
 const isShowing = ref<boolean>(false);
+const isDropdownOpen = ref<boolean>(false);
 
 const togglePlayer = () => {
     isShowing.value = !isShowing.value;
@@ -33,6 +34,16 @@ const togglePlayer = () => {
 const uniquePositions = computed(() =>
     [...new Set(playerData.value.map(p => p.position))].filter(Boolean)
 );
+
+const handleDropdown = (status: boolean) => {
+    isDropdownOpen.value = status;
+};
+
+// ฟังก์ชันสร้างข้อความแสดงเมื่อเกินจำนวน
+const getLimitText = (count: number) => {
+    const hiddenTags = filter_position.value.slice(3).join(", ");
+    return isDropdownOpen.value ? '' : `+ ${count} more`;
+};
 
 const shouldShowEmptyMessage = computed(() => {
     return drawConditions.value.length === 0 && (filter_position.value.length > 0 && filter_status.value);
@@ -142,6 +153,7 @@ const bgColors = [
 const getRandomBgColor = (index: number): string => {
     return bgColors[index % bgColors.length]
 }
+
 </script>
 
 <template>
@@ -157,19 +169,42 @@ const getRandomBgColor = (index: number): string => {
 
             <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" />
 
-
-            <div class="flex flex-col mt-4">
+            <div class="flex flex-col items-center mt-4">
                 <h3 class="font-semibold mb-2">ตั้งเงื่อนไขผู้เล่น</h3>
                 <div class="flex flex-col lg:flex-row gap-4">
                     <!-- quantity -->
-                    <div class="flex flex-col gap-2">
-                        <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
-                        <input type="number" min="1" v-model.number="quantity"
-                            class="input input-bordered w-full lg:w-fit text-white" placeholder="จำนวนที่ต้องการ" />
+                    <div class="flex flex-col items-center gap-2">
+                        <p class="font-medium underline">จำนวนรางวัลที่สุ่ม</p>
+
+                        <div
+                            class="flex items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-1 shadow-sm shadow-black">
+                            <!-- ปุ่มลบ -->
+                            <button @click="quantity = Math.max(1, quantity - 1)"
+                                class="text-black text-xl font-bold px-3 py-1 hover:scale-105 transition-transform">
+                                -
+                            </button>
+
+                            <!-- เส้นแบ่ง -->
+                            <div class="w-px h-6 bg-black mx-1 opacity-40"></div>
+
+                            <!-- จำนวน -->
+                            <input type="number" v-model.number="quantity" min="1"
+                                class="no-spinner w-12 text-center bg-transparent text-black text-lg font-semibold outline-none" />
+
+                            <!-- เส้นแบ่ง -->
+                            <div class="w-px h-6 bg-black mx-1 opacity-40"></div>
+
+                            <!-- ปุ่มบวก -->
+                            <button @click="quantity++"
+                                class="text-black text-xl font-bold px-3 py-1 hover:scale-105 transition-transform">
+                                +
+                            </button>
+                        </div>
                     </div>
 
+
                     <!-- filter_status -->
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-2 items-center">
                         <p class="font-medium mb-1">คนที่มีสิทธิ์</p>
                         <div class="flex flex-col md:flex-row gap-4">
                             <div class="flex items-center gap-2">
@@ -187,7 +222,7 @@ const getRandomBgColor = (index: number): string => {
 
 
                     <!-- filter_is_active -->
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-2 items-center">
                         <p class="font-medium">ผู้เข้าร่วม</p>
                         <select v-model="filter_is_active" class="select select-bordered w-full lg:w-fit text-white">
                             <option :value=false>ผู้เล่นทั้งหมด</option>
@@ -196,24 +231,16 @@ const getRandomBgColor = (index: number): string => {
                     </div>
 
                     <!-- filter_position -->
-                    <div class="flex flex-col justify-center gap-2">
+                    <div class="flex flex-col gap-2 items-center">
                         <p class="font-medium mb-1">ตำแหน่ง</p>
-
-                        <!--  Multiselect พร้อม Search -->
                         <Multiselect v-model="filter_position" :options="uniquePositions" :multiple="true"
-                            :taggable="false" placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." class="max-w-96">
-                            <template #tag="{ index }">
-                                <template v-if="index === 0">
-                                    <span
-                                        class="multiselect__tag px-3 py-1 bg-green-500 text-white rounded-full text-sm shadow-sm">
-                                        ทั้งหมด {{ filter_position.length }} ตำแหน่ง
-                                    </span>
-                                </template>
-                            </template>
+                            :taggable="false" :limit="isDropdownOpen ? 9999 : 3" :limitText="getLimitText"
+                            placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." class="custom-multiselect"
+                            @open="handleDropdown(true)" @close="handleDropdown(false)">
                         </Multiselect>
 
-                    </div>
 
+                    </div>
 
                     <!-- Button -->
                     <div class="flex items-end pt-4">
@@ -230,7 +257,8 @@ const getRandomBgColor = (index: number): string => {
         <div v-if="drawConditions.length > 0" class="card bg-[#ffffff98] shadow-xl mb-8 mx-4 md:mx-0 rounded-lg">
             <div class="card-body">
                 <div class="flex items-center justify-between mb-2 md:min-w-[700px]">
-                    <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }} คน)
+                    <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{ drawConditions.length }}
+                        คน)
                     </h2>
                     <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
                 </div>
@@ -281,4 +309,21 @@ const getRandomBgColor = (index: number): string => {
 
 </template>
 
-<style scoped></style>
+<style scoped>
+/* scoped CSS */
+::v-deep(.multiselect) {
+    border-radius: 20px;
+    padding: 10px 16px;
+    background-image: linear-gradient(to top, #00B2FF, #88E2FF);
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+::v-deep(.custom-multiselect .multiselect__tag) {
+    background-image: linear-gradient(to top, #00B2FF, #88E2FF);
+    border-radius: 30px;
+    color: black;
+    padding: .5em 1.5em;
+    font-size: 0.875rem;
+}
+</style>
