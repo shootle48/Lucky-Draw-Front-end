@@ -52,84 +52,69 @@ const formatDate = (timestamp) => {
             <div>
                 <h2 class="text-2xl font-semibold mb-5 justify-center text-center text-black">🏆 ผู้ที่ได้รางวัล</h2>
                 <div v-if="dashboard.winners.length === 0" class="text-gray-500 mb-6">No winners yet.</div>
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div v-for="winner in dashboard.winners" :key="winner.id"
-                        class="card bg-[#ffffff98] fill-gray-500 drop-shadow-lg drop-shadow-gray-500/50 hover:bg-white/50">
+                <UCarousel v-slot="{ item: winner }" :items="dashboard.winners" :autoplay="{ delay: 3000 }" loop arrows
+                    class="max-w-[1500px] mx-auto"
+                    :ui="{ item: 'basis-full sm:basis-2/3 md:basis-1/3 lg:basis-1/4 px-2' }">
+                    <div class="card bg-[#ffffff98] drop-shadow-lg hover:bg-white/50">
                         <figure class="aspect-video overflow-hidden mt-5">
                             <img :src="winner.image_url" alt="Prize Image" class="rounded-xl object-contain h-full"
                                 @error="(e) => { e.target.src = '/default-image.png' }" />
                         </figure>
-                        <div class="card-body flex items-center lg:p-0 max-w-[400px] mx-auto">
+                        <div class="card-body flex items-center lg:p-0 max-w-[300px] mx-auto">
                             <h3 class="card-title text-lg font-bold text-black">
                                 {{ winner.prefix }}{{ winner.first_name }} {{ winner.last_name }}
                             </h3>
                             <p class="text-sm text-gray-500">{{ winner.position }} | {{ winner.member_id }}</p>
                             <div>
-                                <div class="badge badge-success gap-2">
-                                    🏅 {{ winner.prize_name }}
-                                </div>
+                                <div class="badge badge-success gap-2">🏅 {{ winner.prize_name }}</div>
                             </div>
-
-                            <!-- Status -->
-                            <div class="p">
+                            <!-- <div class="p text">
                                 <h1 class="font-bold text-black">เงื่อนไขการสุ่ม</h1>
                                 <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">สถานะ </span>
-                                    <span class="h-full px-4 text-left text-black">
-                                        {{
-                                            (Array.isArray(winner.filter_status) ? winner.filter_status :
-                                                JSON.parse(winner.filter_status || '[]'))
-                                                .map(status => statusLabel(status))
-                                                .join(', ')
-                                        }}
+                                    <span class="font-medium text-black">สถานะ</span>
+                                    <span class="px-4 text-black">
+                                        {{(Array.isArray(winner.filter_status) ? winner.filter_status :
+                                            JSON.parse(winner.filter_status || '[]')).map(status =>
+                                                statusLabel(status)).join(', ')}}
                                     </span>
                                 </div>
-
-                                <!-- Condition -->
                                 <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">ตำแหน่ง </span>
-                                    <span class="h-full px-4 text-left text-black">
-                                        {{
-                                            (Array.isArray(winner.filter_position) ? winner.filter_position :
-                                                JSON.parse(winner.filter_position || '[]'))
-                                                .map(position => position)
-                                                .join(', ')
-                                        }}
+                                    <span class="font-medium text-black">ตำแหน่ง</span>
+                                    <span class="px-4 text-black">
+                                        {{ (Array.isArray(winner.filter_position) ? winner.filter_position :
+                                            JSON.parse(winner.filter_position || '[]')).join(', ') }}
                                     </span>
                                 </div>
-
-                                <!-- Active -->
                                 <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">ผู้เข้าร่วม </span>
+                                    <span class="font-medium text-black">ผู้เข้าร่วม</span>
                                     <span :class="winner.filter_is_active ? 'badge badge-info' : 'badge badge-neutral'">
                                         {{ winner.filter_is_active ? 'เฉพาะผู้เข้าร่วม' : 'ผู้เล่นทั้งหมด' }}
                                     </span>
                                 </div>
-
-                                <!-- Qty & Time -->
                                 <div class="flex flex-col items-start p-1">
                                     <span class="font-medium text-black">จำนวนรอบที่สุ่ม</span>
-                                    <span class="h-full px-4 text-left text-black">
-                                        {{ winner.quantity }}
-                                    </span>
+                                    <span class="px-4 text-black">{{ winner.quantity }}</span>
                                 </div>
-
-                            </div>
+                            </div> -->
                             <p class="text-xs text-gray-400 mb-4">สุ่มวันที่: {{ formatDate(winner.created_at) }}</p>
                         </div>
                     </div>
-                </div>
+                </UCarousel>
             </div>
 
             <!-- Prizes Section -->
             <div>
                 <h2 class="text-2xl font-semibold mb-5 mt-10 justify-center text-center text-black">🎁 รางวัลที่เหลือ
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div v-for="prize in dashboard.prizes" :key="prize.id"
+                <div v-if="dashboard.prizes.length === 0" class="text-gray-500 mb-6 text-center">ไม่มีรางวัลที่เหลือ
+                </div>
+                <UCarousel v-slot="{ item: prize }" :items="dashboard.prizes" :autoplay="{ delay: 4000 }" loop arrows
+                    class="max-w-[1500px] mx-auto"
+                    :ui="{ item: 'basis-full sm:basis-2/3 md:basis-1/3 lg:basis-1/4 px-2' }">
+                    <div
                         class="card bg-[#ffffff98] fill-gray-500 drop-shadow-lg drop-shadow-gray-500/50 hover:bg-white/50">
                         <figure class="aspect-video overflow-hidden mt-5">
-                            <img :src="prize.image_url" alt="Prize Image" class="rounded-xl object-contain w-80"
+                            <img :src="prize.image_url" alt="Prize Image" class="rounded-xl object-contain h-full"
                                 @error="(e) => { e.target.src = 'https://via.placeholder.com/300x200?text=No+Image' }" />
                         </figure>
                         <div class="card-body flex items-center justify-center text-center">
@@ -137,12 +122,9 @@ const formatDate = (timestamp) => {
                             <p class="text-sm text-gray-600">🎁 รางวัลที่เหลือ: {{ prize.quantity }}</p>
                         </div>
                     </div>
-                </div>
+                </UCarousel>
             </div>
         </div>
     </div>
 </template>
-
-
-
 <style scoped></style>
