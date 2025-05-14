@@ -26,7 +26,7 @@ const checkScreenSize = () => {
 
 const handleSubmitImport = async () => {
     if (!selectedPlayer.value) {
-        showToast("กรุณาเลือกไฟล์ก่อน", "alert-warning");
+        showToast("กรุณาเพิ่มข้อมูลผู้เล่นก่อน", "alert-warning");
         return;
     }
 
