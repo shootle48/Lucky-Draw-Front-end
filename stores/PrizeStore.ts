@@ -143,7 +143,6 @@ export const usePrizeStore = defineStore("prize", {
       }
     },
 
-
     async deletePrize(prizeId: string) {
       this.isLoading = true;
       try {
@@ -167,33 +166,6 @@ export const usePrizeStore = defineStore("prize", {
           error.message ||
           "เกิดข้อผิดพลาดขณะลบรางวัล กรุณาลองใหม่";
         showToast(message, "alert-error");
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    async uploadImage(file: File): Promise<string | null> {
-      this.isLoading = true;
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await apiClient.post("/prizes/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (response.data?.data?.url) {
-          return response.data.data.url;
-        }
-        showToast("การอัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
-        return null;
-      } catch (error: any) {
-        const message =
-          error.response?.data?.message ||
-          error.message ||
-          "ไม่สามารถอัปโหลดรูปภาพได้";
-        showToast(message, "alert-error");
-        return null;
       } finally {
         this.isLoading = false;
       }
