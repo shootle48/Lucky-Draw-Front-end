@@ -163,7 +163,7 @@ const getRandomBgColor = (index: number): string => {
         <div class="p-4 text-black flex flex-col mt-20 items-center">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-0 relative">
                 <div>
-                    <div class="flex flex-col lg:fixed top-50 left-15 z-999 justify-center items-center">
+                    <div class="flex flex-col lg:fixed top-50 left-35 z-999 justify-center items-center">
                         <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" />
                         <div>
                             <button :disabled="filter_position.length === 0 || filter_status.length === 0"
