@@ -179,41 +179,28 @@ const getRandomBgColor = (index: number): string => {
                         </div>
                     </div>
                 </div>
+                <!-- filter_field -->
                 <div class="bg-[#ffffff69] col-span-1 lg:col-span-2 p-6 rounded-lg shadow-lg w-full mb-4">
                     <h3 class="font-semibold my-4">ตั้งเงื่อนไขผู้เล่น</h3>
-                    <div class="flex flex-col justify-center items-center lg:mr-10 ">
+                    <div class="flex flex-col justify-center">
                         <div class="flex flex-col lg:flex-row gap-4">
-                            <!-- quantity -->
-                            <div class="flex flex-col items-center gap-2">
-                                <p class="font-medium underline">จำนวนรางวัลที่สุ่ม</p>
 
+                            <div class="flex flex-col gap-2">
+                                <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
                                 <div
-                                    class="flex  min-w-full justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-2 shadow-xl/30 shadow-black">
-                                    <!-- ปุ่มลบ -->
+                                    class="flex min-w-full justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-2 shadow-xl/30 shadow-black">
                                     <button @click="quantity = Math.max(1, quantity - 1)"
-                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
-                                        -
-                                    </button>
-
-                                    <!-- เส้นแบ่ง -->
+                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">-</button>
                                     <div class="w-px h-6 bg-black mx-1 opacity-40 text-white"></div>
-
-                                    <!-- จำนวน -->
                                     <input type="number" v-model.number="quantity" min="1"
                                         class="no-spinner w-12 text-center bg-transparent text-black text-sm font-semibold outline-none" />
-
-                                    <!-- เส้นแบ่ง -->
                                     <div class="w-px h-6 bg-black mx-1 opacity-40"></div>
-
-                                    <!-- ปุ่มบวก -->
                                     <button @click="quantity++"
-                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
-                                        +
-                                    </button>
+                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">+</button>
                                 </div>
                             </div>
-                            <!-- filter_status -->
-                            <div class="flex flex-col gap-2 items-center">
+
+                            <div class="flex flex-col gap-2">
                                 <p class="font-medium">คนที่มีสิทธิ์</p>
                                 <div
                                     class="flex justify-center min-w-full bg-gradient-to-t from-[#FFD900] to-[#FBFF27] rounded-full px-4 py-2.5 shadow-xl/30 shadow-black">
@@ -232,38 +219,28 @@ const getRandomBgColor = (index: number): string => {
                                 </div>
                             </div>
 
-
-                            <!-- filter_is_active -->
-                            <div class="flex flex-col gap-2 items-center">
-                                <!-- Heading -->
+                            <div class="flex flex-col gap-2">
                                 <p class="font-medium">ผู้เข้าร่วม</p>
-
-                                <!-- Participant Filter Dropdown -->
-                                <select v-model="filter_is_active" class="w-full lg:w-auto bg-gradient-to-t from-[#e64a4a] to-[#ffaac3] 
-                                rounded-full text-black px-4 py-2 shadow-xl/30 shadow-black 
-                                cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ffaac3]
-                                transition-all duration-200 ease-in-out text-sm">
+                                <select v-model="filter_is_active"
+                                    class="w-full lg:w-auto bg-gradient-to-t from-[#e64a4a] to-[#ffaac3] rounded-full text-black px-4 py-2 shadow-xl/30 shadow-black cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ffaac3] transition-all duration-200 ease-in-out text-sm">
                                     <option :value="false">ผู้เล่นทั้งหมด</option>
                                     <option :value="true">เฉพาะผู้เข้าร่วม</option>
                                 </select>
                             </div>
 
-
-                            <!-- filter_position -->
-                            <div class="flex flex-col gap-2 items-center relative">
+                            <div class="flex flex-col gap-2 items-center lg:relative">
                                 <p class="font-medium">ตำแหน่ง</p>
-                                <div class="relative w-full">
+                                <div class="w-full lg:absolute lg:top-8 lg:left-0 lg:min-w-106">
+                                    <!-- เพิ่ม class พิเศษเพื่อควบคุมการแสดงผล dropdown -->
                                     <Multiselect v-model="filter_position" :options="uniquePositions" :multiple="true"
                                         :taggable="false" :limit="isDropdownOpen ? 9999 : 3" :limitText="getLimitText"
                                         placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." @open="handleDropdown(true)"
-                                        @close="handleDropdown(false)"
-                                        class="shadow-xl/30 shadow-black rounded-full max-w-100 relative" />
+                                        @close="handleDropdown(false)" class="shadow-xl/30 shadow-black rounded-full" />
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
+
                     <!-- 🔽 แสดงผู้เล่นที่ตรงตามเงื่อนไข -->
                     <div class="bg-[#ffffff]/80 shadow-xl mb-8 mx-4 md:mx-0 mt-10 rounded-lg">
                         <div v-if="drawConditions.length > 0">
@@ -325,8 +302,6 @@ const getRandomBgColor = (index: number): string => {
         </div>
         <div class="toast toast-top toast-start fixed z-[9999]"></div>
     </div>
-    ```
-
 </template>
 
 <style scoped>
@@ -343,18 +318,18 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 0;
 }
 
-::v-deep(.multiselect) {
+:deep(.multiselect) {
     background-color: transparent;
     color: black;
 }
 
-::v-deep(.multiselect__tags) {
+:deep(.multiselect__tags) {
     background-image: linear-gradient(to top, #00B2FF, #88E2FF);
     border: none;
     padding-top: 10px;
 }
 
-::v-deep(.multiselect__tag) {
+:deep(.multiselect__tag) {
     background-image: linear-gradient(to top, #ffffff, #ecfaff);
     border-radius: 10px;
     color: black;
@@ -362,15 +337,15 @@ input[type="number"]::-webkit-inner-spin-button {
     line-height: 1.5;
 }
 
-::v-deep(.multiselect__tag:hover) {
+:deep(.multiselect__tag:hover) {
     background-image: linear-gradient(to top, #cacaca, #d6d6d6);
 }
 
-::v-deep(.multiselect__tag-icon:hover::after) {
+:deep(.multiselect__tag-icon:hover::after) {
     color: #ff0000;
 }
 
-::v-deep(.multiselect__input) {
+:deep(.multiselect__input) {
     background-color: transparent;
     color: #000000;
     /* สีข้อความที่เข้มขึ้น */
@@ -379,19 +354,21 @@ input[type="number"]::-webkit-inner-spin-button {
     outline: none;
 }
 
-::v-deep(.multiselect__content-wrapper) {
-    position: absolute !important;
-    z-index: 50;
-    /* เพื่อให้ dropdown ซ้อนอยู่ด้านบน */
-    top: 100%;
-    /* ทำให้ dropdown อยู่ใต้ input */
-    left: 0;
-    right: 0;
-    max-height: 200px;
-    /* คุณสามารถปรับขนาดได้ */
-    overflow-y: auto;
-    background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+/* แก้ไขเป็นใช้ position: fixed ให้กับ content wrapper */
+:deep(.multiselect__content-wrapper) {
+    position: absolute;
+    display: block;
+    background: #fff;
+    width: 100%;
+    max-height: 240px;
+    overflow: auto;
+    border: 1px solid #e8e8e8;
+    border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    z-index: 9999;
+    /* เพิ่ม z-index ให้สูงมากๆ */
+    -webkit-overflow-scrolling: touch;
+    /* แก้ไขสำคัญ: ทำให้มัน overlay อยู่เหนือเนื้อหาอื่น ไม่ดัน content */
 }
 </style>
