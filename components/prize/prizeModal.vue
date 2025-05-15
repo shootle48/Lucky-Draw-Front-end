@@ -81,8 +81,6 @@ const openEditModal = (prize: prizeType) => {
     } else {
         editImagePreview.value = null;
     }
-
-    console.log(prize.image_url)
     if (addFileInput.value) {
         addFileInput.value.value = '';
     }

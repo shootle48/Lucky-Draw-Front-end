@@ -39,7 +39,6 @@ export function useDrawPage() {
     not_received: { label: "ยังไม่ได้รางวัล", color: "badge-warning" },
     received: { label: "ได้รับรางวัลแล้ว", color: "badge-success" },
     waive: { label: "สละสิทธิ์", color: "badge-error" },
-    no_show: { label: "ไม่แสดงตน", color: "badge-neutral" },
   };
 
   const filterPositions = computed(
@@ -121,7 +120,7 @@ export function useDrawPage() {
     loop();
   };
 
-  const submitWinner = async (status: "not_received" | "waive" | "no_show") => {
+  const submitWinner = async (status: "not_received" | "waive") => {
     const winner = currentWinner.value;
     if (!winner) return;
 
