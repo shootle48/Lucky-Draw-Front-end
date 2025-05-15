@@ -21,8 +21,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div v-if="isPrizeChoose"
-    class="card bg-[#ffffff98] border-0 rounded-box relative overflow-hidden mx-auto">
+  <div v-if="isPrizeChoose" class="card bg-[#ffffff98] border-0 rounded-box relative overflow-hidden mx-auto">
 
 
     <figure class="px-4 pt-4 w-fit mx-auto">

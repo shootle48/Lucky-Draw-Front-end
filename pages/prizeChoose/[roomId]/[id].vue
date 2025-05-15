@@ -159,11 +159,14 @@ const getRandomBgColor = (index: number): string => {
 <template>
     <div class="flex flex-col items-center">
 
-
         <div class="p-4 text-black flex flex-col mt-20 items-center">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-0 relative">
                 <div>
                     <div class="flex flex-col lg:fixed top-50 left-35 z-999 justify-center items-center">
+                        <div
+                            class="bg-[#ffffff69] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
+                            <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomData.name }}</h1>
+                        </div>
                         <PrizeCard v-if="prizeData" :prize="prizeData" :handleEditPrize="() => { }" />
                         <div>
                             <button :disabled="filter_position.length === 0 || filter_status.length === 0"
@@ -185,10 +188,10 @@ const getRandomBgColor = (index: number): string => {
                                 <p class="font-medium underline">จำนวนรางวัลที่สุ่ม</p>
 
                                 <div
-                                    class="flex  min-w-full justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-1 shadow-xl/30 shadow-black">
+                                    class="flex  min-w-full justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-2 shadow-xl/30 shadow-black">
                                     <!-- ปุ่มลบ -->
                                     <button @click="quantity = Math.max(1, quantity - 1)"
-                                        class="text-white text-xl font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
+                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
                                         -
                                     </button>
 
@@ -197,14 +200,14 @@ const getRandomBgColor = (index: number): string => {
 
                                     <!-- จำนวน -->
                                     <input type="number" v-model.number="quantity" min="1"
-                                        class="no-spinner w-12 text-center bg-transparent text-white text-lg font-semibold outline-none" />
+                                        class="no-spinner w-12 text-center bg-transparent text-black text-sm font-semibold outline-none" />
 
                                     <!-- เส้นแบ่ง -->
                                     <div class="w-px h-6 bg-black mx-1 opacity-40"></div>
 
                                     <!-- ปุ่มบวก -->
                                     <button @click="quantity++"
-                                        class="text-white text-xl font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
+                                        class="text-black text-sm font-bold px-3 py-1 hover:scale-105 transition-transform cursor-pointer">
                                         +
                                     </button>
                                 </div>
@@ -214,7 +217,7 @@ const getRandomBgColor = (index: number): string => {
                                 <p class="font-medium">คนที่มีสิทธิ์</p>
                                 <div
                                     class="flex justify-center min-w-full bg-gradient-to-t from-[#FFD900] to-[#FBFF27] rounded-full px-4 py-2.5 shadow-xl/30 shadow-black">
-                                    <div class="flex gap-4">
+                                    <div class="flex gap-4 text-sm">
                                         <div class="flex items-center gap-2">
                                             <input type="checkbox" class="checkbox checkbox-primary" value="received"
                                                 v-model="filter_status" />
@@ -233,13 +236,13 @@ const getRandomBgColor = (index: number): string => {
                             <!-- filter_is_active -->
                             <div class="flex flex-col gap-2 items-center">
                                 <!-- Heading -->
-                                <p class="font-medium text-lg text-gray-800">ผู้เข้าร่วม</p>
+                                <p class="font-medium">ผู้เข้าร่วม</p>
 
                                 <!-- Participant Filter Dropdown -->
-                                <select v-model="filter_is_active" class="w-full lg:w-auto bg-gradient-to-t from-red-600 to-red-400 
-             rounded-full text-white px-4 py-2 shadow-xl/30 shadow-black 
-               cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-300 
-               transition-all duration-200 ease-in-out">
+                                <select v-model="filter_is_active" class="w-full lg:w-auto bg-gradient-to-t from-[#e64a4a] to-[#ffaac3] 
+                                rounded-full text-black px-4 py-2 shadow-xl/30 shadow-black 
+                                cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ffaac3]
+                                transition-all duration-200 ease-in-out text-sm">
                                     <option :value="false">ผู้เล่นทั้งหมด</option>
                                     <option :value="true">เฉพาะผู้เข้าร่วม</option>
                                 </select>
@@ -268,7 +271,7 @@ const getRandomBgColor = (index: number): string => {
                                 <div class="flex items-center justify-between mb-2 md:min-w-[850px]">
                                     <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{
                                         drawConditions.length
-                                    }}
+                                        }}
                                         คน)
                                     </h2>
                                     <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black"
