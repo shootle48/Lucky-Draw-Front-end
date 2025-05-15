@@ -1,30 +1,68 @@
 <script setup lang="ts">
+import { usePlayerStore } from '@/stores/playerStore' // import store
+import { storeToRefs } from 'pinia' // ให้ reactive
+import { onMounted, ref, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import type { playerType } from '@/types/player'
 import AddPlayerModal from './AddPlayerModal.vue'
 import EditPlayerModal from './EditPlayerModal.vue'
 
+// store
+const playerStore = usePlayerStore()
+const { players } = storeToRefs(playerStore)
+
+// route
 const route = useRoute()
+const roomId = route.params.id as string
+
+// modal
 const isShowing = ref<boolean>(false)
 const isModalOpen = ref(false)
 const selectedPlayer = ref<playerType | null>(null)
 const isEditModalOpen = ref(false)
-const isBurgerOpen = ref<string | null>(null)
 
+// filter
+const nameSearch = ref<string>('')
+
+const playerListWithFullName = computed(() => {
+    return players.value
+        .map((player) => ({
+            ...player,
+            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+        }))
+        .filter((player) =>
+            player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
+        )
+})
+
+const isNoResults = computed(() => playerListWithFullName.value.length === 0 && nameSearch.value.length > 0)
 const togglePlayer = () => isShowing.value = !isShowing.value
-
-const props = defineProps<{
-    players: playerType[]
-}>()
 
 const emit = defineEmits(['add', 'edit'])
 
 const isMainPage = computed(() => route.path.startsWith('/mainPage'))
 
-// ✅ ใช้ภาพ local จาก assets
-const getProfileImage = (index: number) => {
-    const imageIndex = (index % 10) + 1
-    return new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href
-}
+// สร้าง hash จาก string
+const hashString = (str: string): number => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0; // แปลงเป็น 32bit int
+    }
+    return Math.abs(hash);
+};
+const imageCache = new Map<string, string>();
+const getProfileImage = (memberId: string): string => {
+    if (imageCache.has(memberId)) return imageCache.get(memberId)!;
+
+    const hash = hashString(memberId);
+    const imageIndex = (hash % 10) + 1;
+    const imagePath = new URL(`/assets/Image_profile/default_${imageIndex}.png`, import.meta.url).href;
+
+    imageCache.set(memberId, imagePath);
+    return imagePath;
+};
+
 
 const bgColors = [
     '#F44336', // red
@@ -43,12 +81,10 @@ const getRandomBgColor = (index: number): string => {
     return bgColors[index % bgColors.length]
 }
 
-const playerListWithFullName = computed(() =>
-    props.players.map((player) => ({
-        ...player,
-        full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
-    }))
-)
+// ดึงข้อมูลรอบแรก
+onMounted(() => {
+    playerStore.fetchPlayers(roomId)
+})
 
 const handleAddPlayer = (newPlayer: playerType) => {
     emit('add', newPlayer)
@@ -58,12 +94,7 @@ const handleAddPlayer = (newPlayer: playerType) => {
 const openEditModal = (player: playerType) => {
     selectedPlayer.value = player
     isEditModalOpen.value = true
-    isBurgerOpen.value = player.id ?? null
 }
-
-watch(isEditModalOpen, (val) => {
-    if (!val) isBurgerOpen.value = null
-})
 
 const handleEditPlayer = (updatedPlayer: playerType) => {
     emit('edit', updatedPlayer)
@@ -81,10 +112,22 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- mainPage layout -->
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
-                <div class="flex justify-end ">
+                <div class="flex justify-between ">
+                    <!-- ฟิลเตอร์ -->
+                    <label class="input input-bordered input-sm bg-[#c2787898] text-black">
+                        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
+                                stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
+                            </g>
+                        </svg>
+                        <input v-model="nameSearch" type="text" placeholder="ค้นหาชื่อ" />
+                    </label>
                     <button @click="isModalOpen = true"
                         class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
-                        <div class="bg-[#3fc028] rounded-[2rem] p-1 text-xs font-medium flex items-center gap-1">
+                        <div
+                            class="bg-[#3fc028] rounded-[2rem] p-1 text-sm md:text-md font-medium flex items-center gap-1">
 
                             <p class="drop-shadow-lg">เพิ่มผู้เล่น</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.0"
@@ -92,12 +135,13 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                             </svg>
-
                         </div>
                     </button>
-
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
+                        ไม่พบข้อมูลผู้เล่นที่ค้นหา
+                    </div>
                     <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
@@ -117,8 +161,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                 <div class="avatar mx-auto mb-2">
                                     <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                         :style="{ backgroundColor: getRandomBgColor(index) }">
-                                        <img :src="getProfileImage(index)" class="w-full h-full object-cover"
-                                            alt="profile" />
+                                        <img :src="getProfileImage(player.member_id ?? '')"
+                                            class="w-full h-full object-cover" alt="profile" />
+
                                     </div>
 
                                 </div>
@@ -140,7 +185,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                         <div class="avatar mx-auto mb-2">
                             <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center text-white text-xl font-bold"
                                 :style="{ backgroundColor: getRandomBgColor(index) }">
-                                <img :src="getProfileImage(index)" class="w-full h-full object-cover" alt="profile" />
+                                <img :src="getProfileImage(player.member_id ?? '')" class="w-full h-full object-cover"
+                                    alt="profile" />
+
                             </div>
 
                         </div>
@@ -152,11 +199,10 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
         </div>
 
         <!-- Modal -->
-        <AddPlayerModal v-if="isModalOpen" :room-id="props.players[0]?.room_id || ''" @close="isModalOpen = false"
-            @submit="handleAddPlayer" />
+        <AddPlayerModal v-if="isModalOpen" :room-id="roomId" @close="isModalOpen = false" @submit="handleAddPlayer" />
 
-        <EditPlayerModal v-if="isEditModalOpen" :room-id="props.players[0]?.room_id || ''"
-            :player-to-edit="selectedPlayer" @close="isEditModalOpen = false" @submit="handleEditPlayer" />
+        <EditPlayerModal v-if="isEditModalOpen" :room-id="roomId" :player-to-edit="selectedPlayer"
+            @close="isEditModalOpen = false" @submit="handleEditPlayer" />
 
     </div>
 </template>

@@ -70,16 +70,8 @@ const props = defineProps({
 
       <!-- รายการรางวัลแบบ UCarousel -->
       <div v-if="prizes.length > 0" class="relative">
-        <div class="absolute left-0 top-0 bottom-0 w-24 z-20 pointer-events-none
-                 bg-gradient-to-r from-white via-white/80 to-transparent blur-[6px]">
-        </div>
-
-        <div class="absolute right-0 top-0 bottom-0 w-24 z-20 pointer-events-noneห
-                 bg-gradient-to-l from-white via-white/80 to-transparent blur-[6px]">
-        </div>
-
         <UCarousel v-slot="{ item }" :items="carouselItems" class="relative" :ui="{
-          item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1'
+          item: 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1 gap-4',
         }" :autoplay="autoplay ? { delay: autoplayDelay } : false" loop arrows dots>
           <div class="relative px-2" :class="{ 'opacity-50 pointer-events-none': item.quantity === 0 }">
             <div v-if="item.quantity === 0"
