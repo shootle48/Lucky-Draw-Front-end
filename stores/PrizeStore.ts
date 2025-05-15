@@ -89,33 +89,46 @@ export const usePrizeStore = defineStore("prize", {
           this.resetNewPrize();
           showToast("เพิ่มของรางวัลสำเร็จ", "alert-success");
         } else {
-          showToast(`ไม่สามารถเพิ่มของรางวัลได้ (รหัส: ${response.status})`, "alert-error");
+          showToast(
+            `ไม่สามารถเพิ่มของรางวัลได้ (รหัส: ${response.status})`,
+            "alert-error"
+          );
         }
       } catch (error: any) {
-        const message = error.response?.data?.message || error.message || "เกิดข้อผิดพลาดขณะเพิ่มของรางวัล กรุณาลองใหม่";
+        const message =
+          error.response?.data?.message ||
+          error.message ||
+          "เกิดข้อผิดพลาดขณะเพิ่มของรางวัล กรุณาลองใหม่";
         showToast(message, "alert-error");
       } finally {
         this.isLoading = false;
       }
     },
 
-
-    async updatePrize(prizeId: string, updatedData: Partial<prizeType> & { image?: File | null }) {
+    async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
       this.isLoading = true;
       try {
         const formData = new FormData();
         if (updatedData.name) formData.append("name", updatedData.name);
-        if (updatedData.quantity !== undefined) formData.append("quantity", updatedData.quantity.toString());
-        if (updatedData.room_id) formData.append("room_id", updatedData.room_id);
+        if (updatedData.quantity !== undefined)
+          formData.append("quantity", updatedData.quantity.toString());
+        if (updatedData.room_id)
+          formData.append("room_id", updatedData.room_id);
 
+        // ถ้า image เป็น File ให้อัปโหลดไฟล์ใหม่
         if (updatedData.image instanceof File) {
           formData.append("image", updatedData.image);
+        }
+        // ถ้าเป็น null ให้ส่ง "delete_image" เป็น true เพื่อบอก API ให้ลบรูปเดิม
+        else if (updatedData.image === null) {
+          formData.append("remove_image", "true");
         }
 
         const response = await apiClient.patch(`/prizes/${prizeId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
+        // โค้ดส่วนที่เหลือเหมือนเดิม
         if (response.status === 200) {
           const updatedPrizeFromServer = response.data.data;
           const index = this.prizes.findIndex((p) => p.id === prizeId);
@@ -131,11 +144,17 @@ export const usePrizeStore = defineStore("prize", {
           showToast("อัปเดตรางวัลเรียบร้อยแล้ว", "alert-success");
           return updatedPrizeFromServer;
         } else {
-          showToast(`ไม่สามารถอัปเดตรางวัลได้ (รหัส: ${response.status})`, "alert-error");
+          showToast(
+            `ไม่สามารถอัปเดตรางวัลได้ (รหัส: ${response.status})`,
+            "alert-error"
+          );
           throw new Error("Update failed with status: " + response.status);
         }
       } catch (error: any) {
-        const message = error.response?.data?.message || error.message || "เกิดข้อผิดพลาดขณะอัปเดตรางวัล กรุณาลองใหม่";
+        const message =
+          error.response?.data?.message ||
+          error.message ||
+          "เกิดข้อผิดพลาดขณะอัปเดตรางวัล กรุณาลองใหม่";
         showToast(message, "alert-error");
         throw error;
       } finally {
