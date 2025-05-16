@@ -22,8 +22,8 @@ const quantity = ref(1);
 
 const roomData = storeToRefs(playerStore).rooms;
 const playerData = storeToRefs(playerStore).players;
-const { prize: prizeData } = storeToRefs(prizeStore);
-const { isLoading, drawConditions } = storeToRefs(drawStore);
+const { isLoading,prize: prizeData } = storeToRefs(prizeStore);
+const { drawConditions } = storeToRefs(drawStore);
 const isShowing = ref<boolean>(false);
 const isDropdownOpen = ref<boolean>(false);
 

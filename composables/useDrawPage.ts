@@ -8,8 +8,8 @@ export function useDrawPage() {
   const winnerStore = useWinnerStore();
 
   const { rooms } = storeToRefs(playerStore);
-  const { prize } = storeToRefs(prizeStore);
-  const { drawConditions, isLoading } = storeToRefs(drawConditionStore);
+  const { prize, isLoading } = storeToRefs(prizeStore);
+  const { drawConditions } = storeToRefs(drawConditionStore);
 
   const roomName = computed(() => rooms.value?.name || "ไม่พบชื่อห้อง");
   const roomId = computed(() => rooms.value?.id || "");
