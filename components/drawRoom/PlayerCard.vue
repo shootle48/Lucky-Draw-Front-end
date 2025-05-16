@@ -40,7 +40,7 @@
 </script>
 
 <template>
-    <div class="card bg-[#ffffff98] shadow-sm" :class="{
+    <div class="card bg-[#ffffff98] shadow-sm min-h-[200px]" :class="{
         'glow': glowingIndexes.includes(player.id),
         'glow-temp': isDrawing && index === glowingTempIndex
     }">

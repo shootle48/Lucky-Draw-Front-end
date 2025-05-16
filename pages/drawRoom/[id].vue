@@ -1,67 +1,9 @@
-<template>
-  <div class="min-h-screen flex items-center justify-center py-10">
-
-    <div class="text-center text-black space-y-4 m-4">
-      <h2 class="text-2xl font-bold">ห้อง: {{ roomName }}</h2>
-
-      <div class="flex flex-col md:flex-row gap-4">
-        <!-- ส่วนที่ 1: กลุ่มผู้เล่นด้านซ้าย -->
-        <div class="w-full md:w-1/3">
-          <h3 class="text-xl mb-4">ผู้เล่น ({{ leftPlayers.length }} คน)</h3>
-          <div class="grid grid-cols-4 gap-4">
-            <PlayerCard v-for="(player, index) in leftPlayers" :key="player.member_id" :player="player" :index="index"
-              :glowingIndexes="glowingIndexes" :glowingTempIndex="glowingTempIndex" :isDrawing="isDrawing" />
-          </div>
-        </div>
-
-        <!-- ส่วนที่ 2: ข้อมูลรางวัลและเงื่อนไขตรงกลาง -->
-        <div class="w-full md:w-1/3 p-4">
-          <div class="sticky top-4">
-            <PrizeInfo :prizeData="prizeData" :drawQuantity="drawQuantity" :isDrawing="isDrawing"
-              @startDrawing="startDrawing" />
-
-            <DrawConditions :isActiveLabel="isActiveLabel" :filterPositions="filterPositions"
-              :filterStatuses="filterStatuses" :statusMap="statusMap" :drawQuantity="drawQuantity" />
-          </div>
-        </div>
-
-        <!-- ส่วนที่ 3: กลุ่มผู้เล่นด้านขวา -->
-        <div class="w-full md:w-1/3">
-          <h3 class="text-xl mb-4">ผู้เล่น ({{ rightPlayers.length }} คน)</h3>
-          <div class="grid grid-cols-4 gap-4">
-            <PlayerCard v-for="(player, index) in rightPlayers" :key="player.member_id" :player="player"
-              :index="index + leftPlayers.length" :glowingIndexes="glowingIndexes" :glowingTempIndex="glowingTempIndex"
-              :isDrawing="isDrawing" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <WinnerModal v-if="showWinnerModal && currentWinner" :currentWinner="currentWinner" :currentIndex="currentIndex"
-      :prizeData="prizeData" @submitWinner="submitWinner" />
-
-    <!-- ❌ เมื่อรางวัลหมด หรือสุ่มครบแล้ว -->
-    <div v-if="(isPrizeExhausted || isFinished) && !isLoading"
-      class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white">
-      <div class="text-2xl font-bold mb-4">
-        🎁 {{ isPrizeExhausted ? 'รางวัลหมดแล้ว' : 'สุ่มครบตามจำนวนแล้ว' }}
-      </div>
-      <button class="btn btn-accent" @click="router.push(`/mainPage/${roomId}`)">
-        🔙 กลับไปเลือกของรางวัล
-      </button>
-    </div>
-
-    <div v-if="isDrawing" class="overlay z-40">
-      <LoadingPage />
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import PrizeInfo from '@/components/drawRoom/PrizeInfo.vue'
 import DrawConditions from '@/components/drawRoom/DrawConditions.vue'
 import PlayerCard from '@/components/drawRoom/PlayerCard.vue'
 import WinnerModal from '@/components/drawRoom/WinnerModal.vue'
+import logo from '@/assets/logo.png';
 const router = useRouter();
 
 const isPrizeExhausted = computed(() => (prizeData.value?.quantity || 0) <= 0);
@@ -99,6 +41,66 @@ const rightPlayers = computed(() => {
   return filteredPlayers.value.slice(halfLength);
 });
 </script>
+
+<template>
+  <div class="min-h-screen flex items-center justify-center py-10">
+
+    <div class="text-center text-black space-y-4 m-4">
+      <div class="flex flex-col md:flex-row gap-4">
+        <!-- ส่วนที่ 1: กลุ่มผู้เล่นด้านซ้าย -->
+        <div class="w-full md:w-1/3">
+          <h3 class="text-xl mb-4">ผู้เล่น ({{ leftPlayers.length }} คน)</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <PlayerCard v-for="(player, index) in leftPlayers" :key="player.member_id" :player="player" :index="index"
+              :glowingIndexes="glowingIndexes" :glowingTempIndex="glowingTempIndex" :isDrawing="isDrawing" />
+          </div>
+        </div>
+
+        <!-- ส่วนที่ 2: ข้อมูลรางวัลและเงื่อนไขตรงกลาง -->
+        <div class="w-full md:w-1/3 p-4">
+          <div class="sticky top-4">
+            <div class="flex justify-center">
+              <img :src="logo" alt="Lucky Draw Logo" class="w-70 md:h-50" />
+            </div>
+            <PrizeInfo :prizeData="prizeData" :drawQuantity="drawQuantity" :isDrawing="isDrawing"
+              @startDrawing="startDrawing" />
+
+            <DrawConditions :isActiveLabel="isActiveLabel" :filterPositions="filterPositions"
+              :filterStatuses="filterStatuses" :statusMap="statusMap" :drawQuantity="drawQuantity" />
+          </div>
+        </div>
+
+        <!-- ส่วนที่ 3: กลุ่มผู้เล่นด้านขวา -->
+        <div class="w-full md:w-1/3">
+          <h3 class="text-xl mb-4">ผู้เล่น ({{ rightPlayers.length }} คน)</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <PlayerCard v-for="(player, index) in rightPlayers" :key="player.member_id" :player="player"
+              :index="index + leftPlayers.length" :glowingIndexes="glowingIndexes" :glowingTempIndex="glowingTempIndex"
+              :isDrawing="isDrawing" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <WinnerModal v-if="showWinnerModal && currentWinner" :currentWinner="currentWinner" :currentIndex="currentIndex"
+      :prizeData="prizeData" @submitWinner="submitWinner" />
+
+    <!-- ❌ เมื่อรางวัลหมด หรือสุ่มครบแล้ว -->
+    <div v-if="(isPrizeExhausted || isFinished) && !isLoading"
+      class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white">
+      <div class="text-2xl font-bold mb-4">
+        🎁 {{ isPrizeExhausted ? 'รางวัลหมดแล้ว' : 'สุ่มครบตามจำนวนแล้ว' }}
+      </div>
+      <button class="btn btn-accent" @click="router.push(`/mainPage/${roomId}`)">
+        🔙 กลับไปเลือกของรางวัล
+      </button>
+    </div>
+
+    <div v-if="isDrawing" class="overlay z-40">
+      <LoadingPage />
+    </div>
+  </div>
+</template>
 
 <style>
 .card.glow {

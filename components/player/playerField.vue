@@ -140,11 +140,11 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                         </div>
                     </button>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative w-full">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
@@ -179,7 +179,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- other pages -->
             <div v-else v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div v-for="(player, index) in playerList" :key="index" class="card shadow-sm relative">
+                <div v-for="(player, index) in playerList" :key="index" class="card shadow-sm relative w-full">
                     <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
                         :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม"></div>
 
