@@ -45,40 +45,33 @@ export const parsePlayerExcel = async (file: File): Promise<playerType[]> => {
       );
 
       const prefix = String(
-        row["prefix"] ||
-        row["คำนำหน้า"] ||
-        lowerCasedKeys["prefix"] ||
-        ""
+        row["prefix"] || row["คำนำหน้า"] || lowerCasedKeys["prefix"] || ""
       );
       const first_name = String(
-        row["firstName"] ||
-        row["ชื่อ"] ||
-        lowerCasedKeys["firstname"] ||
-        ""
+        row["firstName"] || row["ชื่อ"] || lowerCasedKeys["firstname"] || ""
       );
       const last_name = String(
-        row["lastName"] ||
-        row["นามสกุล"] ||
-        lowerCasedKeys["lastname"] ||
-        ""
+        row["lastName"] || row["นามสกุล"] || lowerCasedKeys["lastname"] || ""
       );
       const member_id = String(
         row["member_id"] ||
-        row["รหัสบัตรประชาชน/รหัสสมาชิก"] ||
-        lowerCasedKeys["member_id"] ||
-        ""
+          row["รหัสบัตรประชาชน/รหัสสมาชิก"] ||
+          lowerCasedKeys["member_id"] ||
+          ""
       );
       const position = String(
-        row["position"] ||
-        row["สถานะ"] ||
-        lowerCasedKeys["position"] ||
-        ""
+        row["position"] || row["สถานะ"] || lowerCasedKeys["position"] || ""
       );
       const status = String(
-        row["active"] ||
-        row["เข้าร่วม"] ||
-        lowerCasedKeys["active"] ||
-        ""
+        row["active"] || row["เข้าร่วม"] || lowerCasedKeys["active"] || ""
+      );
+
+      const timestamp = String(
+        row["timestamp"] ||
+          row["วันที่"] ||
+          row["เวลา"] ||
+          lowerCasedKeys["timestamp"] ||
+          ""
       );
 
       return {
@@ -89,8 +82,11 @@ export const parsePlayerExcel = async (file: File): Promise<playerType[]> => {
         position,
         status,
         image: null,
-        full_name: `${prefix ?? ''} ${first_name ?? ''} ${last_name ?? ''}`.trim(),
+        full_name: `${prefix ?? ""} ${first_name ?? ""} ${
+          last_name ?? ""
+        }`.trim(),
         room_id: "",
+        timestamp,
       };
     })
     .filter((p) => p.first_name && p.first_name !== "ไม่ระบุชื่อ");
