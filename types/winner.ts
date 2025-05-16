@@ -6,11 +6,7 @@ export interface winnerType {
   prefix: string;
   first_name?: string;
   last_name?: string;
-  full_name?: string;
   member_id?: string;
-  position?: string;
-  is_active?: boolean;
-  status?: string;
 
   prize_id: string;
   prize_name: string;
@@ -24,5 +20,4 @@ export interface winnerType {
   quantity: number;
 
   player_status: string;
-
 }

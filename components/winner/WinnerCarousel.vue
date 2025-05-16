@@ -54,7 +54,7 @@ const formatDate = (timestamp: number) => {
         <div class="badge badge-success gap-2 my-2">
           🏅 {{ item.prize_name }}
         </div>
-        <button class="btn btn-sm btn-outline mt-2" @click="$emit('show-detail', item)">
+        <button class="btn mt-2" @click="$emit('show-detail', item)">
           ดูรายละเอียด
         </button>
         <p class="text-xs text-gray-400 mt-auto">

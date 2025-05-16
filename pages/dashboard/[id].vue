@@ -1,18 +1,16 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import apiClient from '@/utils/apiClient' // ปรับให้ตรงกับ path ของโปรเจคจริง
 import WinnerCarousel from '@/components/winner/WinnerCarousel.vue'
 import WinnerModal from '@/components/winner/WinnerModal.vue'
 import type { winnerType } from '@/types/winner'
 
 const dashboard = ref({ winners: [], prizes: [] })
+const playerStore = usePlayerStore()
 const loading = ref(true)
 const autoplay = ref(true)
 const autoplayDelay = 4000
 
-const route = useRoute()
-const roomID = route.params.id
+const roomID = playerStore.currentRoomId
 
 const showModal = ref(false)
 const selectedWinner = ref<winnerType | null>(null)
@@ -47,9 +45,7 @@ onMounted(async () => {
             Summary of the Dashboard
         </h1>
 
-        <div v-if="loading" class="flex justify-center items-center py-20">
-            <div class="text-xl font-semibold text-gray-500">กำลังโหลดข้อมูลผู้ชนะ...</div>
-        </div>
+        <LoadingPage v-if="loading"/>
 
         <div v-else>
             <!-- 🏆 ผู้ชนะ -->
@@ -66,16 +62,16 @@ onMounted(async () => {
                         <!-- icon toggle -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
-                            <template v-if="autoplay">
+                            <div v-if="autoplay">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </template>
-                            <template v-else>
+                            </div>
+                            <div v-else>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </template>
+                            </div>
                         </svg>
                     </button>
                 </div>
