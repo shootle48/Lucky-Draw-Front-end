@@ -29,7 +29,7 @@ const playerListWithFullName = computed(() => {
     return players.value
         .map((player) => ({
             ...player,
-            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+            full_name: `${player.prefix}${player.first_name} ${player.last_name}`.trim()
         }))
         .filter((player) =>
             player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
