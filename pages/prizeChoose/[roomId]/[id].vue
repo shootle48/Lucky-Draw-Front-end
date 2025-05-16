@@ -186,7 +186,7 @@ const getRandomBgColor = (index: number): string => {
                         <div class="flex flex-col lg:flex-row gap-4">
 
                             <div class="flex flex-col gap-2">
-                                <p class="font-medium">จำนวนรางวัลที่สุ่ม</p>
+                                <p class="font-medium">จำนวนรางวัลที่อยากสุ่ม</p>
                                 <div
                                     class="flex min-w-full justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-2 shadow-xl/30 shadow-black">
                                     <button @click="quantity = Math.max(1, quantity - 1)"
@@ -201,7 +201,7 @@ const getRandomBgColor = (index: number): string => {
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <p class="font-medium">คนที่มีสิทธิ์</p>
+                                <p class="font-medium">ผู้ที่มีสิทธิ์เล่น</p>
                                 <div
                                     class="flex justify-center min-w-full bg-gradient-to-t from-[#FFD900] to-[#FBFF27] rounded-full px-4 py-2.5 shadow-xl/30 shadow-black">
                                     <div class="flex gap-4 text-sm">
@@ -245,7 +245,7 @@ const getRandomBgColor = (index: number): string => {
                     <div class="bg-[#ffffff]/80 shadow-xl mb-8 mx-4 md:mx-0 mt-10 rounded-lg">
                         <div v-if="drawConditions.length > 0">
                             <div class="card-body">
-                                <div class="flex items-center justify-between mb-2 md:min-w-[850px]">
+                                <div class="flex items-center justify-between mb-2 md:min-w-[1150px]">
                                     <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{
                                         drawConditions.length
                                         }}
