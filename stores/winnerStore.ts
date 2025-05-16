@@ -1,14 +1,32 @@
 import type { winnerType } from "@/types/winner";
 import apiClient from "@/utils/apiClient";
+import { defineStore } from "pinia";
 
 export const useWinnerStore = defineStore("winner", {
   state: () => ({
     winners: [] as winnerType[],
-    winner: [] as winnerType[],
+    winner: null as winnerType | null,
     isLoading: false,
   }),
 
   actions: {
+    async fetchWinner(roomId: string) {
+      this.isLoading = true;
+      try {
+        const { data } = await apiClient.get(`/winners/room/${roomId}`);
+
+        // สมมุติว่ามี array ของผู้ชนะ
+        this.winners = data?.winners || [];
+
+        // หากมีคนเดียวหรืออยากเก็บผู้โชคดีแรกไว้ใน `winner`
+        this.winner = this.winners.length > 0 ? this.winners[0] : null;
+      } catch (error) {
+        console.error("❌ Error fetching winners:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async createWinner(payload: {
       room_id: string;
       player_id: string;
@@ -19,13 +37,13 @@ export const useWinnerStore = defineStore("winner", {
       this.isLoading = true;
       try {
         const response = await apiClient.post(`winners/create`, payload);
-        // ตรวจสอบ response ก่อน push
+
         if (
           response.status === 200 ||
           (response.status === 201 && response.data?.data)
         ) {
-          this.winners.push(response.data.data); // เพิ่มเข้า state
-          return response.data.data; // คืนค่าที่สร้างสำเร็จ
+          this.winners.push(response.data.data);
+          return response.data.data;
         } else {
           console.error(
             "❌ createWinner failed with status:",
@@ -37,7 +55,7 @@ export const useWinnerStore = defineStore("winner", {
           );
         }
       } catch (e) {
-        console.error(e);
+        console.error("❌ Error creating winner:", e);
       } finally {
         this.isLoading = false;
       }

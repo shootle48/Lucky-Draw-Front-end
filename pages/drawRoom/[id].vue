@@ -45,6 +45,13 @@ const rightPlayers = computed(() => {
 <template>
   <div class="min-h-screen flex items-center justify-center py-10">
 
+    <div v-if="isDrawing" class="overlay z-40">
+      <LoadingPage />
+    </div>
+    <div v-else-if="isLoading" class="overlay z-40">
+      <LoadingPage />
+    </div>
+
     <div class="text-center text-black space-y-4 m-4">
       <div class="flex flex-col md:flex-row gap-4">
         <!-- ส่วนที่ 1: กลุ่มผู้เล่นด้านซ้าย -->
@@ -94,10 +101,6 @@ const rightPlayers = computed(() => {
       <button class="btn btn-accent" @click="router.push(`/mainPage/${roomId}`)">
         🔙 กลับไปเลือกของรางวัล
       </button>
-    </div>
-
-    <div v-if="isDrawing" class="overlay z-40">
-      <LoadingPage />
     </div>
   </div>
 </template>
