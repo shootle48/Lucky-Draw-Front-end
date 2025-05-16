@@ -1,130 +1,103 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import apiClient from '@/utils/apiClient' // ปรับให้ตรงกับ path ของโปรเจคจริง
+import WinnerCarousel from '@/components/winner/WinnerCarousel.vue'
+import WinnerModal from '@/components/winner/WinnerModal.vue'
+import type { winnerType } from '@/types/winner'
 
 const dashboard = ref({ winners: [], prizes: [] })
 const loading = ref(true)
+const autoplay = ref(true)
+const autoplayDelay = 4000
 
 const route = useRoute()
 const roomID = route.params.id
 
-const statusLabel = (status) => {
-    return {
-        received: 'ได้รับรางวัลแล้ว',
-        waive: 'สละสิทธิ์',
-        no_show: 'ไม่แสดงตน'
-    }[status] || 'ยังไม่ได้รับรางวัล'
+const showModal = ref(false)
+const selectedWinner = ref<winnerType | null>(null)
+
+const openDetail = (winner: winnerType) => {
+    selectedWinner.value = winner
+    showModal.value = true
 }
 
-const activeLabel = (val) => val ? 'ใช้งานอยู่' : 'ไม่ใช้งาน'
+const toggleAutoplay = () => {
+    autoplay.value = !autoplay.value
+}
 
 onMounted(async () => {
     try {
         const { data } = await apiClient.get(`/winners/room/${roomID}`)
-        dashboard.value = data
+        dashboard.value = {
+            winners: data.winners || [],
+            prizes: data.prizes || [],
+        }
     } catch (error) {
         console.error('Error fetching dashboard:', error)
     } finally {
         loading.value = false
     }
 })
-
-const formatDate = (timestamp) => {
-    if (!timestamp) return '-'
-    const date = new Date(timestamp * 1000) // แปลงจาก seconds → milliseconds
-    return date.toLocaleString('th-TH', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    })
-}
-
 </script>
 
 <template>
     <div class="p-6 space-y-6">
-        <h1 class="text-3xl font-bold justify-center text-center text-black">Summary of the Dashboard</h1>
+        <h1 class="text-3xl font-bold text-center text-black">
+            Summary of the Dashboard
+        </h1>
 
         <div v-if="loading" class="flex justify-center items-center py-20">
-            <span class="loading loading-spinner text-primary"></span>
+            <div class="text-xl font-semibold text-gray-500">กำลังโหลดข้อมูลผู้ชนะ...</div>
         </div>
 
         <div v-else>
-            <!-- Winners Section -->
-            <div>
-                <h2 class="text-2xl font-semibold mb-5 justify-center text-center text-black">🏆 ผู้ที่ได้รางวัล</h2>
-                <div v-if="dashboard.winners.length === 0" class="text-gray-500 mb-6">No winners yet.</div>
-                <UCarousel v-slot="{ item: winner }" :items="dashboard.winners" :autoplay="{ delay: 3000 }" loop arrows
-                    class="max-w-[1500px] mx-auto"
-                    :ui="{ item: 'basis-full sm:basis-2/3 md:basis-1/3 lg:basis-1/4 px-2' }">
-                    <div class="card bg-[#ffffff98] drop-shadow-lg hover:bg-white/50">
-                        <figure class="aspect-video overflow-hidden mt-5">
-                            <img :src="winner.image_url" alt="Prize Image" class="rounded-xl object-contain h-full"
-                                @error="(e) => { e.target.src = '/default-image.png' }" />
-                        </figure>
-                        <div class="card-body flex items-center lg:p-0 max-w-[300px] mx-auto">
-                            <h3 class="card-title text-lg font-bold text-black">
-                                {{ winner.prefix }}{{ winner.first_name }} {{ winner.last_name }}
-                            </h3>
-                            <p class="text-sm text-gray-500">{{ winner.position }} | {{ winner.member_id }}</p>
-                            <div>
-                                <div class="badge badge-success gap-2">🏅 {{ winner.prize_name }}</div>
-                            </div>
-                            <!-- <div class="p text">
-                                <h1 class="font-bold text-black">เงื่อนไขการสุ่ม</h1>
-                                <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">สถานะ</span>
-                                    <span class="px-4 text-black">
-                                        {{(Array.isArray(winner.filter_status) ? winner.filter_status :
-                                            JSON.parse(winner.filter_status || '[]')).map(status =>
-                                                statusLabel(status)).join(', ')}}
-                                    </span>
-                                </div>
-                                <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">ตำแหน่ง</span>
-                                    <span class="px-4 text-black">
-                                        {{ (Array.isArray(winner.filter_position) ? winner.filter_position :
-                                            JSON.parse(winner.filter_position || '[]')).join(', ') }}
-                                    </span>
-                                </div>
-                                <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">ผู้เข้าร่วม</span>
-                                    <span :class="winner.filter_is_active ? 'badge badge-info' : 'badge badge-neutral'">
-                                        {{ winner.filter_is_active ? 'เฉพาะผู้เข้าร่วม' : 'ผู้เล่นทั้งหมด' }}
-                                    </span>
-                                </div>
-                                <div class="flex flex-col items-start p-1">
-                                    <span class="font-medium text-black">จำนวนรอบที่สุ่ม</span>
-                                    <span class="px-4 text-black">{{ winner.quantity }}</span>
-                                </div>
-                            </div> -->
-                            <p class="text-xs text-gray-400 mb-4">สุ่มวันที่: {{ formatDate(winner.created_at) }}</p>
-                        </div>
-                    </div>
-                </UCarousel>
+            <!-- 🏆 ผู้ชนะ -->
+            <div class="card w-full px-10">
+                <h2 class="text-2xl font-semibold text-center text-black">🏆 ผู้ที่ได้รางวัล</h2>
+                <div v-if="dashboard.winners.length === 0" class="text-xl text-gray-500 text-center my-4">
+                    ยังไม่มีผู้ชนะรางวัล
+                </div>
+
+                <div class="flex justify-end mb-4">
+                    <button @click="toggleAutoplay"
+                        class="btn bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-full text-white shadow-md"
+                        :class="autoplay ? 'btn-success' : 'btn-outline'">
+                        <!-- icon toggle -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <template v-if="autoplay">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </template>
+                            <template v-else>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </template>
+                        </svg>
+                    </button>
+                </div>
+
+                <WinnerCarousel :items="dashboard.winners" type="winner" :autoplay="autoplay"
+                    :autoplayDelay="autoplayDelay" @show-detail="openDetail" />
+                <WinnerModal v-model:show="showModal" :data="selectedWinner ?? undefined" />
             </div>
 
-            <!-- Prizes Section -->
-            <div>
-                <h2 class="text-2xl font-semibold mb-5 mt-10 justify-center text-center text-black">🎁 รางวัลที่เหลือ
-                </h2>
-                <div v-if="dashboard.prizes.length === 0" class="text-gray-500 mb-6 text-center">ไม่มีรางวัลที่เหลือ
+            <!-- 🎁 รางวัลที่เหลือ -->
+            <div class="card w-full px-10 mt-15">
+                <h2 class="text-2xl font-semibold text-center text-black mb-5">🎁 รางวัลที่เหลือ</h2>
+                <div v-if="dashboard.prizes.length === 0" class="text-xl text-gray-500 text-center my-4">
+                    ไม่มีรางวัลที่เหลือ
                 </div>
-                <UCarousel v-slot="{ item: prize }" :items="dashboard.prizes" :autoplay="{ delay: 4000 }" loop arrows
-                    class="max-w-[1500px] mx-auto"
-                    :ui="{ item: 'basis-full sm:basis-2/3 md:basis-1/3 lg:basis-1/4 px-2' }">
-                    <div
-                        class="card bg-[#ffffff98] fill-gray-500 drop-shadow-lg drop-shadow-gray-500/50 hover:bg-white/50">
-                        <figure class="aspect-video overflow-hidden mt-5">
-                            <img :src="prize.image_url" alt="Prize Image" class="rounded-xl object-contain h-full"
-                                @error="(e) => { e.target.src = 'https://via.placeholder.com/300x200?text=No+Image' }" />
-                        </figure>
-                        <div class="card-body flex items-center justify-center text-center">
-                            <h3 class="card-title truncate text-lg text-black">{{ prize.name }}</h3>
-                            <p class="text-sm text-gray-600">🎁 รางวัลที่เหลือ: {{ prize.quantity }}</p>
-                        </div>
-                    </div>
-                </UCarousel>
+
+                <WinnerCarousel :items="dashboard.prizes" type="prize" :autoplay="true" :autoplayDelay="6000" />
             </div>
         </div>
     </div>
+
+
 </template>
+
 <style scoped></style>
