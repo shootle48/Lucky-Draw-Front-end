@@ -3,6 +3,8 @@ import { getToast } from "@/composables/useToastPage";
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/Full_Logo.png';
+import qrForm from '@/assets/image-template-form/Lucky-Draw_Template-Form.png'
+
 
 const { showToast } = getToast();
 const Router = useRouter();
@@ -80,6 +82,15 @@ const add_room = async () => {
         </div>
     </div>
     <div class="toast toast-top toast-start fixed z-[9999]"></div>
+
+    <!-- QR Code form -->
+    <div class="fixed right-4 bottom-4 z-50 border-2">
+        <img :src="qrForm" alt="แบบฟอร์มลงทะเบียน"
+            class=" w-40 h-auto opacity-90 hover:opacity-100 transition-opacity duration-300 " />
+        <div class="text-sm text-center text-blue-950 bg-white/50">
+            แบบฟอร์มลงทะเบียน
+        </div>
+    </div>
 </template>
 
 <style lang="scss" scoped></style>
