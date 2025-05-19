@@ -84,13 +84,15 @@ const add_room = async () => {
     <div class="toast toast-top toast-start fixed z-[9999]"></div>
 
     <!-- QR Code form -->
-    <div class="fixed right-4 bottom-4 z-50 border-2">
+    <NuxtLink to="https://docs.google.com/forms/d/1Ewo0i9c58WnQJxd0_oBUPE_OWte88bmu44oz_5o73dQ/copy" target="_blank">
+        <div class="fixed right-4 bottom-4 z-50 border-2">
         <img :src="qrForm" alt="แบบฟอร์มลงทะเบียน"
             class=" w-40 h-auto opacity-90 hover:opacity-100 transition-opacity duration-300 " />
         <div class="text-sm text-center text-blue-950 bg-white/50">
             แบบฟอร์มลงทะเบียน
         </div>
     </div>
+    </NuxtLink>
 </template>
 
 <style lang="scss" scoped></style>
