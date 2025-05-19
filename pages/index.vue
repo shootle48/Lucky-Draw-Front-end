@@ -3,7 +3,7 @@ import { getToast } from "@/composables/useToastPage";
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/Full_Logo.png';
-import qrForm from '@/assets/image-template-form/Lucky-Draw_Template-Form.png'
+import qrForm from '@/assets/image-template-form/Lucky-Draw-QrCode-Form.png'
 
 
 const { showToast } = getToast();
