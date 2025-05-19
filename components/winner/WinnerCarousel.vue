@@ -54,8 +54,15 @@ const formatDate = (timestamp: number) => {
         <div class="badge badge-success gap-2 my-2">
           🏅 {{ item.prize_name }}
         </div>
-        <button class="btn mt-2" @click="$emit('show-detail', item)">
+        <!-- <button class="btn bg-white/0 border-0 text-rose-700 font-semibold" @click="$emit('show-detail', item)">
           ดูรายละเอียด
+        </button> -->
+
+        <button @click="$emit('show-detail', item)"
+          class="btn h-fit bg-gradient-to-t from-[#E69DB8] to-[#FFD0C7] p-0.5 px-1.5 py-1.5 border-0 rounded-[2rem]  text-white shadow-black shadow-sm">
+          <div class="bg-[#E69DB8] rounded-[2rem] p-0.25 px-2.5 text-sm md:text-lg font-medium flex items-center gap-1">
+            <p class="drop-shadow-lg text-sm">ดูรายละเอียด</p>
+          </div>
         </button>
         <p class="text-xs text-gray-400 mt-auto">
           สุ่มวันที่: {{ formatDate(item.created_at) }}

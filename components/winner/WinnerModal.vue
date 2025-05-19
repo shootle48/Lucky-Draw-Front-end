@@ -52,13 +52,13 @@ computed(() => props.data?.filter_position?.split(',') || [])
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-50">
     <div class="bg-white text-black rounded-xl shadow-xl max-w-lg w-full p-8 relative overflow-y-auto max-h-[90vh]">
-      <h2 class="text-2xl font-bold text-center mb-6">🎉 รายละเอียดการสุ่ม 🎉</h2>
+      <h2 class="text-2xl font-bold text-center">รายละเอียดการสุ่ม</h2>
 
       <div v-if="props.data" class="flex flex-col gap-5">
 
-      <!-- Prize Info -->
+        <!-- Prize Info -->
         <div v-if="props.data.prize_name" class="mt-4">
-          <div class="bg-yellow-100 w-fit rounded-lg p-4 flex flex-col mx-auto items-center gap-4">
+          <div class="w-fit rounded-lg p-4 flex flex-col mx-auto items-center gap-4">
             <h4 class="font-semibold text-md mb-1">รางวัล</h4>
             <img :src="props.data.image_url" alt="prize image" class="w-40 h-40 object-cover rounded-full shadow" />
             <p class="font-semibold text-2xl">{{ props.data.prize_name }}</p>
@@ -92,20 +92,52 @@ computed(() => props.data?.filter_position?.split(',') || [])
             </span>
           </div>
         </div>
-
-
+        <hr class="opacity-30" />
+        <div>
+          <div class="text-center font-bold">
+            เงื่อนไขการรับรางวัล
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div v-if="props.data.filter_position">
+              <p class="text-sm text-gray-500">ตำแหน่ง</p>
+              <span class="text-sm text-black">
+                {{ (Array.isArray(props.data.filter_position) ? props.data.filter_position :
+                  JSON.parse(props.data.filter_position || '[]')).join(', ') }}
+              </span>
+            </div>
+            <div v-if="props.data.filter_position">
+              <p class="text-sm text-gray-500">สถานะ</p>
+              <span class="text-sm text-black">
+                {{(Array.isArray(props.data.filter_status) ? props.data.filter_status :
+                  JSON.parse(props.data.filter_status || '[]')).map((status: string) =>
+                    statusLabel(status)).join(', ')}}
+              </span>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">ผู้เข้าร่วม</p>
+              <span :class="props.data.filter_is_active ? 'badge badge-info' : 'badge badge-neutral'">
+                {{ props.data.filter_is_active ? 'เฉพาะผู้เข้าร่วม' : 'ผู้เล่นทั้งหมด' }}
+              </span>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">จำนวนรางวัล</p>
+              <span class="text-black">{{ props.data.quantity }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div v-else class="text-gray-500 text-center py-10"><LoadingPage /></div>
+      <div v-else class="text-gray-500 text-center py-10">
+        <LoadingPage />
+      </div>
 
       <!-- Close Button -->
-      <button @click="isOpen = false" class="absolute top-3 right-3 text-red-500 hover:text-red-700 text-lg font-bold cursor-pointer">
+      <button @click="isOpen = false"
+        class="absolute top-3 right-3 text-red-500 hover:text-red-700 text-lg font-bold cursor-pointer">
         ✕
       </button>
     </div>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
