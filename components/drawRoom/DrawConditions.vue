@@ -22,11 +22,11 @@
         </div>
 
         <div>
-            <span class="badge badge-info">{{ isActiveLabel }}</span>
-            <span v-for="status in filterStatuses" :key="status"
-                :class="['badge', statusMap[status]?.color || 'badge-secondary']">
+            <div class="badge badge-info">{{ isActiveLabel }}</div>
+            <div v-for="status in filterStatuses" :key="status"
+                :class="['badge', statusMap[status]?.color || 'badge-secondary']" class="mx-2">
                 {{ statusMap[status]?.label || status }}
-            </span>
+            </div>
         </div>
     </div>
 </template>

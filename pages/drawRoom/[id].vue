@@ -3,7 +3,6 @@ import PrizeInfo from '@/components/drawRoom/PrizeInfo.vue'
 import DrawConditions from '@/components/drawRoom/DrawConditions.vue'
 import PlayerCard from '@/components/drawRoom/PlayerCard.vue'
 import WinnerModal from '@/components/drawRoom/WinnerModal.vue'
-import logo from '@/assets/logo.png';
 const router = useRouter();
 
 const isPrizeExhausted = computed(() => (prizeData.value?.quantity || 0) <= 0);
@@ -66,9 +65,6 @@ const rightPlayers = computed(() => {
         <!-- ส่วนที่ 2: ข้อมูลรางวัลและเงื่อนไขตรงกลาง -->
         <div class="w-full md:w-1/3 p-4">
           <div class="sticky top-4">
-            <div class="flex justify-center">
-              <img :src="logo" alt="Lucky Draw Logo" class="w-70 md:h-50" />
-            </div>
             <PrizeInfo :prizeData="prizeData" :drawQuantity="drawQuantity" :isDrawing="isDrawing"
               @startDrawing="startDrawing" />
 
