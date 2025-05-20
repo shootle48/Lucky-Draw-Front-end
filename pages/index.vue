@@ -3,6 +3,8 @@ import { getToast } from "@/composables/useToastPage";
 import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/Full_Logo.png';
+import qrForm from '@/assets/image-template-form/Lucky-Draw-QrCode-Form.png'
+
 
 const { showToast } = getToast();
 const Router = useRouter();
@@ -50,8 +52,14 @@ const add_room = async () => {
                         <div class="join ">
                             <input type="text" class="input w-fit bg-white/80 text-black mr-4 rounded-lg"
                                 placeholder="ชื่อห้องสุ่มรางวัล" v-model="RoomData.name" />
-                            <button type="submit" class="btn  btn-accent text-[#ffffff] drop-shadow-lg rounded-lg">
+                            <!-- <button type="submit" class="btn  btn-accent text-[#ffffff] drop-shadow-lg rounded-lg">
                                 <p class="text-lg font-medium ">สร้างห้อง</p>
+                            </button> -->
+                            <button type="submit"
+                                class="btn h-fit bg-gradient-to-t from-[#ff8f00] to-[#ffd902] p-2 border-0 rounded-[2rem] text-white shadow-black shadow-sm">
+                                <div class="bg-[#ffae02] px-2.5 py-0.25 rounded-[2rem] text-lg font-semibold">
+                                    <p class="drop-shadow-lg">สร้างห้อง</p>
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -74,6 +82,17 @@ const add_room = async () => {
         </div>
     </div>
     <div class="toast toast-top toast-start fixed z-[9999]"></div>
+
+    <!-- QR Code form -->
+    <NuxtLink to="https://docs.google.com/forms/d/1Ewo0i9c58WnQJxd0_oBUPE_OWte88bmu44oz_5o73dQ/copy" target="_blank">
+        <div class="fixed right-4 bottom-4 z-50 border-2">
+        <img :src="qrForm" alt="แบบฟอร์มลงทะเบียน"
+            class=" w-40 h-auto opacity-90 hover:opacity-100 transition-opacity duration-300 " />
+        <div class="text-sm text-center text-blue-950 bg-white/50">
+            แบบฟอร์มลงทะเบียน
+        </div>
+    </div>
+    </NuxtLink>
 </template>
 
 <style lang="scss" scoped></style>

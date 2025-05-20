@@ -69,33 +69,18 @@ export const usePrizeStore = defineStore("prize", {
       }
 
       try {
-        let imageUrl = "";
+        const formData = new FormData();
+        formData.append("name", this.newPrize.name);
+        formData.append("quantity", this.newPrize.quantity.toString());
+        formData.append("room_id", this.newPrize.room_id);
 
         if (this.selectedImage) {
-          const uploadForm = new FormData();
-          uploadForm.append("file", this.selectedImage);
-
-          const uploadRes = await apiClient.post("/prizes/upload", uploadForm, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-
-          if (uploadRes.data?.url) {
-            imageUrl = uploadRes.data.url;
-            this.newPrize.image_url = imageUrl;
-          } else {
-            showToast("อัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
-            throw new Error("Image upload failed to return a URL.");
-          }
+          formData.append("image", this.selectedImage);
         }
 
-        const prizePayload = {
-          name: this.newPrize.name,
-          image_url: imageUrl,
-          quantity: this.newPrize.quantity,
-          room_id: this.newPrize.room_id,
-        };
-
-        const response = await apiClient.post("/prizes/create", prizePayload);
+        const response = await apiClient.post("/prizes/create", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         if (response.status === 200 || response.status === 201) {
           const createdPrize = response.data.data;
@@ -120,44 +105,30 @@ export const usePrizeStore = defineStore("prize", {
       }
     },
 
-    async updatePrize(
-      prizeId: string,
-      updatedData: Partial<prizeType> & { image?: File | null }
-    ) {
+    async updatePrize(prizeId: string, updatedData: Partial<prizeType>) {
       this.isLoading = true;
       try {
-        let finalImageUrl: string | undefined = updatedData.image_url;
+        const formData = new FormData();
+        if (updatedData.name) formData.append("name", updatedData.name);
+        if (updatedData.quantity !== undefined)
+          formData.append("quantity", updatedData.quantity.toString());
+        if (updatedData.room_id)
+          formData.append("room_id", updatedData.room_id);
 
+        // ถ้า image เป็น File ให้อัปโหลดไฟล์ใหม่
         if (updatedData.image instanceof File) {
-          const form = new FormData();
-          form.append("file", updatedData.image);
-
-          const uploadRes = await apiClient.post("/prizes/upload", form, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-
-          if (uploadRes.data?.url) {
-            finalImageUrl = uploadRes.data.url;
-            this.newPrize.image_url = finalImageUrl;
-          } else {
-            showToast("อัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
-            throw new Error(
-              "Image upload failed to return a URL during update."
-            );
-          }
+          formData.append("image", updatedData.image);
+        }
+        // ถ้าเป็น null ให้ส่ง "delete_image" เป็น true เพื่อบอก API ให้ลบรูปเดิม
+        else if (updatedData.image === null) {
+          formData.append("remove_image", "true");
         }
 
-        const { image, ...payload } = updatedData;
-        const updatePayload = {
-          ...payload,
-          image_url: finalImageUrl,
-        };
+        const response = await apiClient.patch(`/prizes/${prizeId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
-        const response = await apiClient.patch(
-          `/prizes/${prizeId}`,
-          updatePayload
-        );
-
+        // โค้ดส่วนที่เหลือเหมือนเดิม
         if (response.status === 200) {
           const updatedPrizeFromServer = response.data.data;
           const index = this.prizes.findIndex((p) => p.id === prizeId);
@@ -214,33 +185,6 @@ export const usePrizeStore = defineStore("prize", {
           error.message ||
           "เกิดข้อผิดพลาดขณะลบรางวัล กรุณาลองใหม่";
         showToast(message, "alert-error");
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    async uploadImage(file: File): Promise<string | null> {
-      this.isLoading = true;
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await apiClient.post("/prizes/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (response.data?.data?.url) {
-          return response.data.data.url;
-        }
-        showToast("การอัปโหลดรูปภาพไม่สำเร็จ: ไม่พบ URL", "alert-error");
-        return null;
-      } catch (error: any) {
-        const message =
-          error.response?.data?.message ||
-          error.message ||
-          "ไม่สามารถอัปโหลดรูปภาพได้";
-        showToast(message, "alert-error");
-        return null;
       } finally {
         this.isLoading = false;
       }

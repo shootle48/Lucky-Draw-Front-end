@@ -81,8 +81,6 @@ const openEditModal = (prize: prizeType) => {
     } else {
         editImagePreview.value = null;
     }
-
-    console.log(prize.image_url)
     if (addFileInput.value) {
         addFileInput.value.value = '';
     }
@@ -108,7 +106,8 @@ const removeEditImage = () => {
     selectedEditImage.value = null;
 
     if (editingPrize.value) {
-        editingPrize.value.image_url = '';
+        editingPrize.value.image_url = ''; // เซ็ตให้เป็นสตริงว่างเพื่อแสดงผลในหน้า UI
+        editingPrize.value.image = null;   // เพิ่มบรรทัดนี้เพื่อเตรียมส่งค่า null ไปยัง API
     }
 
     // รีเซ็ต input file
@@ -127,8 +126,9 @@ const saveEditedPrize = async () => {
             editingPrize.value.image = selectedEditImage.value;
         }
 
+        // ส่งเฉพาะ prizeId และ editingPrize.value ซึ่งมีทั้ง image ใหม่หรือ null แล้ว
         await prizeStore.updatePrize(editingPrize.value.id as string, editingPrize.value);
-        await prizeStore.fetchPrizes(prizeStore.newPrize.room_id)
+        await prizeStore.fetchPrizes(prizeStore.newPrize.room_id);
         showEditPrizeModal.value = false;
 
         // รีเซ็ตหลังจากบันทึกเสร็จ

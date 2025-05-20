@@ -57,41 +57,42 @@ const submitForm = () => {
 <template>
     <dialog open class="modal modal-open">
         <div class="modal-box bg-white text-black/70 shadow-xl">
-            <h3 class="font-bold text-lg mb-4 text-center">แก้ไขผู้เเล่น</h3>
+            <h3 class="font-bold text-lg mb-4 text-center">แก้ไขผู้เล่น</h3>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">คำนำหน้า</label>
+                <label class="label-text mb-1">คำนำหน้า <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.prefix"
-                    class="input input-bordered w-full bg-gray-100 text-gray-700 opacity-80 pointer-events-none"
-                    readonly disabled />
+                    class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
+                    readonly />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">ชื่อ</label>
+                <label class="label-text mb-1">ชื่อ <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.first_name"
-                    class="input input-bordered w-full bg-gray-100 text-gray-700 opacity-80 pointer-events-none"
-                    readonly disabled />
+                    class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
+                    readonly />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">นามสกุล</label>
+                <label class="label-text mb-1">นามสกุล <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.last_name"
-                    class="input input-bordered w-full bg-gray-100 text-gray-700 opacity-80 pointer-events-none"
-                    readonly disabled />
+                    class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
+                    readonly />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">รหัสสมาชิก (member ID)</label>
+                <label class="label-text mb-1">รหัสสมาชิก (member ID) <span
+                        class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.member_id"
-                    class="input input-bordered w-full bg-gray-100 text-gray-700 opacity-80 pointer-events-none"
-                    readonly disabled />
+                    class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
+                    readonly />
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">ตำแหน่ง</label>
+                <label class="label-text mb-1">ตำแหน่ง <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.position"
-                    class="input input-bordered w-full bg-gray-100 text-gray-700 opacity-80 pointer-events-none"
-                    readonly disabled />
+                    class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
+                    readonly />
             </div>
 
             <div class="form-control mb-2 flex flex-col">
@@ -101,9 +102,12 @@ const submitForm = () => {
                     <div
                         class="w-5 h-5 rounded border border-gray-400 bg-red-400 peer-checked:bg-green-400 transition-colors duration-300">
                     </div>
-                    <span class="text-sm text-gray-700">สถานะ</span>
+                    <span class="text-sm" :class="formPlayer.is_active ? 'text-green-600' : 'text-red-600'">
+                        {{ formPlayer.is_active ? 'เข้าร่วม' : 'ไม่เข้าร่วม' }}
+                    </span>
                 </label>
             </div>
+
 
 
             <div class="modal-action flex justify-center gap-4">

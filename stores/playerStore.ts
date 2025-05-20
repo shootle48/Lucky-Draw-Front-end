@@ -105,15 +105,15 @@ export const usePlayerStore = defineStore("player", {
           // 🔥 ปรับให้ตรง playerType: is_active
           const mappedPlayers = players.map((player) => ({
             ...player,
-            is_active: ["เข้า"].includes(
+            is_active: ["เข้าร่วม"].includes(
               String((player as any).status || "").trim()
             )
               ? true
-              : ["ไม่เข้า"].includes(
-                  String((player as any).status || "").trim()
-                )
-              ? false
-              : false,
+              : ["ไม่เข้าร่วม"].includes(
+                String((player as any).status || "").trim()
+              )
+                ? false
+                : false,
           }));
 
           this.players = mappedPlayers;
@@ -164,9 +164,10 @@ export const usePlayerStore = defineStore("player", {
           status: newPlayer.status,
         });
         return response.data;
-      } catch (e) {
+      } catch (e: any) {
         console.error("❌ Error adding player:", e);
-        throw e;
+        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+        throw new Error(errorMessage);
       } finally {
         this.isLoading = false;
       }
@@ -189,9 +190,10 @@ export const usePlayerStore = defineStore("player", {
         if (response.status === 200) {
           console.log("แก้ไขผู้เล่นสำเร็จ");
         }
-      } catch (error) {
-        console.error("Error editing player:", error);
-        throw error; // โยนกลับไปให้ [id].vue จัดการ alert
+      } catch (e: any) {
+        console.error("Error editing player:", e);
+        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+        throw new Error(errorMessage);
       } finally {
         this.isLoading = false;
       }

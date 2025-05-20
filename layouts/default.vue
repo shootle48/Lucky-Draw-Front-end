@@ -8,7 +8,7 @@ const roomId = computed(() => playerStore.currentRoomId);
 <template>
     <div class="flex flex-col h-screen justify-between">
         <div>
-            <div class="navbar fixed z-50 px-4">
+            <div class="navbar fixed z-10 px-4">
                 <!-- Logo -->
                 <NuxtLink :to="`/mainPage/${roomId}`" class="btn btn-accent h-full"
                     style="border-radius: 69% 31% 66% 34% / 36% 38% 62% 64%;">

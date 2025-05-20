@@ -2,6 +2,7 @@
 import apiClient from "@/utils/apiClient"; // <--- เพิ่มบรรทัดนี้ (ตรวจสอบ path ให้ถูกต้อง)
 
 import type { drawConditionType } from "@/types/drawCondition";
+import { fi } from "@nuxt/ui/runtime/locale/index.js";
 
 export const useDrawConditionStore = defineStore("drawCondition", {
   state: () => ({
@@ -52,8 +53,6 @@ export const useDrawConditionStore = defineStore("drawCondition", {
           error.response?.data || error.message || error
         );
         this.drawConditions = []; // เคลียร์ค่าเมื่อเกิด error
-        // ไม่ควร throw error ที่นี่ ถ้าต้องการให้ component ทำงานต่อได้แม้ fetch ล้มเหลว
-        // throw error;
       }
     },
 

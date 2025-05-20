@@ -9,6 +9,7 @@ import EditPlayerModal from './EditPlayerModal.vue'
 
 // store
 const playerStore = usePlayerStore()
+const playerList = playerStore.players
 const { players } = storeToRefs(playerStore)
 
 // route
@@ -28,7 +29,7 @@ const playerListWithFullName = computed(() => {
     return players.value
         .map((player) => ({
             ...player,
-            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
+            full_name: `${player.prefix}${player.first_name} ${player.last_name}`.trim()
         }))
         .filter((player) =>
             player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
@@ -103,9 +104,9 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 </script>
 
 <template>
-    <div class="card bg-[#ffffff98] w-full shadow-xl mb-8">
+    <div class="card bg-[#ffffff98] shadow-xl mb-8 mx-4">
         <div class="card-body">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4 md:min-w-[700px] gap-10">
                 <h2 class="card-title text-black">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
             </div>
@@ -114,7 +115,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
             <div v-if="isMainPage" class="flex flex-col gap-4" v-show="!isShowing">
                 <div class="flex justify-between ">
                     <!-- ฟิลเตอร์ -->
-                    <label class="input input-bordered input-sm bg-[#c2787898] text-black">
+                    <label
+                        class="input input-bordered max-w-[200px] md:max-w-[275px] input-sm bg-[#c2787898] text-black">
                         <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
                                 stroke="currentColor">
@@ -138,11 +140,11 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                         </div>
                     </button>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative w-full">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
@@ -177,7 +179,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
             <!-- other pages -->
             <div v-else v-show="!isShowing" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <div v-for="(player, index) in players" :key="index" class="card shadow-sm relative">
+                <div v-for="(player, index) in playerList" :key="index" class="card shadow-sm relative w-full">
                     <div class="absolute top-2 right-2 w-3 h-3 rounded-full shadow"
                         :class="player.is_active ? 'bg-green-500' : 'bg-red-500'" title="สถานะการเข้าร่วม"></div>
 

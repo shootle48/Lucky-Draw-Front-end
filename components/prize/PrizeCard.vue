@@ -21,11 +21,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div v-if="isPrizeChoose" class="w-fit mx-auto">
+  <div v-if="isPrizeChoose" class="card bg-[#ffffff98] border-0 rounded-box relative overflow-hidden mx-auto">
 
 
     <figure class="px-4 pt-4 w-fit mx-auto">
-      <div v-if="prize.image_url" class="w-60 h-60 rounded-full overflow-hidden border-4 border-white drop-shadow-lg">
+      <div v-if="prize.image_url" class="w-80 h-80 rounded-full overflow-hidden border-4 border-white drop-shadow-lg">
         <img :src="getImageSrc(prize.image_url)" :alt="prize.name" class="object-cover w-full h-full" />
       </div>
       <div v-else class="w-60 h-60 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
@@ -40,7 +40,7 @@ const props = defineProps<{
 
     <div class="p-4 flex flex-col items-center gap-2">
       <label class="text-black/50">รางวัล</label>
-      <div class="bg-[#ffffff69] rounded-box max-w-md shadow-lg p-4 text-center ">
+      <div class="">
         <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ prize.name }}</h1>
       </div>
       <div class="">
