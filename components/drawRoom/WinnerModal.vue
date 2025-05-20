@@ -5,7 +5,7 @@
             <img :src="prizeData?.image_url" class="w-72 h-72 rounded-full overflow-hidden border-4 border-white shadow-lg" />
             <p class="text-xl font-semibold">🎉 Congratulation 🎉</p>
             <p class="text-3xl">
-                คุณ <strong>{{ currentWinner?.prefix }} {{ currentWinner?.first_name }} {{ currentWinner?.last_name
+                <strong>{{ currentWinner?.prefix }} {{ currentWinner?.first_name }} {{ currentWinner?.last_name
                 }}</strong>
             </p>
             <p>ได้รับ</p>

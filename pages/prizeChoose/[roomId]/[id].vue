@@ -22,7 +22,7 @@ const quantity = ref(1);
 
 const roomData = storeToRefs(playerStore).rooms;
 const playerData = storeToRefs(playerStore).players;
-const { isLoading,prize: prizeData } = storeToRefs(prizeStore);
+const { isLoading, prize: prizeData } = storeToRefs(prizeStore);
 const { drawConditions } = storeToRefs(drawStore);
 const isShowing = ref<boolean>(false);
 const isDropdownOpen = ref<boolean>(false);
@@ -75,12 +75,18 @@ watch([filter_status, filter_position, filter_is_active], () => {
 const handleCreateCondition = async () => {
     try {
         if (!drawStore.drawConditions.length) {
-            showToast("❌ ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น", "alert-warning");
+            showToast("ไม่พบผู้เล่นที่ตรงตามเงื่อนไข โปรดเลือกตำแหน่งอื่น", "alert-warning");
             return;
         }
 
         const currentPrizeQuantity = prizeData.value?.quantity || 0;
         const totalDrawQty = drawStore.drawConditions.reduce((sum, c) => sum + (c.quantity || 0), 0);
+
+        const filteredPlayersCount = drawStore.drawConditions.length;
+        if (quantity.value > filteredPlayersCount) {
+            showToast("จำนวของรางวัลมากกว่าจำนวนผู้เล่นไม่ได้", "alert-error");
+            return;
+        }
 
         if (quantity.value + totalDrawQty > currentPrizeQuantity) {
             showToast(`จำนวนเกินที่กำหนด`, "alert-error");
@@ -98,17 +104,15 @@ const handleCreateCondition = async () => {
 
         if (createdCondition.id) {
             showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "alert-success");
-
-            // รอ 1.5 วิ ให้ user ได้อ่าน toast ก่อนเปลี่ยนหน้า
             await new Promise((resolve) => setTimeout(resolve, 1500));
-
             router.push(`/drawRoom/${createdCondition.id}`);
         }
 
     } catch {
-        showToast("เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "alert-error");
+        showToast("❌ เกิดข้อผิดพลาดในการเพิ่มเงื่อนไข", "alert-error");
     }
 };
+
 
 const filteredDrawConditions = computed(() =>
     drawConditions.value.filter(player => Object.keys(player).length > 1)
@@ -248,7 +252,7 @@ const getRandomBgColor = (index: number): string => {
                                 <div class="flex items-center justify-between mb-2 md:min-w-[1150px]">
                                     <h2 class="card-title text-black pr-10">ผู้เล่นที่ตรงตามเงื่อนไข ({{
                                         drawConditions.length
-                                        }}
+                                    }}
                                         คน)
                                     </h2>
                                     <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black"
