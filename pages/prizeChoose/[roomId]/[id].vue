@@ -242,7 +242,7 @@ const getRandomBgColor = (index: number): string => {
                     </div>
 
                     <!-- 🔽 แสดงผู้เล่นที่ตรงตามเงื่อนไข -->
-                    <div class="bg-[#ffffff]/80 shadow-xl mb-8 mx-4 md:mx-0 mt-10 rounded-lg">
+                    <div class="bg-[#ffffff]/80 shadow-xl mb-8 mx-4 md:mx-0 mt-10 rounded-lg lg:min-w-300">
                         <div v-if="drawConditions.length > 0">
                             <div class="card-body">
                                 <div class="flex items-center justify-between mb-2 md:min-w-[1150px]">

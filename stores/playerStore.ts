@@ -13,8 +13,15 @@ export const usePlayerStore = defineStore("player", {
     rooms: {
       id: "",
       name: "",
+      password: "",
     } as roomTypes,
     players: [] as playerType[],
+    Rooms: [] as roomTypes[],
+    pagination: {
+      page: 1,
+      size: 9,
+      total: 0,
+    },
   }),
 
   actions: {
@@ -24,6 +31,31 @@ export const usePlayerStore = defineStore("player", {
     clearRoomId() {
       this.currentRoomId = "";
     },
+    async fetchRooms(page = 1, size = 6) {
+      this.isLoading = true;
+      try {
+        const response = await apiClient.get(`/rooms/list`, {
+          params: {
+            page,
+            size,
+          },
+        });
+
+        if (response.status === 200) {
+          this.Rooms = response.data.data;
+          this.pagination = {
+            page,
+            size,
+            total: response.data.pagination.total,
+          };
+        }
+      } catch (err) {
+        console.error("something went wrong!", err);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async fetchRoom(roomId: string) {
       this.isLoading = true;
       try {
@@ -110,10 +142,10 @@ export const usePlayerStore = defineStore("player", {
             )
               ? true
               : ["ไม่เข้าร่วม"].includes(
-                String((player as any).status || "").trim()
-              )
-                ? false
-                : false,
+                  String((player as any).status || "").trim()
+                )
+              ? false
+              : false,
           }));
 
           this.players = mappedPlayers;
@@ -166,7 +198,8 @@ export const usePlayerStore = defineStore("player", {
         return response.data;
       } catch (e: any) {
         console.error("❌ Error adding player:", e);
-        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+        const errorMessage =
+          e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
         throw new Error(errorMessage);
       } finally {
         this.isLoading = false;
@@ -192,7 +225,8 @@ export const usePlayerStore = defineStore("player", {
         }
       } catch (e: any) {
         console.error("Error editing player:", e);
-        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+        const errorMessage =
+          e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
         throw new Error(errorMessage);
       } finally {
         this.isLoading = false;
