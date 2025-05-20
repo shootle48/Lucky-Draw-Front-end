@@ -77,6 +77,33 @@ export function useDrawPage() {
   };
 
   const drawNextRound = async () => {
+    const isLastAutoAssign =
+      drawQuantity.value === filteredPlayers.value.length &&
+      drawnWinners.value.length === drawQuantity.value - 1 &&
+      remainingPlayers.value.length === 1;
+
+    if (isLastAutoAssign) {
+      const selected = remainingPlayers.value.splice(0, 1)[0];
+      drawnPlayerIds.value.add(selected.id);
+      drawnWinners.value.push(selected);
+
+      currentIndex.value = drawnWinners.value.length - 1; // 🧠 อัปเดตให้ currentWinner ทำงานถูกต้อง
+      glowingIndexes.value.push(selected.id);
+      glowingTempIndex.value = null;
+
+      console.log(
+        `🎯 ผู้โชคดีคนสุดท้าย: ${selected.first_name} ${selected.last_name} (ไม่ต้องสุ่ม)`
+      );
+
+      setTimeout(() => {
+        showWinnerModal.value = true;
+        isDrawing.value = false;
+      }, 500);
+
+      return;
+    }
+
+    // 🌀 กรณีทั่วไป: ทำการสุ่ม
     let speed = 60;
     let count = 0;
     const maxCount = 20;
@@ -96,13 +123,10 @@ export function useDrawPage() {
         );
         const selected = remainingPlayers.value.splice(finalIndex, 1)[0];
 
-        // เพิ่ม ID ของผู้โชคดีเข้าไปในเซ็ต
         drawnPlayerIds.value.add(selected.id);
-
         drawnWinners.value.push(selected);
-        // อัพเดท currentIndex ให้ชี้ไปที่ผู้โชคดีล่าสุด
-        currentIndex.value = drawnWinners.value.length - 1;
 
+        currentIndex.value = drawnWinners.value.length - 1; // 🧠 เช่นกันตรงนี้
         glowingIndexes.value.push(selected.id);
         glowingTempIndex.value = null;
 
@@ -128,6 +152,7 @@ export function useDrawPage() {
       room_id: drawCondition.value?.room_id,
       player_id: winner.id,
       prize_id: drawCondition.value?.prize_id,
+      quantity: 1,
       draw_condition_id: drawConditionID,
       player_status: status,
     };

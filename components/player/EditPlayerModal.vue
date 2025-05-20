@@ -116,7 +116,7 @@ const submitForm = () => {
                     ยกเลิก
                 </button>
                 <button @click="submitForm"
-                    class="relative px-6 py-2 rounded-full bg-gradient-to-t from-[#ff8f00] to-[#ffd902] text-white font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg active:scale-95">
+                    class="relative px-6 py-2 rounded-full bg-gradient-to-t from-[#ff8f00] to-[#ffd902] text-white font-semibold shadow-md cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg active:scale-95">
                     บันทึก
                 </button>
             </div>
