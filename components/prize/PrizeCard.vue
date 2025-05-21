@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 import type { prizeType } from '@/types/prize';
 
 const prizeStore = usePrizeStore();
@@ -18,6 +19,23 @@ const props = defineProps<{
   handleEditPrize: Function
 }>();
 
+const confirmDelete = async (id: string) => {
+  const result = await Swal.fire({
+    title: 'คุณแน่ใจหรือไม่?',
+    text: "คุณต้องการลบรางวัลนี้หรือไม่",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'ใช่, ลบเลย!',
+    cancelButtonText: 'ยกเลิก',
+  });
+
+  if (result.isConfirmed) {
+    prizeStore.deletePrize(id);
+    Swal.fire('ลบแล้ว!', 'รางวัลของคุณถูกลบเรียบร้อยแล้ว', 'success');
+  }
+};
 </script>
 
 <template>
@@ -55,13 +73,15 @@ const props = defineProps<{
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
     <div v-if="!isMainPage && !isPrizeChoose">
-      <button @click="prizeStore.deletePrize(prize.id as string)"
-        class="absolute top-2 right-2 btn btn-sm btn-circle btn-error  z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <button @click="confirmDelete(prize.id as string)"
+        class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
 
 
 
