@@ -172,7 +172,6 @@ export const usePrizeStore = defineStore("prize", {
           if (this.prize && this.prize.id === prizeId) {
             this.prize = null;
           }
-          showToast("ลบรางวัลเรียบร้อยแล้ว", "alert-success");
         } else {
           showToast(
             `ไม่สามารถลบรางวัลได้ (รหัส: ${response.status})`,

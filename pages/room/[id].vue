@@ -51,7 +51,7 @@ const handleSubmitImport = async () => {
     try {
         await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
         showToast("นำเข้ารายชื่อเรียบร้อยแล้ว", "alert-success");
-
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         // ✅ ไปหน้าถัดไปได้
         router.push(`../mainPage/${roomId}`);
     } catch (_) {
@@ -127,7 +127,7 @@ onUnmounted(() => {
                         </div>
 
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
-                            class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff]" />
+                            class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff] text-black" />
 
                         <!-- ปุ่มแบบ fixed สำหรับ mobile -->
                         <div v-if="isMobile"

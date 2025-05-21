@@ -221,7 +221,7 @@ onMounted(async () => {
                 <div>
                     <label for="password" class="block text-gray-700 mb-2">รหัสผ่าน</label>
                     <input type="password" id="password" v-model="currentRoomPassword"
-                        class="input input-bordered w-full bg-gray-100 focus:border-lime-500"
+                        class="input input-bordered w-full bg-gray-100 focus:border-lime-500 text-black"
                         placeholder="กรอกรหัสผ่านเพื่อเข้าห้อง" ref="passwordInput" autofocus />
                 </div>
                 <div class="flex justify-end space-x-2">
