@@ -4,12 +4,20 @@ import { defineStore } from "pinia";
 
 export const useWinnerStore = defineStore("winner", {
   state: () => ({
+    currentRoomId: "",
     winners: [] as winnerType[],
     winner: null as winnerType | null,
     isLoading: false,
+    prizes: [] as winnerType[], // Add this line, replace 'any' with a proper type if available
   }),
 
   actions: {
+    setRoomId(roomId: string) {
+      this.currentRoomId = roomId;
+    },
+    clearRoomId() {
+      this.currentRoomId = "";
+    },
     async fetchWinner(roomId: string) {
       this.isLoading = true;
       try {
@@ -60,5 +68,19 @@ export const useWinnerStore = defineStore("winner", {
         this.isLoading = false;
       }
     },
+
+    async fetchDashboard(roomId: string) {
+      this.isLoading = true;
+      try {
+        const { data } = await apiClient.get(`/winners/room/${roomId}`);
+        this.winners = data?.winners || [];
+        this.prizes = data?.prizes || [];
+      } catch (error) {
+        console.error("❌ Error fetching dashboard:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
   },
 });

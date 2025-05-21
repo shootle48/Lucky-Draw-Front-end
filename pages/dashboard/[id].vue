@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import apiClient from '@/utils/apiClient' // ปรับให้ตรงกับ path ของโปรเจคจริง
+import { useRoute } from 'vue-router'
+import { useWinnerStore } from '@/stores/winnerStore'
+import { usePlayerStore } from '@/stores/playerStore'
+import { ref, watch } from 'vue'
 import WinnerCarousel from '@/components/winner/WinnerCarousel.vue'
 import WinnerModal from '@/components/winner/WinnerModal.vue'
 import type { winnerType } from '@/types/winner'
 
-const dashboard = ref({ winners: [], prizes: [] })
+const route = useRoute()
+const winnerStore = useWinnerStore()
 const playerStore = usePlayerStore()
-const loading = ref(true)
-const autoplay = ref(true)
-const autoplayDelay = 4000
-
-const roomID = playerStore.currentRoomId
 
 const showModal = ref(false)
 const selectedWinner = ref<winnerType | null>(null)
@@ -24,19 +23,27 @@ const toggleAutoplay = () => {
     autoplay.value = !autoplay.value
 }
 
-onMounted(async () => {
-    try {
-        const { data } = await apiClient.get(`/winners/room/${roomID}`)
-        dashboard.value = {
-            winners: data.winners || [],
-            prizes: data.prizes || [],
+const autoplay = ref(true)
+const autoplayDelay = 4000
+
+// ดึง roomID จาก route param (url) แทนการดึงจาก store
+const roomID = ref(route.params.id as string)
+
+// ถ้าต้องการซิงค์ roomID ลง playerStore ก็ทำได้ (ไม่จำเป็นก็ข้ามได้)
+playerStore.currentRoomId = roomID.value
+
+// เวลาที่ route.params.id เปลี่ยน หรือ หน้าโหลดใหม่
+watch(
+    () => route.params.id,
+    async (newId) => {
+        if (typeof newId === 'string') {
+            roomID.value = newId
+            playerStore.currentRoomId = newId // ซิงค์ถ้าต้องการ
+            await winnerStore.fetchDashboard(newId)
         }
-    } catch (error) {
-        console.error('Error fetching dashboard:', error)
-    } finally {
-        loading.value = false
-    }
-})
+    },
+    { immediate: true }
+)
 </script>
 
 <template>
@@ -45,13 +52,13 @@ onMounted(async () => {
             Summary of the Dashboard
         </h1>
 
-        <LoadingPage v-if="loading" />
+        <LoadingPage v-if="winnerStore.isLoading" />
 
         <div v-else>
             <!-- 🏆 ผู้ชนะ -->
             <div class="card w-full px-10">
                 <h2 class="text-2xl font-semibold text-center text-black">🏆 ผู้ที่ได้รางวัล</h2>
-                <div v-if="dashboard.winners.length === 0" class="text-xl text-gray-500 text-center my-4">
+                <div v-if="winnerStore.winners.length === 0" class="text-xl text-gray-500 text-center my-4">
                     ยังไม่มีผู้ชนะรางวัล
                 </div>
 
@@ -77,7 +84,7 @@ onMounted(async () => {
                     </button>
                 </div>
 
-                <WinnerCarousel :items="dashboard.winners" type="winner" :autoplay="autoplay"
+                <WinnerCarousel :items="winnerStore.winners" type="winner" :autoplay="autoplay"
                     :autoplayDelay="autoplayDelay" @show-detail="openDetail" />
                 <WinnerModal v-model:show="showModal" :data="selectedWinner ?? undefined" />
             </div>
@@ -85,11 +92,11 @@ onMounted(async () => {
             <!-- 🎁 รางวัลที่เหลือ -->
             <div class="card w-full px-10 mt-15">
                 <h2 class="text-2xl font-semibold text-center text-black mb-5">🎁 รางวัลที่เหลือ</h2>
-                <div v-if="dashboard.prizes.length === 0" class="text-xl text-gray-500 text-center my-4">
+                <div v-if="winnerStore.prizes.length === 0" class="text-xl text-gray-500 text-center my-4">
                     ไม่มีรางวัลที่เหลือ
                 </div>
 
-                <WinnerCarousel :items="dashboard.prizes" type="prize" :autoplay="true" :autoplayDelay="6000" />
+                <WinnerCarousel :items="winnerStore.prizes" type="prize" :autoplay="true" :autoplayDelay="6000" />
             </div>
         </div>
     </div>
