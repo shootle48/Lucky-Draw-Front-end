@@ -60,7 +60,8 @@ const submitForm = () => {
             <h3 class="font-bold text-lg mb-4 text-center">แก้ไขผู้เล่น</h3>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">คำนำหน้า <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
+                <label class="label-text mb-1">คำนำหน้า <span
+                        class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.prefix"
                     class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
                     readonly />
@@ -74,7 +75,8 @@ const submitForm = () => {
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">นามสกุล <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
+                <label class="label-text mb-1">นามสกุล <span
+                        class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.last_name"
                     class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
                     readonly />
@@ -89,7 +91,8 @@ const submitForm = () => {
             </div>
 
             <div class="form-control mb-2">
-                <label class="label-text mb-1">ตำแหน่ง <span class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
+                <label class="label-text mb-1">ตำแหน่ง <span
+                        class="text-red-900 text-sm">ไม่สามารถแก้ไขได้</span></label>
                 <input v-model="formPlayer.position"
                     class="input input-bordered w-full bg-gray-300 text-gray-700 opacity-80 pointer-events-none"
                     readonly />

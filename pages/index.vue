@@ -4,14 +4,19 @@ import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/Full_Logo.png';
 import QrcodeVue from 'qrcode.vue';
+import { useMediaQuery } from '@vueuse/core'
+
 definePageMeta({
     layout: false
 });
+const showQR = ref(false)
+const isMdUp = useMediaQuery('(min-width: 768px)')
 const QRcodeTamplateForm = import.meta.env.VITE_QR_CODE_TEMPLATE_FORM_URL;
 
 const { showToast } = getToast();
 const playerStore = usePlayerStore();
 const Router = useRouter();
+
 
 const RoomData = ref<roomTypes>({
     id: '',
@@ -178,7 +183,8 @@ onMounted(async () => {
 
             <!-- รายการห้อง -->
             <div>
-                <h1 class="mt-8 mb-4 text-xl font-semibold drop-shadow-lg lg:min-w-250">รายการห้องทั้งหมด</h1>
+                <h1 class="mt-8 mb-4 text-xl font-semibold drop-shadow-lg lg:min-w-250 text-black">รายการห้องทั้งหมด
+                </h1>
                 <div v-if="Rooms.length === 0" class="badge badge-outline badge-primary shadow-md w-full h-40 flex items-center justify-center
                     gap-4 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 24 24"
@@ -186,7 +192,7 @@ onMounted(async () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span class=" text-xl font-bold drop-shadow-2xl">ยังไม่มีห้องที่สร้างไว้</span>
+                    <span class=" text-xl font-bold drop-shadow-2xl text-black">ยังไม่มีห้องที่สร้างไว้</span>
                 </div>
                 <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div v-for="room in Rooms" :key="room.id" class="relative">
@@ -277,10 +283,17 @@ onMounted(async () => {
         </div>
     </div>
 
-    <!-- QR Code form -->
-    <NuxtLink :to="QRcodeTamplateForm" target="_blank">
+    <!-- ปุ่ม toggle สำหรับเปิด/ปิด QR (แสดงเฉพาะหน้าจอเล็ก) -->
+    <button @click="showQR = !showQR"
+        class="fixed right-4 bottom-5 z-20 text-white px-2.5 py-2 rounded-full shadow-lg md:hidden text-xs"
+        :class="showQR ? 'bg-gray-400' : 'bg-rose-600'">
+        {{ showQR ? 'Close' : 'Open Form' }}
+    </button>
+
+    <!-- QR Code Display -->
+    <NuxtLink v-if="showQR || isMdUp" :to="QRcodeTamplateForm" target="_blank">
         <div
-            class="fixed right-4 bottom-4 border z-10 border-gray-300 shadow-lg rounded-2xl bg-white/90 backdrop-blur-md p-2.5 flex flex-col items-center transition-transform hover:scale-105">
+            class="fixed right-4 bottom-4 border z-10 border-gray-300 shadow-lg rounded-2xl bg-white/90 backdrop-blur-md p-2.5 flex flex-col items-center transition-transform hover:scale-105 bottom-15 md:bottom-4">
             <div class="rounded-xl overflow-hidden border-4 border-white shadow-inner">
                 <QrcodeVue :value="QRcodeTamplateForm" :size="155" class="max-w-20 max-h-20 md:max-w-full md:max-h-full"
                     :level="'M'" />

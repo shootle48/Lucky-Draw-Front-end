@@ -35,9 +35,10 @@ const formatDate = (timestamp: number) => {
     class="mx-auto lg:max-w-[1500px]" :ui="{
       item:
         type === 'winner'
-          ? 'basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1 gap-4'
+          ? 'basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 grid grid-cols-1 gap-4'
           : 'basis-full sm:basis-1/3 md:basis-1/3 lg:basis-1/4 px-2 grid grid-cols-1 gap-4',
     }">
+
     <!-- Winner Card -->
     <div v-if="type === 'winner'" class="card bg-white/60 drop-shadow-lg hover:bg-white/50 md:min-w-70">
       <figure class="aspect-video overflow-hidden mt-5">
@@ -54,9 +55,6 @@ const formatDate = (timestamp: number) => {
         <div class="badge badge-success gap-2 my-2">
           🏅 {{ item.prize_name }}
         </div>
-        <!-- <button class="btn bg-white/0 border-0 text-rose-700 font-semibold" @click="$emit('show-detail', item)">
-          ดูรายละเอียด
-        </button> -->
 
         <button @click="$emit('show-detail', item)"
           class="btn h-fit bg-gradient-to-t from-[#E69DB8] to-[#FFD0C7] p-0.5 px-1.5 py-1.5 border-0 rounded-[2rem]  text-white shadow-black shadow-sm">
@@ -87,3 +85,5 @@ const formatDate = (timestamp: number) => {
     </div>
   </UCarousel>
 </template>
+
+<style scoped></style>
