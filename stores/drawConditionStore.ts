@@ -1,8 +1,5 @@
-// เพิ่ม import apiClient
-import apiClient from "@/utils/apiClient"; // <--- เพิ่มบรรทัดนี้ (ตรวจสอบ path ให้ถูกต้อง)
-
+import * as drawConditionService from "@/services/drawConditionService";
 import type { drawConditionType } from "@/types/drawCondition";
-import { fi } from "@nuxt/ui/runtime/locale/index.js";
 
 export const useDrawConditionStore = defineStore("drawCondition", {
   state: () => ({
@@ -17,42 +14,46 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       filter_position: string[],
       filter_is_active: boolean
     ) {
+      this.isLoading = true; // Set loading for this action
       try {
-        const payload = {
-          room_id: roomId,
-          filter_status: Array.isArray(filter_status) ? filter_status : [],
-          filter_position: Array.isArray(filter_position)
-            ? filter_position
-            : [],
+        const logPayload = {
+          roomId,
+          filter_status,
+          filter_position,
           filter_is_active,
         };
+        const rawConditionsData =
+          await drawConditionService.fetchDrawConditionsPreview(
+            roomId,
+            filter_status,
+            filter_position,
+            filter_is_active
+          );
 
-        // เปลี่ยน axios.post เป็น apiClient.post และใช้ path ต่อท้าย
-        const res = await apiClient.post(
-          // <--- แก้ไข
-          `/draw-conditions/preview`,
-          payload
-          // ไม่ต้อง override header เพราะ payload เป็น JSON (ตาม default ของ apiClient)
-        );
-        // ใช้ res.data.data โดยตรง ไม่ต้อง splice ถ้าต้องการแทนที่ทั้งหมด
-        if (res.status === 200 && res.data?.data) {
-          this.drawConditions = res.data.data.map((p: any) => ({
-            ...p,
+        // The service returns raw data; map it here if full_name is needed for UI
+        if (Array.isArray(rawConditionsData)) {
+          this.drawConditions = rawConditionsData.map((p: any) => ({
+            // Assuming p has relevant fields
+            ...p, // Spread all fields from raw data
             full_name: `${p.prefix ?? ""} ${p.first_name ?? ""} ${
               p.last_name ?? ""
             }`.trim(),
-          }));
-
-          console.log("📤 ส่ง filter ไป preview API:", payload);
+          })) as drawConditionType[];
+          console.log(
+            "📤 Fetched and processed draw conditions preview:",
+            logPayload
+          );
         } else {
-          this.drawConditions = []; // เคลียร์ค่าถ้า response ไม่ถูกต้อง
+          this.drawConditions = [];
         }
       } catch (error: any) {
         console.error(
-          "fetchDrawConditions error:",
-          error.response?.data || error.message || error
+          "Error in store fetchDrawConditions:",
+          error.message || error
         );
-        this.drawConditions = []; // เคลียร์ค่าเมื่อเกิด error
+        this.drawConditions = [];
+      } finally {
+        this.isLoading = false;
       }
     },
 
@@ -64,83 +65,41 @@ export const useDrawConditionStore = defineStore("drawCondition", {
       filter_is_active: boolean;
       quantity: number;
     }) {
-      // ไม่ต้องตั้ง isLoading ที่นี่ เพราะมักจะทำใน component ก่อนเรียก action
       try {
-        // เปลี่ยน axios.post เป็น apiClient.post และใช้ path ต่อท้าย
-        const res = await apiClient.post(
-          // <--- แก้ไข
-          `/draw-conditions/create`,
+        const createdCondition = await drawConditionService.createDrawCondition(
           payload
         );
-
-        // ตรวจสอบ response ก่อน push
-        if (res.status === 200 || (res.status === 201 && res.data?.data)) {
-          this.drawConditions.push(res.data.data); // เพิ่มเข้า state
-          return res.data.data; // คืนค่าที่สร้างสำเร็จ
-        } else {
-          console.error(
-            "createDrawCondition failed with status:",
-            res.status,
-            res.data
-          );
-          throw new Error(
-            `Failed to create draw condition (Status: ${res.status})`
-          );
-        }
+        this.drawConditions.push(createdCondition);
+        return createdCondition; // Return created data
       } catch (error: any) {
-        console.log("payload for createDrawCondition:", payload);
         console.error(
-          "createDrawCondition error:",
-          error.response?.data || error.message || error
+          "Error in store createDrawCondition:",
+          error.message || error
         );
         alert(
           `เกิดข้อผิดพลาดในการสร้างเงื่อนไข: ${
-            error.response?.data?.message || error.message || "ไม่ทราบสาเหตุ"
+            error.message || "ไม่ทราบสาเหตุ"
           }`
         );
-        throw error; // โยน error ต่อให้ component จัดการ
-      } finally {
-        this.isLoading = false;
+        throw error;
       }
     },
 
     async deleteDrawCondition(conditionId: string) {
-      // ไม่ต้องตั้ง isLoading ที่นี่
       try {
-        // เปลี่ยน axios.delete เป็น apiClient.delete และใช้ path ต่อท้าย
-        const res = await apiClient.delete(
-          // <--- แก้ไข
-          `/draw-conditions/${conditionId}`
+        await drawConditionService.deleteDrawCondition(conditionId);
+        this.drawConditions = this.drawConditions.filter(
+          (dc) => dc.id !== conditionId
         );
-
-        // ตรวจสอบ status code ก่อน filter state (ปกติ delete จะคืน 200 หรือ 204)
-        if (res.status === 200 || res.status === 204) {
-          this.drawConditions = this.drawConditions.filter(
-            (dc) => dc.id !== conditionId
-          );
-        } else {
-          console.error(
-            "❌ deleteDrawCondition failed with status:",
-            res.status,
-            res.data
-          );
-          throw new Error(
-            `Failed to delete draw condition (Status: ${res.status})`
-          );
-        }
       } catch (error: any) {
         console.error(
-          "❌ deleteDrawCondition error:",
-          error.response?.data || error.message || error
+          "Error in store deleteDrawCondition:",
+          error.message || error
         );
         alert(
-          `เกิดข้อผิดพลาดในการลบเงื่อนไข: ${
-            error.response?.data?.message || error.message || "ไม่ทราบสาเหตุ"
-          }`
+          `เกิดข้อผิดพลาดในการลบเงื่อนไข: ${error.message || "ไม่ทราบสาเหตุ"}`
         );
-        throw error; // โยน error ต่อ
-      } finally {
-        this.isLoading = false;
+        throw error;
       }
     },
   },

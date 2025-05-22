@@ -25,8 +25,7 @@ const confirmDelete = async (id: string) => {
     text: "คุณต้องการลบรางวัลนี้หรือไม่",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
     confirmButtonText: 'ใช่, ลบเลย!',
     cancelButtonText: 'ยกเลิก',
   });

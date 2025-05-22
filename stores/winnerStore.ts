@@ -1,5 +1,5 @@
 import type { winnerType } from "@/types/winner";
-import apiClient from "@/utils/apiClient";
+import apiClient from "~/services/apiClient";
 import { defineStore } from "pinia";
 
 export const useWinnerStore = defineStore("winner", {
@@ -81,6 +81,5 @@ export const useWinnerStore = defineStore("winner", {
         this.isLoading = false;
       }
     },
-
   },
 });

@@ -126,7 +126,7 @@ export function useDrawPage() {
         drawnPlayerIds.value.add(selected.id);
         drawnWinners.value.push(selected);
 
-        currentIndex.value = drawnWinners.value.length - 1; // 🧠 เช่นกันตรงนี้
+        currentIndex.value = drawnWinners.value.length - 1;
         glowingIndexes.value.push(selected.id);
         glowingTempIndex.value = null;
 
@@ -144,7 +144,7 @@ export function useDrawPage() {
     loop();
   };
 
-  const submitWinner = async (status: "not_received" | "waive") => {
+  const submitWinner = async (status: "received" | "waive") => {
     const winner = currentWinner.value;
     if (!winner) return;
 
