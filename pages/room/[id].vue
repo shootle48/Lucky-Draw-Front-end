@@ -5,7 +5,9 @@ import type { prizeType } from '~/types/prize';
 import logo from '@/assets/logo.png';
 import QrCodeModal from '@/components/player/QrCodeModal.vue'
 import QrcodeVue from 'qrcode.vue';
-
+definePageMeta({
+    layout: false
+});
 const route = useRoute();
 const router = useRouter()
 const { showToast } = getToast();

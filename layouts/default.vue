@@ -1,8 +1,26 @@
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 import logo from '@/assets/7.png';
 const Year = new Date().getFullYear();
 const playerStore = usePlayerStore();
 const roomId = computed(() => playerStore.currentRoomId);
+
+const confirmExit = async () => {
+    const result = await Swal.fire({
+        title: 'คุณแน่ใจหรือไม่?',
+        text: "คุณต้องการออกจากห้องสุ่มหรือไม่",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ใช่, ออกจากห้อง',
+        cancelButtonText: 'ยกเลิก'
+    });
+
+    if (result.isConfirmed) {
+        await navigateTo('/'); // หรือใช้ $router.push('/') ก็ได้
+    }
+};
 
 </script>
 <template>
@@ -27,7 +45,7 @@ const roomId = computed(() => playerStore.currentRoomId);
                         <section class="menu-container pastel-dropdown shadow-lg">
                             <div class="menu-list cursor-pointer hover:bg-yellow-100"
                                 @click="$router.push(`/dashboard/${roomId}`)">สรุปผลรางวัล</div>
-                            <div class="menu-list cursor-pointer hover:bg-pink-100" @click="$router.push(`/`)">
+                            <div class="menu-list cursor-pointer hover:bg-pink-100"  @click="confirmExit">
                                 ออกจากห้องสุ่ม</div>
                         </section>
                     </label>
@@ -181,6 +199,7 @@ const roomId = computed(() => playerStore.currentRoomId);
 }
 
 .bar-event-wrapper-inp {
+    appearance: none;
     -webkit-appearance: none;
     display: none;
     visibility: hidden;

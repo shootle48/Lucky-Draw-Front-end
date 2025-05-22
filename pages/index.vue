@@ -4,7 +4,9 @@ import axios from 'axios';
 import type { roomTypes } from '@/types/room';
 import logo from '@/assets/Full_Logo.png';
 import QrcodeVue from 'qrcode.vue';
-
+definePageMeta({
+    layout: false
+});
 const QRcodeTamplateForm = import.meta.env.VITE_QR_CODE_TEMPLATE_FORM_URL;
 
 const { showToast } = getToast();
@@ -23,6 +25,7 @@ const isModalOpen = ref<boolean>(false);
 const selectedRoom = ref<roomTypes | null>(null);
 const pagination = computed(() => playerStore.pagination);
 const { isLoading } = storeToRefs(playerStore)
+const isPasswordVisible = ref(false);
 
 const add_room = async () => {
     try {
@@ -121,7 +124,7 @@ onMounted(async () => {
 
                         <div class="join flex flex-col gap-4">
                             <!-- ชื่อห้อง -->
-                            <input type="text" class="input bg-white/80 text-black mr-4 rounded-lg"
+                            <input type="text" class="input bg-white/80 text-black mr-4 rounded-lg w-full pr-12"
                                 placeholder="ชื่อห้องสุ่มรางวัล" v-model="RoomData.name" />
 
                             <!-- ✅ Toggle รหัสผ่าน -->
@@ -139,9 +142,27 @@ onMounted(async () => {
                             </div>
 
                             <!-- ✅ ช่องรหัสผ่าน (แสดงเมื่อเปิด toggle) -->
-                            <input v-if="usePassword" type="password"
-                                class="input bg-white/80 text-black mr-4 rounded-lg" placeholder="รหัสผ่านห้อง"
-                                v-model="RoomData.password" />
+                            <div v-if="usePassword" class="relative w-full">
+                                <input :type="isPasswordVisible ? 'text' : 'password'"
+                                    class="input bg-white/80 text-black mr-4 rounded-lg w-full pr-12"
+                                    placeholder="รหัสผ่านห้อง" v-model="RoomData.password" />
+                                <button type="button"
+                                    class="btn btn-square absolute right-0 top-0 z-10 bg-transparent border-0"
+                                    @click="isPasswordVisible = !isPasswordVisible" tabindex="0">
+                                    <svg v-if="!isPasswordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                        fill="none" viewBox="0 0 24 24" stroke="#000000" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="#000000" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.964 9.964 0 012.293-3.95M6.428 6.428A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.953 9.953 0 01-4.227 5.147M15 12a3 3 0 01-4.243-4.243M3 3l18 18" />
+                                    </svg>
+                                </button>
+                            </div>
 
                             <!-- ปุ่มสร้าง -->
                             <button type="submit"
@@ -220,9 +241,28 @@ onMounted(async () => {
             <form @submit.prevent="submitPassword" class="space-y-4">
                 <div>
                     <label for="password" class="block text-gray-700 mb-2">รหัสผ่าน</label>
-                    <input type="password" id="password" v-model="currentRoomPassword"
-                        class="input input-bordered w-full bg-gray-100 focus:border-lime-500 text-black"
-                        placeholder="กรอกรหัสผ่านเพื่อเข้าห้อง" ref="passwordInput" autofocus />
+                    <div class="input-group relative">
+                        <input :type="isPasswordVisible ? 'text' : 'password'" id="password"
+                            v-model="currentRoomPassword"
+                            class="input input-bordered w-full bg-gray-100 focus:border-lime-500 text-black pr-12"
+                            placeholder="กรอกรหัสผ่านเพื่อเข้าห้อง" />
+                        <button type="button" class="btn btn-square absolute right-0 top-0 z-10 bg-[#00000000] border-0"
+                            @click="isPasswordVisible = !isPasswordVisible" tabindex="0">
+                            <svg v-if="!isPasswordVisible" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                fill="none" viewBox="0 0 24 24" stroke="#000000" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                viewBox="0 0 24 24" stroke="#000000" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.964 9.964 0 012.293-3.95M6.428 6.428A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.953 9.953 0 01-4.227 5.147M15 12a3 3 0 01-4.243-4.243M3 3l18 18" />
+                            </svg>
+                        </button>
+                    </div>
+
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" @click="closeModal"
@@ -242,7 +282,8 @@ onMounted(async () => {
         <div
             class="fixed right-4 bottom-4 border z-10 border-gray-300 shadow-lg rounded-2xl bg-white/90 backdrop-blur-md p-2.5 flex flex-col items-center transition-transform hover:scale-105">
             <div class="rounded-xl overflow-hidden border-4 border-white shadow-inner">
-                <QrcodeVue :value="QRcodeTamplateForm" :size="155" class="max-w-20 max-h-20 md:max-w-full md:max-h-full" :level="'M'" />
+                <QrcodeVue :value="QRcodeTamplateForm" :size="155" class="max-w-20 max-h-20 md:max-w-full md:max-h-full"
+                    :level="'M'" />
             </div>
             <div class="mt-1 text-sm font-medium text-blue-950 text-center">
                 ตัวอย่างฟอร์มลงทะเบียน
