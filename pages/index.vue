@@ -321,7 +321,7 @@ onMounted(async () => {
             class="fixed right-4 bottom-4 border z-10 border-gray-300 shadow-lg rounded-2xl bg-white/90 backdrop-blur-md p-2.5 flex flex-col items-center transition-transform hover:scale-105 bottom-15 md:bottom-4">
             <div class="rounded-xl overflow-hidden border-4 border-white shadow-inner">
                 <QrcodeVue :value="QRcodeTamplateForm" :size="155" class="max-w-20 max-h-20 md:max-w-full md:max-h-full"
-                    :level="'M'" />
+                    :level="'M'" foreground="#000000" background="#ffffff00" />
             </div>
             <div class="mt-1 text-sm font-medium text-blue-950 text-center">
                 ตัวอย่างฟอร์มลงทะเบียน

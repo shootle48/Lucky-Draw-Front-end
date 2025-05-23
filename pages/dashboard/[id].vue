@@ -48,16 +48,19 @@ watch(
 
 <template>
     <div class="p-6 space-y-6">
-        <h1 class="text-3xl font-bold text-center text-black">
-            Summary of the Dashboard
-        </h1>
+        <div class="bg-[#ffffff69] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
+            <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">Summary of the Dashboard</h1>
+        </div>
 
         <LoadingPage v-if="winnerStore.isLoading" />
 
         <div v-else>
             <!-- 🏆 ผู้ชนะ -->
             <div class="card w-full px-10">
-                <h2 class="text-2xl font-semibold text-center text-black">🏆 ผู้ที่ได้รางวัล</h2>
+                <div
+                    class="bg-[#ffffff69] py-4 px-4 md:px-8 mb-4 mx-10 md:mx-auto rounded-box text-md md:text-xl font-semibold text-center text-black">
+                    🏆 ผู้ที่ได้รางวัล
+                </div>
                 <div v-if="winnerStore.winners.length === 0" class="text-xl text-gray-500 text-center my-4">
                     ยังไม่มีผู้ชนะรางวัล
                 </div>
@@ -91,7 +94,10 @@ watch(
 
             <!-- 🎁 รางวัลที่เหลือ -->
             <div class="card w-full px-10 mt-15">
-                <h2 class="text-2xl font-semibold text-center text-black mb-5">🎁 รางวัลที่เหลือ</h2>
+                <div
+                    class="bg-[#ffffff69] py-4 px-4 md:px-8 mb-4 mx-10 md:mx-auto rounded-box text-md md:text-xl font-semibold text-center text-black">
+                    🎁 รางวัลที่เหลือ
+                </div>
                 <div v-if="winnerStore.prizes.length === 0" class="text-xl text-gray-500 text-center my-4">
                     ไม่มีรางวัลที่เหลือ
                 </div>
