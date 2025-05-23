@@ -16,9 +16,6 @@ export const fetchRooms = async (page = 1, size = 6, search?: string) => {
     });
     // The store will handle setting state, service returns data or throws error
     if (response.status === 200) {
-      console.log("Params:", { page, size, search, sortBy: 'created_at', orderBy: 'desc' });
-
-      console.log("Response data:", response.data)
       return response.data;
     } else {
       throw new Error(`Failed to fetch rooms: ${response.status}`);
