@@ -2,16 +2,23 @@ import apiClient from "./apiClient";
 import type { playerType } from "../types/player"; // Adjusted path
 import type { roomTypes } from "../types/room"; // Adjusted path
 
-export const fetchRooms = async (page = 1, size = 6) => {
+export const fetchRooms = async (page = 1, size = 6, search?: string) => {
   try {
     const response = await apiClient.get(`/rooms/list`, {
       params: {
         page,
         size,
+        search,
+        search_by: 'name',
+        sort_by: 'created_at',
+        order_by: 'desc',
       },
     });
     // The store will handle setting state, service returns data or throws error
     if (response.status === 200) {
+      console.log("Params:", { page, size, search, sortBy: 'created_at', orderBy: 'desc' });
+
+      console.log("Response data:", response.data)
       return response.data;
     } else {
       throw new Error(`Failed to fetch rooms: ${response.status}`);

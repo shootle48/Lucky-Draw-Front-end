@@ -3,4 +3,5 @@ export interface roomTypes {
     name: string;
     password?: string;
     has_password?: boolean
+    search?: string;
 }

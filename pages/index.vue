@@ -31,6 +31,8 @@ const selectedRoom = ref<roomTypes | null>(null);
 const pagination = computed(() => playerStore.pagination);
 const { isLoading } = storeToRefs(playerStore)
 const isPasswordVisible = ref(false);
+const searchQuery = ref("");
+
 
 const add_room = async () => {
     try {
@@ -92,6 +94,21 @@ const submitPassword = async () => {
 };
 
 
+const handleSearch = async () => {
+    await playerStore.fetchRooms(
+        pagination.value.page,
+        pagination.value.size,
+        searchQuery.value
+    );
+};
+
+watch(usePassword, (val) => {
+    if (!val) {
+        RoomData.value.password = '';
+    }
+});
+
+
 const changePage = async (direction: 'next' | 'prev') => {
     const { page, size, total } = pagination.value;
     const newPage = direction === 'next' ? page + 1 : page - 1;
@@ -102,9 +119,13 @@ const changePage = async (direction: 'next' | 'prev') => {
     await playerStore.fetchRooms(newPage, size);
 };
 
+watch(searchQuery, async (newValue) => {
+    await playerStore.fetchRooms(1, pagination.value.size, newValue);
+});
+
 
 onMounted(async () => {
-    await playerStore.fetchRooms(pagination.value.page, pagination.value.size);
+    await playerStore.fetchRooms(pagination.value.page, pagination.value.size, searchQuery.value);
     Rooms.value = playerStore.Rooms;
     pagination.value.total = playerStore.pagination.total;
 });
@@ -183,6 +204,12 @@ onMounted(async () => {
             <div>
                 <h1 class="mt-8 mb-4 text-xl font-semibold drop-shadow-lg lg:min-w-250 text-black">รายการห้องทั้งหมด
                 </h1>
+                <!-- 🔍 ช่องค้นหาชื่อห้อง -->
+                <div class="w-full max-w-md my-6">
+                    <input v-model="searchQuery" type="text" placeholder="ค้นหาชื่อห้อง..."
+                        class="input bg-white/80 text-black w-full rounded-lg" @input="handleSearch" />
+                </div>
+
                 <div v-if="Rooms.length === 0" class="badge badge-outline badge-primary shadow-md w-full h-40 flex items-center justify-center
                     gap-4 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 24 24"

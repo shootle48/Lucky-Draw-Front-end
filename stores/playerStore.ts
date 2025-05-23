@@ -43,11 +43,10 @@ export const usePlayerStore = defineStore("player", {
     clearRoomId() {
       this.currentRoomId = "";
     },
-
-    async fetchRooms(page = 1, size = 6) {
+    async fetchRooms(page = 1, size = 6, search?: string) {
       this.isLoading = true;
       try {
-        const responseData = await playerService.fetchRooms(page, size);
+        const responseData = await playerService.fetchRooms(page, size, search);
         this.Rooms = responseData.data;
         this.pagination = {
           page,
@@ -127,10 +126,10 @@ export const usePlayerStore = defineStore("player", {
             )
               ? true
               : ["ไม่เข้าร่วม"].includes(
-                  String((player as any).status || "").trim()
-                )
-              ? false
-              : false,
+                String((player as any).status || "").trim()
+              )
+                ? false
+                : false,
           }));
           this.players = mappedPlayers;
           console.log("Players from Excel:", this.players);
