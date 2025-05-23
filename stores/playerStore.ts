@@ -1,5 +1,4 @@
 import * as playerService from "@/services/playerService";
-
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
 import { parsePlayerExcel } from "@/utils/excelParser";
@@ -20,15 +19,31 @@ export const usePlayerStore = defineStore("player", {
       size: 9,
       total: 0,
     },
+    knownRoomIds: [] as string[], // ✅ เก็บ UUID ที่รู้ว่าเป็น room จริง
   }),
+
+  getters: {
+    /**
+     * ตรวจสอบว่า UUID นี้เป็น roomId ที่รู้จัก
+     */
+    isKnownRoomId:
+      (state) =>
+      (id: string): boolean => {
+        return state.knownRoomIds.includes(id);
+      },
+  },
 
   actions: {
     setRoomId(roomId: string) {
       this.currentRoomId = roomId;
+      if (!this.knownRoomIds.includes(roomId)) {
+        this.knownRoomIds.push(roomId); // ✅ track roomId ที่เคยใช้
+      }
     },
     clearRoomId() {
       this.currentRoomId = "";
     },
+
     async fetchRooms(page = 1, size = 6) {
       this.isLoading = true;
       try {
@@ -39,6 +54,10 @@ export const usePlayerStore = defineStore("player", {
           size,
           total: responseData.pagination.total,
         };
+
+        // ✅ เพิ่มรายการ roomId เข้า knownRoomIds
+        const ids = responseData.data.map((r: roomTypes) => r.id);
+        this.knownRoomIds = [...new Set([...this.knownRoomIds, ...ids])];
       } catch (err) {
         console.error("Error in store fetchRooms:", err);
       } finally {
@@ -50,11 +69,10 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
       try {
         const roomData = await playerService.fetchRoom(roomId);
-        this.rooms = roomData; // Service returns the room data directly
-        this.currentRoomId = roomId;
+        this.rooms = roomData;
+        this.setRoomId(roomId); // ✅ ใช้ setRoomId เพื่อจัดการ knownRoomIds
       } catch (error) {
         console.error("Error in store fetchRoom:", error);
-        // Optionally, set an error state here
       } finally {
         this.isLoading = false;
       }
@@ -63,7 +81,7 @@ export const usePlayerStore = defineStore("player", {
     async fetchPlayers(
       roomId: string,
       filters?: {
-        search?: String;
+        search?: string;
         sortBy?: string;
         orderBy?: "asc" | "desc";
       }
@@ -75,8 +93,6 @@ export const usePlayerStore = defineStore("player", {
           roomId,
           filters
         );
-        // The service returns the player array directly.
-        // The reordering logic can remain in the store if it's UI specific behavior
         const playerMap = new Map(fetchedPlayers.map((p) => [p.id, p]));
         const reorderedPlayers = originalOrder
           .map((id) => playerMap.get(id))
@@ -87,14 +103,12 @@ export const usePlayerStore = defineStore("player", {
         this.players = [...reorderedPlayers, ...newPlayers];
       } catch (e) {
         console.error("Error in store fetchPlayers:", e);
-        // Optionally, set an error state here
       } finally {
         this.isLoading = false;
       }
     },
 
     async handlePlayersExport(event: Event) {
-      // No API call, no change needed here
       const input = event.target as HTMLInputElement;
       if (!input.files || input.files.length === 0) return;
 
@@ -133,12 +147,11 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
       try {
         const importResult = await playerService.importPlayers(file, roomId);
-        await this.fetchPlayers(roomId); // Refresh data
-        return importResult; // Return result for toast or further handling
+        await this.fetchPlayers(roomId);
+        return importResult;
       } catch (e: any) {
-        // Error is already processed by service, rethrow for UI
         console.error("Error in store handlePlayerImport:", e);
-        throw e; // Service throws error message string or Error object
+        throw e;
       } finally {
         this.isLoading = false;
       }
@@ -151,14 +164,10 @@ export const usePlayerStore = defineStore("player", {
           newPlayer,
           roomId
         );
-        // Optionally, refresh players list or add the new player to state directly
-        // For example, by calling: await this.fetchPlayers(roomId);
-        // Or if the service returns the full player object: this.players.push(addedPlayerData.data);
-        return addedPlayerData; // Return data for UI feedback (e.g. toast)
+        return addedPlayerData;
       } catch (e: any) {
-        // Error is already processed by service
         console.error("Error in store addPlayer:", e);
-        throw e; // Service throws Error object with message
+        throw e;
       } finally {
         this.isLoading = false;
       }
@@ -168,19 +177,11 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
       try {
         const editedPlayerData = await playerService.editPlayer(updatedPlayer);
-        // Optionally, find and update the player in the local 'this.players' array
-        // const index = this.players.findIndex(p => p.id === updatedPlayer.id);
-        // if (index !== -1) {
-        //   this.players[index] = { ...this.players[index], ...editedPlayerData.data }; // Assuming service returns {data: playerType}
-        // }
-        // Or simply refetch players for the room if consistency is key
-        // if (updatedPlayer.room_id) await this.fetchPlayers(updatedPlayer.room_id);
         console.log("Player edited successfully in store.");
-        return editedPlayerData; // Return data for UI feedback
+        return editedPlayerData;
       } catch (e: any) {
-        // Error is already processed by service
         console.error("Error in store editPlayer:", e);
-        throw e; // Service throws Error object with message
+        throw e;
       } finally {
         this.isLoading = false;
       }

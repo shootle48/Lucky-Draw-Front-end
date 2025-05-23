@@ -49,7 +49,6 @@ const add_room = async () => {
             showToast('กรุณากรอกชื่อห้อง', 'alert-warning');
         }
     } catch (error) {
-        console.error('Error creating room:', error);
         showToast('ไม่สามารถสร้างห้องได้ กรุณาลองใหม่', 'alert-error');
     }
 };
@@ -88,7 +87,6 @@ const submitPassword = async () => {
             showToast("รหัสผ่านไม่ถูกต้อง", "alert-warning");
         }
     } catch (error) {
-        console.error("Error entering room:", error);
         showToast("ไม่สามารถเข้าห้องได้ กรุณาลองใหม่", "alert-error");
     }
 };

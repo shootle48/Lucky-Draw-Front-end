@@ -1,34 +1,51 @@
 <script setup lang="ts">
 import Swal from 'sweetalert2'
-import logo from '@/assets/7.png';
-const Year = new Date().getFullYear();
-const playerStore = usePlayerStore();
-const roomId = computed(() => playerStore.currentRoomId);
+import logo from '@/assets/7.png'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { usePlayerStore } from '@/stores/playerStore'
+
+const route = useRoute()
+const playerStore = usePlayerStore()
+const Year = new Date().getFullYear()
+
+// ✅ ดึง roomId แบบ dynamic
+const resolvedRoomId = computed(() => {
+    const id = route.params.id as string
+    const path = route.path
+
+    // ✅ ระบุเฉพาะ path ที่เรามั่นใจว่า id คือ roomId
+    const pathExpectingRoomId = ['/mainPage', '/dashboard']
+    const shouldUseRouteId = pathExpectingRoomId.some(p => path.startsWith(p))
+
+    // fallback: ใช้จาก store
+    return shouldUseRouteId ? id : playerStore.currentRoomId
+})
 
 const confirmExit = async () => {
     const result = await Swal.fire({
         title: 'คุณแน่ใจหรือไม่?',
-        text: "คุณต้องการออกจากห้องสุ่มหรือไม่",
+        text: 'คุณต้องการออกจากห้องสุ่มหรือไม่',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'ใช่, ออกจากห้อง',
         cancelButtonText: 'ยกเลิก'
-    });
+    })
 
     if (result.isConfirmed) {
-        await navigateTo('/'); // หรือใช้ $router.push('/') ก็ได้
+        await navigateTo('/')
     }
-};
-
+}
 </script>
+
 <template>
     <div class="flex flex-col h-screen justify-between">
         <div>
             <div class="navbar fixed z-10 px-4">
                 <!-- Logo -->
-                <NuxtLink :to="`/mainPage/${roomId}`" class="btn btn-accent h-full"
+                <NuxtLink v-if="resolvedRoomId" :to="`/mainPage/${resolvedRoomId}`" class="btn btn-accent h-full"
                     style="border-radius: 69% 31% 66% 34% / 36% 38% 62% 64%;">
                     <img :src="logo" alt="Lucky Draw Logo" class="w-25 h-20" />
                 </NuxtLink>
@@ -44,15 +61,16 @@ const confirmExit = async () => {
                         </div>
                         <section class="menu-container pastel-dropdown shadow-lg">
                             <div class="menu-list cursor-pointer hover:bg-yellow-100"
-                                @click="$router.push(`/dashboard/${roomId}`)">สรุปผลรางวัล</div>
-                            <div class="menu-list cursor-pointer hover:bg-pink-100"  @click="confirmExit">
-                                ออกจากห้องสุ่ม</div>
+                                @click="$router.push(`/dashboard/${resolvedRoomId}`)">
+                                สรุปผลรางวัล
+                            </div>
+                            <div class="menu-list cursor-pointer hover:bg-pink-100" @click="confirmExit">
+                                ออกจากห้องสุ่ม
+                            </div>
                         </section>
                     </label>
                 </div>
             </div>
-
-
 
             <!-- ✅ slot สำหรับเนื้อหา -->
             <main class="flex-grow relative">
@@ -63,13 +81,14 @@ const confirmExit = async () => {
         <!-- ✅ Footer -->
         <footer class="footer sm:footer-horizontal footer-center p-4">
             <aside>
-                <p class="text-white text-shadow-md">Copyright © {{ Year }} - All right reserved by
-                    INTERN GRIT CONSULTANT TEAM</p>
+                <p class="text-white text-shadow-md">
+                    Copyright © {{ Year }} - All right reserved by INTERN GRIT CONSULTANT TEAM
+                </p>
             </aside>
         </footer>
     </div>
-
 </template>
+
 
 <style scoped>
 /* From Uiverse.io by jerome_5148 */

@@ -91,10 +91,6 @@ export function useDrawPage() {
       glowingIndexes.value.push(selected.id);
       glowingTempIndex.value = null;
 
-      console.log(
-        `🎯 ผู้โชคดีคนสุดท้าย: ${selected.first_name} ${selected.last_name} (ไม่ต้องสุ่ม)`
-      );
-
       setTimeout(() => {
         showWinnerModal.value = true;
         isDrawing.value = false;
@@ -130,10 +126,6 @@ export function useDrawPage() {
         glowingIndexes.value.push(selected.id);
         glowingTempIndex.value = null;
 
-        console.log(
-          `🎯 ผู้โชคดีลำดับที่ ${drawnWinners.value.length}: ${selected.first_name} ${selected.last_name}`
-        );
-
         setTimeout(() => {
           showWinnerModal.value = true;
           isDrawing.value = false;
@@ -158,7 +150,6 @@ export function useDrawPage() {
     };
 
     await winnerStore.createWinner(payload);
-    console.log("📦 ส่งข้อมูลผู้โชคดี:", payload);
     showWinnerModal.value = false;
 
     // ตรวจสอบว่าต้องสุ่มคนถัดไปหรือไม่
@@ -204,7 +195,6 @@ export function useDrawPage() {
         filter_position,
         filter_is_active
       );
-      console.log(drawConditionStore.drawConditions);
     } else {
       drawConditionStore.drawConditions = [];
     }

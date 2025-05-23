@@ -4,7 +4,7 @@ import type { prizeType } from "@/types/prize";
 export const fetchPrizes = async (roomId: string) => {
   try {
     const response = await apiClient.get("/prizes/list", {
-      params: { search: roomId }, // Assuming 'search' is the correct param for room_id filter
+      params: { search: roomId },
     });
     if (response.status == 200) {
       return response.data.data as prizeType[]; // Store assigns response.data.data

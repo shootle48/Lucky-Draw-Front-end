@@ -23,10 +23,6 @@ export const fetchDrawConditionsPreview = async (
     } else {
       // Store was clearing conditions, so service can return empty array or throw
       // Throwing might be better to signal actual failure vs. no data
-      console.warn(
-        "fetchDrawConditionsPreview did not return valid data:",
-        response
-      );
       return []; // Or throw new Error (`Failed to fetch draw conditions preview: ${response.status}`);
     }
   } catch (error: any) {

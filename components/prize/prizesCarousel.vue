@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { prizeType } from '~/types/prize';
+
 
 const route = useRoute();
 const prizeStore = usePrizeStore();
@@ -25,9 +27,12 @@ const toggleAutoplay = () => {
   autoplay.value = !autoplay.value;
 };
 
-const props = defineProps({
-  handleEditPrize: Function
-})
+const { handleEditPrize = () => { } } = defineProps<{
+  handleEditPrize?: (prize: prizeType) => void
+}>()
+
+
+
 </script>
 
 <template>
@@ -78,7 +83,7 @@ const props = defineProps({
               class="absolute inset-0 bg-black/70 flex items-center justify-center text-white font-bold text-lg z-20 rounded-lg">
               หมดแล้ว
             </div>
-            <PrizeCard :prize="item" :handleEditPrize="handleEditPrize" />
+            <PrizeCard :prize="item" :handleEditPrize=handleEditPrize />
           </div>
         </UCarousel>
       </div>

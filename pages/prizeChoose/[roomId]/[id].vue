@@ -55,7 +55,6 @@ onMounted(async () => {
     await prizeStore.getPrize(prizeId);
 
     filter_position.value = [...uniquePositions.value];
-    console.log(drawConditions)
 });
 
 watch([filter_status, filter_position, filter_is_active], () => {
