@@ -3,8 +3,11 @@ import PrizeModals from '@/components/prize/prizeModal.vue';
 import { getToast } from "@/composables/useToastPage";
 import type { prizeType } from '~/types/prize';
 import logo from '@/assets/logo.png';
-
-
+import QrCodeModal from '@/components/player/QrCodeModal.vue'
+import QrcodeVue from 'qrcode.vue';
+definePageMeta({
+    layout: false
+});
 const route = useRoute();
 const router = useRouter()
 const { showToast } = getToast();
@@ -19,6 +22,17 @@ const prizeModalsRef = ref<InstanceType<typeof PrizeModals> | null>(null);
 const { isLoading, rooms } = storeToRefs(playerStore);
 const roomName = computed(() => rooms.value.name);
 const isMobile = ref(false);
+
+const qrCodeLink = ref('');
+const showQrModal = ref(false);
+
+const openQrModal = () => {
+    if (!qrCodeLink.value.trim()) {
+        showToast("กรุณาใส่ลิงก์ฟอร์มก่อน", "alert-warning");
+        return;
+    }
+    showQrModal.value = true;
+}
 
 const checkScreenSize = () => {
     isMobile.value = window.innerWidth <= 768;
@@ -39,7 +53,7 @@ const handleSubmitImport = async () => {
     try {
         await playerStore.handlePlayerImport(selectedPlayer.value, roomId);
         showToast("นำเข้ารายชื่อเรียบร้อยแล้ว", "alert-success");
-
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         // ✅ ไปหน้าถัดไปได้
         router.push(`../mainPage/${roomId}`);
     } catch (_) {
@@ -98,15 +112,24 @@ onUnmounted(() => {
 
             <PrizeField :handleEditPrize="handleEditPrize" />
             <div class="flex flex-col justify-center items-center">
-                <fieldset class="fieldset bg-[#ffffff98] rounded-box w-fit shadow-lg border my-6 p-4">
+                <fieldset class="fieldset bg-[#ffffff98] rounded-box min-w-200 shadow-lg border my-6 p-4">
                     <legend class="fieldset-legend text-left text-2xl md:text-3xl text-[#000000]">ผู้เล่น</legend>
                     <div class="form-control w-full">
-                        <label class="label">
-                            <span class="label-text text-lg mb-2 text-[#000000]">นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx,
-                                .csv)</span>
-                        </label>
+
+                        <div class="flex justify-between items-center mb-4 ">
+                            <div class="label-text text-lg mb-2 text-[#000000]">
+                                นำเข้ารายชื่อผู้เข้าร่วม (.xls, .xlsx, .csv)
+                            </div>
+                            <button @click="showQrModal = true"
+                                class="btn h-fit bg-gradient-to-t from-[#ff3c9a] to-[#ff91c6] p-1 border-0 rounded-[2rem] w-fit text-white ">
+                                <div class="bg-[#f850a1] px-2 py-0.5 rounded-[2rem] text-lg font-semibold">
+                                    <p class="drop-shadow-lg text-xs">สร้าง QR Code</p>
+                                </div>
+                            </button>
+                        </div>
+
                         <input type="file" @change="handlePlayerChange" accept=".xls,.xlsx,.csv"
-                            class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff]" />
+                            class="file-input file-input-bordered w-full bg-[#ffffff] file-input-[#ffffff] text-black" />
 
                         <!-- ปุ่มแบบ fixed สำหรับ mobile -->
                         <div v-if="isMobile"
@@ -141,7 +164,8 @@ onUnmounted(() => {
     <!-- Global toast container -->
     <div class="toast toast-top toast-start fixed z-[9999]"></div>
 
-
+    <QrCodeModal v-if="showQrModal" :link="qrCodeLink" @update:link="(val: string) => qrCodeLink = val"
+        @close="showQrModal = false" />
 </template>
 
 <style scoped>

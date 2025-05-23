@@ -82,10 +82,6 @@ const getRandomBgColor = (index: number): string => {
     return bgColors[index % bgColors.length]
 }
 
-// ดึงข้อมูลรอบแรก
-onMounted(() => {
-    playerStore.fetchPlayers(roomId)
-})
 
 const handleAddPlayer = (newPlayer: playerType) => {
     emit('add', newPlayer)

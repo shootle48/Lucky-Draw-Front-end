@@ -1,10 +1,7 @@
-// เพิ่ม import apiClient
-import apiClient from "@/utils/apiClient";
-
+import * as playerService from "@/services/playerService";
 import type { playerType } from "@/types/player";
 import type { roomTypes } from "@/types/room";
-import { parsePlayerExcel } from "@/utils/excelParser"; //
-import { tr } from "@nuxt/ui/runtime/locale/index.js";
+import { parsePlayerExcel } from "@/utils/excelParser";
 
 export const usePlayerStore = defineStore("player", {
   state: () => ({
@@ -13,27 +10,68 @@ export const usePlayerStore = defineStore("player", {
     rooms: {
       id: "",
       name: "",
+      password: "",
     } as roomTypes,
     players: [] as playerType[],
+    Rooms: [] as roomTypes[],
+    pagination: {
+      page: 1,
+      size: 9,
+      total: 0,
+    },
+    knownRoomIds: [] as string[], // ✅ เก็บ UUID ที่รู้ว่าเป็น room จริง
   }),
+
+  getters: {
+    /**
+     * ตรวจสอบว่า UUID นี้เป็น roomId ที่รู้จัก
+     */
+    isKnownRoomId:
+      (state) =>
+      (id: string): boolean => {
+        return state.knownRoomIds.includes(id);
+      },
+  },
 
   actions: {
     setRoomId(roomId: string) {
       this.currentRoomId = roomId;
+      if (!this.knownRoomIds.includes(roomId)) {
+        this.knownRoomIds.push(roomId); // ✅ track roomId ที่เคยใช้
+      }
     },
     clearRoomId() {
       this.currentRoomId = "";
     },
+    async fetchRooms(page = 1, size = 6, search?: string) {
+      this.isLoading = true;
+      try {
+        const responseData = await playerService.fetchRooms(page, size, search);
+        this.Rooms = responseData.data;
+        this.pagination = {
+          page,
+          size,
+          total: responseData.pagination.total,
+        };
+
+        // ✅ เพิ่มรายการ roomId เข้า knownRoomIds
+        const ids = responseData.data.map((r: roomTypes) => r.id);
+        this.knownRoomIds = [...new Set([...this.knownRoomIds, ...ids])];
+      } catch (err) {
+        console.error("Error in store fetchRooms:", err);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async fetchRoom(roomId: string) {
       this.isLoading = true;
       try {
-        const response = await apiClient.get(`/rooms/${roomId}`);
-        if (response.status === 200) {
-          this.rooms = response.data.data;
-          this.currentRoomId = roomId; // 🆕 Set roomId ที่นี่เลย
-        }
+        const roomData = await playerService.fetchRoom(roomId);
+        this.rooms = roomData;
+        this.setRoomId(roomId); // ✅ ใช้ setRoomId เพื่อจัดการ knownRoomIds
       } catch (error) {
-        console.error("Error fetching room:", error);
+        console.error("Error in store fetchRoom:", error);
       } finally {
         this.isLoading = false;
       }
@@ -42,54 +80,33 @@ export const usePlayerStore = defineStore("player", {
     async fetchPlayers(
       roomId: string,
       filters?: {
-        search?: String;
+        search?: string;
         sortBy?: string;
         orderBy?: "asc" | "desc";
       }
     ) {
       this.isLoading = true;
-
-      // 🔸 Step 1: เก็บลำดับ id เดิมไว้
       const originalOrder = this.players.map((p) => p.id);
-
       try {
-        const response = await apiClient.get(`/players/list`, {
-          params: {
-            room_id: roomId,
-            ...filters,
-            search: filters?.search || "",
-            sort_by: filters?.sortBy || "created_at",
-            order_by: filters?.orderBy || "asc",
-          },
-        });
-
-        if (response.status == 200) {
-          const fetchedPlayers = response.data.data as playerType[];
-
-          // 🔸 Step 2: สร้าง Map จาก id -> player
-          const playerMap = new Map(fetchedPlayers.map((p) => [p.id, p]));
-
-          // 🔸 Step 3: เรียงลำดับใหม่ตาม originalOrder
-          const reorderedPlayers = originalOrder
-            .map((id) => playerMap.get(id))
-            .filter((p): p is playerType => !!p); // กรอง undefined
-
-          // 🔸 Step 4: กรณีมี player ใหม่ที่ไม่มีใน originalOrder
-          const newPlayers = fetchedPlayers.filter(
-            (p) => !originalOrder.includes(p.id)
-          );
-
-          // 🔸 Step 5: รวมผลลัพธ์และ set ค่า
-          this.players = [...reorderedPlayers, ...newPlayers];
-        }
+        const fetchedPlayers = await playerService.fetchPlayers(
+          roomId,
+          filters
+        );
+        const playerMap = new Map(fetchedPlayers.map((p) => [p.id, p]));
+        const reorderedPlayers = originalOrder
+          .map((id) => playerMap.get(id))
+          .filter((p): p is playerType => !!p);
+        const newPlayers = fetchedPlayers.filter(
+          (p) => !originalOrder.includes(p.id)
+        );
+        this.players = [...reorderedPlayers, ...newPlayers];
       } catch (e) {
-        console.log("something went wrong fetching players", e);
+        console.error("Error in store fetchPlayers:", e);
       } finally {
         this.isLoading = false;
       }
     },
 
-    // ฟังก์ชันนี้ไม่ได้เรียก API โดยตรง ไม่ต้องแก้ส่วน Axios
     async handlePlayersExport(event: Event) {
       const input = event.target as HTMLInputElement;
       if (!input.files || input.files.length === 0) return;
@@ -102,7 +119,6 @@ export const usePlayerStore = defineStore("player", {
         if (players.length === 0) {
           alert("ไม่พบข้อมูลที่นำเข้า");
         } else {
-          // 🔥 ปรับให้ตรง playerType: is_active
           const mappedPlayers = players.map((player) => ({
             ...player,
             is_active: ["เข้าร่วม"].includes(
@@ -115,7 +131,6 @@ export const usePlayerStore = defineStore("player", {
                 ? false
                 : false,
           }));
-
           this.players = mappedPlayers;
           console.log("Players from Excel:", this.players);
         }
@@ -126,24 +141,16 @@ export const usePlayerStore = defineStore("player", {
         this.isLoading = false;
       }
     },
-    // ฟังก์ชันนี้ใช้ import ข้อมูลผู้เล่นผ่าน API
+
     async handlePlayerImport(file: File, roomId: string) {
       this.isLoading = true;
       try {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("room_id", roomId);
-
-        const response = await apiClient.post(`/players/import`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        await this.fetchPlayers(roomId); // รีเฟรชข้อมูล
-
-        return response.data; // ✅ ให้ component นำไปใช้แสดง toast
+        const importResult = await playerService.importPlayers(file, roomId);
+        await this.fetchPlayers(roomId);
+        return importResult;
       } catch (e: any) {
-        // โยน error ให้ภายนอกจัดการ toast
-        throw e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
+        console.error("Error in store handlePlayerImport:", e);
+        throw e;
       } finally {
         this.isLoading = false;
       }
@@ -152,48 +159,28 @@ export const usePlayerStore = defineStore("player", {
     async addPlayer(newPlayer: playerType, roomId: string) {
       this.isLoading = true;
       try {
-        console.log("🛠 ส่งไปที่ backend:", newPlayer);
-        const response = await apiClient.post("/players/create", {
-          room_id: roomId,
-          prefix: newPlayer.prefix,
-          first_name: newPlayer.first_name,
-          last_name: newPlayer.last_name,
-          member_id: newPlayer.member_id,
-          position: newPlayer.position,
-          is_active: newPlayer.is_active,
-          status: newPlayer.status,
-        });
-        return response.data;
+        const addedPlayerData = await playerService.addPlayer(
+          newPlayer,
+          roomId
+        );
+        return addedPlayerData;
       } catch (e: any) {
-        console.error("❌ Error adding player:", e);
-        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
-        throw new Error(errorMessage);
+        console.error("Error in store addPlayer:", e);
+        throw e;
       } finally {
         this.isLoading = false;
       }
     },
 
     async editPlayer(updatedPlayer: playerType) {
-      console.log("send to backend:", updatedPlayer);
       this.isLoading = true;
       try {
-        const response = await apiClient.patch(`/players/${updatedPlayer.id}`, {
-          prefix: updatedPlayer.prefix,
-          first_name: updatedPlayer.first_name,
-          last_name: updatedPlayer.last_name,
-          member_id: updatedPlayer.member_id,
-          position: updatedPlayer.position,
-          is_active: updatedPlayer.is_active,
-          status: updatedPlayer.status,
-          room_id: updatedPlayer.room_id,
-        });
-        if (response.status === 200) {
-          console.log("แก้ไขผู้เล่นสำเร็จ");
-        }
+        const editedPlayerData = await playerService.editPlayer(updatedPlayer);
+        console.log("Player edited successfully in store.");
+        return editedPlayerData;
       } catch (e: any) {
-        console.error("Error editing player:", e);
-        const errorMessage = e.response?.data?.message || e.message || "เกิดข้อผิดพลาด";
-        throw new Error(errorMessage);
+        console.error("Error in store editPlayer:", e);
+        throw e;
       } finally {
         this.isLoading = false;
       }

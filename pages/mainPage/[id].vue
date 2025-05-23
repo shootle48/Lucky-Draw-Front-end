@@ -15,7 +15,6 @@ const roomName = computed(() => rooms.value.name);
 onMounted(async () => {
     await playerStore.fetchRoom(roomId);
     await playerStore.fetchPlayers(roomId)
-    console.log(playerStore.players)
 });
 
 const handleAddPlayer = async (newPlayer: playerType) => {
@@ -24,7 +23,6 @@ const handleAddPlayer = async (newPlayer: playerType) => {
         await playerStore.fetchPlayers(roomId)
         showToast("เพิ่มผู้เล่นสำเร็จ", "alert-success");
     } catch (error: any) {
-        console.error('เพิ่มผู้เล่นไม่สำเร็จ:', error)
         const errorMsg = error?.message || 'เกิดข้อผิดพลาดในการเพิ่มผู้เล่น';
         showToast(errorMsg, "alert-error");
     }
@@ -36,7 +34,6 @@ const handleEditPlayer = async (updatedPlayer: playerType) => {
         await playerStore.fetchPlayers(roomId)
         showToast("แก้ไขผู้เล่นสำเร็จ", "alert-success");
     } catch (error: any) {
-        console.error("แก้ไขผู้เล่นไม่สำเร็จ:", error)
         const errorMsg = error?.response?.data?.error || error?.message || 'เกิดข้อผิดพลาดในการแก้ไขผู้เล่น'
         showToast(errorMsg, "alert-error");
     }
@@ -68,7 +65,7 @@ const handleEditPlayer = async (updatedPlayer: playerType) => {
         <LoadingPage />
     </div>
     <!-- นำเข้า component PrizeModals -->
-    <PrizeModals ref="prizeModalsRef" />
+    <PrizeModal ref="prizeModalsRef" />
     <div class="toast toast-top toast-start fixed z-[9999]" />
 
 </template>

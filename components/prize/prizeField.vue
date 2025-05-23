@@ -7,10 +7,6 @@ const route = useRoute();
 const prizeStore = usePrizeStore();
 const roomId = route.params.id as string;
 
-onMounted(async () => {
-  await prizeStore.fetchPrizes(roomId);
-});
-
 const prizesQuantity = computed(() => prizeStore.prizes.length);
 
 const props = defineProps({
