@@ -77,6 +77,21 @@ export const usePlayerStore = defineStore("player", {
       }
     },
 
+    async deleteRoom(roomId: string) {
+      this.isLoading = true;
+      try {
+        await playerService.deleteRoom(roomId);
+        this.Rooms = this.Rooms.filter((room) => room.id !== roomId);
+        this.knownRoomIds = this.knownRoomIds.filter((id) => id !== roomId); // ✅ ลบจาก knownRoomIds
+        if (this.currentRoomId === roomId) {
+          this.clearRoomId(); // ถ้าห้องที่ลบคือห้องปัจจุบัน ให้เคลียร์ currentRoomId
+        }
+      } catch (error) {
+        console.error("Error in store deleteRoom:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async fetchPlayers(
       roomId: string,
       filters?: {
@@ -126,10 +141,10 @@ export const usePlayerStore = defineStore("player", {
             )
               ? true
               : ["ไม่เข้าร่วม"].includes(
-                String((player as any).status || "").trim()
-              )
-                ? false
-                : false,
+                  String((player as any).status || "").trim()
+                )
+              ? false
+              : false,
           }));
           this.players = mappedPlayers;
           console.log("Players from Excel:", this.players);

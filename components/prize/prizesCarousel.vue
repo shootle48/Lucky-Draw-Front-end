@@ -71,9 +71,9 @@ const { handleEditPrize = () => { } } = defineProps<{
           </button>
           <NuxtLink v-else :to="`updatePrize/${route.params.id}`">
             <button
-              class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
-              <div class="bg-[#3fc028] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
-                <p class="drop-shadow-lg">แก้ไขรางวัล</p>
+              class="btn h-fit bg-gradient-to-t from-[#ff8f00] to-[#ffd902] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
+              <div class="bg-[#ffae02] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
+                <p class="drop-shadow-md">แก้ไขรางวัล</p>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-6">
                   <path stroke-linecap="round" stroke-linejoin="round"

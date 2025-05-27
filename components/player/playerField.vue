@@ -140,7 +140,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative w-full">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index"
+                        class="card shadow-sm relative w-full">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">

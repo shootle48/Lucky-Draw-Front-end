@@ -60,7 +60,18 @@ computed(() => props.data?.filter_position?.split(',') || [])
         <div v-if="props.data.prize_name" class="mt-4">
           <div class="w-fit rounded-lg p-4 flex flex-col mx-auto items-center gap-4">
             <h4 class="font-semibold text-md mb-1">รางวัล</h4>
-            <img :src="props.data.image_url" alt="prize image" class="w-40 h-40 object-cover rounded-full shadow" />
+            <div v-if="props.data.image_url">
+              <img :src="props.data.image_url" alt="prize image" class="w-40 h-40 object-cover rounded-full shadow" />
+            </div>
+            <div v-else>
+              <div class="w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
             <p class="font-semibold text-2xl">{{ props.data.prize_name }}</p>
           </div>
         </div>
