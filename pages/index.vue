@@ -43,8 +43,6 @@ const add_room = async () => {
 
             if (response.status === 200) {
                 const roomId = response.data.data.id;
-                showToast('สร้างห้องสำเร็จแล้ว!', 'alert-success');
-                await new Promise((resolve) => setTimeout(resolve, 1500));
                 await Router.push(`/room/${roomId}`);
             }
         } else {
@@ -245,17 +243,27 @@ onMounted(async () => {
 
                 <!-- Pagination Controls -->
                 <div class="flex justify-center items-center gap-4 mt-6">
-                    <button @click="changePage('prev')" :disabled="pagination.page === 1"
-                        class="btn btn-outline border-white text-white disabled:opacity-50">
-                        ⬅️ ย้อนกลับ
+                    <button @click="changePage('prev')" :disabled="pagination.page === 1" class="btn bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 
+               text-white font-semibold px-6 py-3 rounded-xl shadow-lg 
+               border-2 border-blue-400 hover:border-blue-300
+               disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-300 
+               disabled:cursor-not-allowed disabled:hover:from-gray-400 disabled:hover:to-gray-500
+               transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100">
+                        ย้อนกลับ
                     </button>
 
-                    <span class="text-white font-medium">หน้าที่ {{ pagination.page }}</span>
+                    <div class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg border-2 border-orange-300 shadow-md">
+                        <span class="text-gray-800 font-bold text-lg">หน้าที่ {{ pagination.page }}</span>
+                    </div>
 
                     <button @click="changePage('next')"
-                        :disabled="pagination.page * pagination.size >= pagination.total"
-                        class="btn btn-outline border-white text-white disabled:opacity-50">
-                        ถัดไป ➡️
+                        :disabled="pagination.page * pagination.size >= pagination.total" class="btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+               text-white font-semibold px-6 py-3 rounded-xl shadow-lg 
+               border-2 border-green-400 hover:border-green-300
+               disabled:from-gray-400 disabled:to-gray-500 disabled:border-gray-300 
+               disabled:cursor-not-allowed disabled:hover:from-gray-400 disabled:hover:to-gray-500
+               transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100">
+                        ถัดไป
                     </button>
                 </div>
             </div>

@@ -101,7 +101,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
 <template>
     <div class="card bg-[#ffffff98] shadow-xl mb-8 mx-4">
-        <div class="card-body">
+        <div class="card-body mim-w-[393pxdas] lg:min-w-[1408px]">
             <div class="flex items-center justify-between mb-4 md:min-w-[700px] gap-10">
                 <h2 class="card-title text-black">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
