@@ -82,10 +82,10 @@ const deleteRoom = async () => {
 
 <template>
     <div>
-        <!-- แสดงเมื่อไม่มีรางวัลที่สามารถจับได้ -->
+
         <div v-if="!hasAvailablePrizes && prizes.length > 0"
             class="min-h-screen flex flex-col items-center justify-center text-center p-6 ">
-            <!-- ไอคอนขนาดใหญ่ -->
+
             <div class="mb-6">
                 <div
                     class="w-32 h-32 mx-auto bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl">
@@ -97,7 +97,6 @@ const deleteRoom = async () => {
                 </div>
             </div>
 
-            <!-- หัวข้อที่โดดเด่น -->
             <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-2xl border-4 border-red-300">
                 <h1
                     class="text-4xl font-black text-transparent bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text mb-3">
@@ -110,7 +109,6 @@ const deleteRoom = async () => {
                 </p>
             </div>
 
-            <!-- ปุ่มที่โดดเด่น -->
             <button @click="$router.push(`/dashboard/${roomId}`);"
                 class="relative overflow-hidden px-10 py-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 
                        text-white text-xl font-bold rounded-2xl shadow-2xl 
@@ -163,7 +161,7 @@ const deleteRoom = async () => {
     <div v-if='isLoading' class="h-full">
         <LoadingPage />
     </div>
-    <!-- นำเข้า component PrizeModals -->
+
     <PrizeModal ref="prizeModalsRef" />
     <div class="toast toast-top toast-start fixed z-[9999]" />
 </template>

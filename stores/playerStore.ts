@@ -147,7 +147,6 @@ export const usePlayerStore = defineStore("player", {
               : false,
           }));
           this.players = mappedPlayers;
-          console.log("Players from Excel:", this.players);
         }
       } catch (error) {
         console.error("Import Error:", error);
@@ -191,7 +190,6 @@ export const usePlayerStore = defineStore("player", {
       this.isLoading = true;
       try {
         const editedPlayerData = await playerService.editPlayer(updatedPlayer);
-        console.log("Player edited successfully in store.");
         return editedPlayerData;
       } catch (e: any) {
         console.error("Error in store editPlayer:", e);
