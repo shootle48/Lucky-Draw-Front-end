@@ -132,7 +132,7 @@ computed(() => props.data?.filter_position?.split(',') || [])
             </div>
             <div>
               <p class="text-sm text-gray-500">จำนวนรางวัล</p>
-              <span class="text-black">{{ props.data.quantity }}</span>
+              <span class="text-black">{{ props.data.quantity }} จำนวน</span>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ const playerListWithFullName = computed(() => {
     return players.value
         .map((player) => ({
             ...player,
-            full_name: `${player.prefix}${player.first_name} ${player.last_name}`.trim()
+            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
         }))
         .filter((player) =>
             player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
@@ -166,8 +166,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                     </div>
 
                                 </div>
-                                <div class="text-lg font-bold">{{ player.full_name }}</div>
-                                <div class="text-sm text-gray-500">{{ player.position }}</div>
+                                <div class="text-sm md:text-base font-bold">{{ player.full_name }}</div>
+                                <div class="text-xs md:text-sm text-gray-500">{{ player.position }}</div>
                             </div>
                         </div>
                     </div>
@@ -190,8 +190,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                             </div>
 
                         </div>
-                        <div class="text-lg font-bold">{{ player.full_name }}</div>
-                        <div class="text-sm text-gray-500">{{ player.position }}</div>
+                        <div class="text-sm md:text-base font-bold">{{ player.full_name }}</div>
+                        <div class="text-xs md:text-sm text-gray-500">{{ player.position }}</div>
                     </div>
                 </div>
             </div>

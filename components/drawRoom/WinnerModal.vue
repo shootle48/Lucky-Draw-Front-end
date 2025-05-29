@@ -2,9 +2,9 @@
     <dialog open class="modal modal-open">
         <div class="modal-box flex flex-col items-center bg-[#ffffff]/98 text-black space-y-4">
             <h2 class="text-2xl font-bold text-green-600">ผู้โชคดี คนที่ {{ currentIndex + 1 }}</h2>
-            <div v-if="prize.image_url"
+            <div v-if="prizeData.image_url"
                 class="w-80 h-80 rounded-full overflow-hidden border-4 border-white drop-shadow-lg">
-                <img :src="getImageSrc(prize.image_url)" :alt="prize.name" class="object-cover w-full h-full" />
+                <img :src="getImageSrc(prizeData.image_url)" :alt="prizeData.name" class="object-cover w-full h-full" />
             </div>
             <div v-else class="w-60 h-60 bg-gray-200 rounded-full flex items-center justify-center shadow-inner">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
@@ -31,6 +31,13 @@
     </dialog>
 </template>
 
-<script setup>
+<script lang="ts" setup>
+import type { prizeType } from '@/types/prize';
+
 defineProps(['currentWinner', 'currentIndex', 'prizeData'])
+const getImageSrc = (image: string | File | null): string => {
+    if (!image) return "";
+    if (typeof image === "string") return image;
+    return URL.createObjectURL(image);
+};
 </script>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { prizeType } from '~/types/prize';
 
-
 const route = useRoute();
 const prizeStore = usePrizeStore();
 const isMainPage = computed(() => route.path.startsWith('/mainPage'));
@@ -73,7 +72,7 @@ const { handleEditPrize = () => { } } = defineProps<{
             <button
               class="btn h-fit bg-gradient-to-t from-[#ff8f00] to-[#ffd902] p-2 border-0 rounded-[2rem] w-fit text-white shadow-black shadow-sm">
               <div class="bg-[#ffae02] rounded-[2rem] p-2 text-sm font-semibold flex items-center gap-1">
-                <p class="drop-shadow-md">แก้ไขรางวัล</p>
+                <p class="drop-shadow-md">จัดการรางวัล</p>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-6">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -104,13 +103,14 @@ const { handleEditPrize = () => { } } = defineProps<{
 
 
       <!-- ถ้าไม่มีรางวัล -->
-      <div v-if="prizes.length === 0" class="badge badge-outline badge-primary shadow-md h-40 flex items-center justify-center gap-4 mx-auto rounded-lg">
+      <div v-if="prizes.length === 0"
+        class="badge badge-outline badge-primary shadow-md h-40 flex items-center justify-center gap-4 mx-auto rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 24 24"
           class="stroke-current shrink-0 w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
-        <span class=" text-xl font-bold drop-shadow-2xl text-black">ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย
+        <span class=" text-xl font-bold drop-shadow-2xl text-black/50">ยังไม่มีของรางวัลในตอนนี้ กรุณาเพิ่มรางวัลอย่างน้อย
           1
           รายการก่อนเริ่มใช้งาน</span>
       </div>

@@ -2,6 +2,7 @@
 import Swal from 'sweetalert2';
 import { getToast } from "@/composables/useToastPage";
 import logo from '@/assets/logo.png';
+import type { playerType } from '~/types/player';
 
 const { showToast } = getToast();
 const router = useRouter();
