@@ -187,7 +187,7 @@ const dropdownLimit = computed(() => isDropdownOpen.value ? 9999 : screenLimit.v
         <div class="p-4 text-black flex flex-col mt-20 items-center">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-0 relative">
                 <div class="col-span-1 lg:col-span-1 flex justify-center items-center">
-                    <div class="flex flex-col lg:fixed top-50 z-999 justify-center items-center">
+                    <div class="flex flex-col lg:fixed top-50 z-40 justify-center items-center">
                         <div
                             class="bg-[#ffffff69] rounded-box  max-w-md shadow-lg py-4 px-6 sm:px-10 mb-4 text-center mx-4 md:mx-auto">
                             <h1 class="text-black text-xl md:text-2xl font-bold drop-shadow-lg">{{ roomData.name }}</h1>
@@ -205,33 +205,34 @@ const dropdownLimit = computed(() => isDropdownOpen.value ? 9999 : screenLimit.v
                     </div>
                 </div>
                 <!-- filter_field -->
-                <div class="bg-[#ffffff69] col-span-1 lg:col-span-2 p-6 rounded-lg shadow-lg w-full mb-4">
-                    <h3 class="font-semibold my-4">ตั้งเงื่อนไขผู้เล่น</h3>
+                <div
+                    class="bg-[#ffffff69] col-span-1 lg:col-span-2 p-6 rounded-lg shadow-lg w-full lg:min-w-[1115px] mb-4">
+                    <h3 class="font-semibold my-4 text-xl">ตั้งเงื่อนไขผู้เล่น</h3>
                     <div class="flex flex-col justify-center">
                         <div class="flex flex-col lg:flex-row gap-4">
 
                             <!-- จำนวนรางวัล -->
                             <div class="flex flex-col gap-2 col-span-1">
-                                <p class="font-medium text-xs sm:text-sm">จำนวนรางวัลที่สุ่ม</p>
+                                <p class="font-medium ">จำนวนรางวัลที่สุ่ม</p>
                                 <div
-                                    class="flex justify-between items-center bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-1.75 shadow-xl/30 shadow-black">
+                                    class="flex justify-between items-center mt-2 bg-gradient-to-t from-[#3fc028] to-[#5ee746] rounded-full px-2 py-1.75 shadow-xl/30 shadow-black">
                                     <button @click="quantity = Math.max(1, quantity - 1)"
-                                        class="text-black text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 hover:scale-105 transition-transform cursor-pointer">-</button>
+                                        class="text-black font-bold px-2 sm:px-3 py-1 hover:scale-105 transition-transform cursor-pointer">-</button>
                                     <div class="w-px h-4 sm:h-6 bg-black mx-1 opacity-40 text-white"></div>
                                     <input type="number" v-model.number="quantity" min="1"
-                                        class="no-spinner w-8 sm:w-12 text-center bg-transparent text-black text-xs sm:text-sm font-semibold outline-none" />
+                                        class="no-spinner w-8 sm:w-12 text-center bg-transparent text-black font-semibold outline-none" />
                                     <div class="w-px h-4 sm:h-6 bg-black mx-1 opacity-40"></div>
                                     <button @click="quantity++"
-                                        class="text-black text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 hover:scale-105 transition-transform cursor-pointer">+</button>
+                                        class="text-black font-bold px-2 sm:px-3 py-1 hover:scale-105 transition-transform cursor-pointer">+</button>
                                 </div>
                             </div>
 
                             <!-- ผู้ที่มีสิทธิ์เล่น -->
                             <div class="flex flex-col gap-2 col-span-1 sm:col-span-2 lg:col-span-1">
-                                <p class="font-medium text-xs sm:text-sm">ผู้ที่มีสิทธิ์เล่น</p>
+                                <p class="font-medium">ผู้ที่มีสิทธิ์เล่น</p>
                                 <div
-                                    class="flex justify-center min-w-full bg-gradient-to-t from-[#FFD900] to-[#FBFF27] rounded-full px-4 py-2.5 shadow-xl/30 shadow-black">
-                                    <div class="flex gap-4 text-sm">
+                                    class="flex justify-center mt-2 min-w-full bg-gradient-to-t from-[#FFD900] to-[#FBFF27] rounded-full px-4 py-2.5 shadow-xl/30 shadow-black">
+                                    <div class="flex gap-4">
                                         <div class="flex items-center gap-2">
                                             <input type="checkbox"
                                                 class="checkbox checkbox-primary checkbox-xs sm:checkbox-sm"
@@ -250,23 +251,23 @@ const dropdownLimit = computed(() => isDropdownOpen.value ? 9999 : screenLimit.v
 
                             <!-- ผู้เข้าร่วม -->
                             <div class="flex flex-col gap-2 col-span-1">
-                                <p class="font-medium text-xs sm:text-sm">ผู้เข้าร่วม</p>
+                                <p class="font-medium">ผู้เข้าร่วม</p>
                                 <select v-model="filter_is_active"
-                                    class="w-full bg-gradient-to-t from-[#e64a4a] to-[#ffaac3] rounded-full text-black px-2 sm:px-4 py-2 shadow-xl/30 shadow-black cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ffaac3] transition-all duration-200 ease-in-out text-xs sm:text-sm">
+                                    class="w-full mt-2 bg-gradient-to-t from-[#e64a4a] to-[#ffaac3] rounded-full text-black px-2 sm:px-4 py-2 shadow-xl/30 shadow-black cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ffaac3] transition-all duration-200 ease-in-out">
                                     <option :value="false">ผู้เล่นทั้งหมด</option>
                                     <option :value="true">เฉพาะผู้เข้าร่วม</option>
                                 </select>
                             </div>
 
                             <!-- ตำแหน่ง -->
-                            <div class="flex flex-col gap-2 col-span-1 sm:col-span-2 lg:col-span-1">
-                                <p class="font-medium text-xs sm:text-sm">ตำแหน่ง</p>
-                                <div class="w-full relative ">
+                            <div class="flex flex-col gap-2 items-center lg:relative">
+                                <p class="font-medium">ตำแหน่ง</p>
+                                <div class="w-full lg:absolute lg:top-8 lg:left-0 lg:min-w-106">
+                                    <!-- เพิ่ม class พิเศษเพื่อควบคุมการแสดงผล dropdown -->
                                     <Multiselect v-model="filter_position" :options="uniquePositions" :multiple="true"
                                         :taggable="false" :limit="dropdownLimit" :limitText="getLimitText"
-                                        placeholder="เลือกตำแหน่ง..." @open="handleDropdown(true)"
-                                        @close="handleDropdown(false)"
-                                        class="shadow-xl/30 shadow-black rounded-full multiselect-responsive" />
+                                        placeholder="เลือกหรือลองค้นหาตำแหน่งผู้เล่น..." @open="handleDropdown(true)"
+                                        @close="handleDropdown(false)" class="shadow-xl/30 shadow-black rounded-full" />
                                 </div>
                             </div>
                         </div>
