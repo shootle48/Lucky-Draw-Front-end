@@ -26,6 +26,7 @@ const { isLoading, prize: prizeData } = storeToRefs(prizeStore);
 const { drawConditions } = storeToRefs(drawStore);
 const isShowing = ref<boolean>(false);
 const isDropdownOpen = ref<boolean>(false);
+const isConditionSuccess = ref(false);
 
 const togglePlayer = () => {
     isShowing.value = !isShowing.value;
@@ -102,9 +103,12 @@ const handleCreateCondition = async () => {
         });
 
         if (createdCondition.id) {
+            isConditionSuccess.value = true
             showToast("เพิ่มเงื่อนไขสำเร็จแล้ว", "alert-success");
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            router.push(`/drawRoom/${createdCondition.id}`);
+            setTimeout(async () => {
+                isConditionSuccess.value = false;
+                router.push(`/drawRoom/${createdCondition.id}`);
+            }, 500)
         }
 
     } catch {
@@ -329,7 +333,7 @@ const dropdownLimit = computed(() => isDropdownOpen.value ? 9999 : screenLimit.v
 
         </div>
 
-        <div v-if="isLoading">
+        <div v-if="isLoading || isConditionSuccess">
             <LoadingPage />
         </div>
         <div class="toast toast-top toast-start fixed z-[9999]"></div>
