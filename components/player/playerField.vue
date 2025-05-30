@@ -29,7 +29,7 @@ const playerListWithFullName = computed(() => {
     return players.value
         .map((player) => ({
             ...player,
-            full_name: `${player.prefix}${player.first_name} ${player.last_name}`.trim()
+            full_name: `${player.prefix} ${player.first_name} ${player.last_name}`.trim()
         }))
         .filter((player) =>
             player.full_name.toLowerCase().includes(nameSearch.value.toLowerCase())
@@ -101,7 +101,7 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
 
 <template>
     <div class="card bg-[#ffffff98] shadow-xl mb-8 mx-4">
-        <div class="card-body">
+        <div class="card-body mim-w-[393pxdas] lg:min-w-[1408px]">
             <div class="flex items-center justify-between mb-4 md:min-w-[700px] gap-10">
                 <h2 class="card-title text-black">รายชื่อผู้เข้าร่วม ({{ players.length }} คน)</h2>
                 <input type="checkbox" @click="togglePlayer" class="toggle toggle-accent bg-black" checked />
@@ -140,7 +140,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                     <div v-if="isNoResults" class="col-span-full text-center text-lg text-gray-500">
                         ไม่พบข้อมูลผู้เล่นที่ค้นหา
                     </div>
-                    <div v-for="(player, index) in playerListWithFullName" :key="index" class="card shadow-sm relative w-full">
+                    <div v-for="(player, index) in playerListWithFullName" :key="index"
+                        class="card shadow-sm relative w-full">
                         <div class="card-body p-3 text-center">
                             <button class="btn bg-transparent border-0 cursor-pointer p-1 absolute top-2 left-2 z-10"
                                 @click="openEditModal(player)">
@@ -165,8 +166,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                                     </div>
 
                                 </div>
-                                <div class="text-lg font-bold">{{ player.full_name }}</div>
-                                <div class="text-sm text-gray-500">{{ player.position }}</div>
+                                <div class="text-sm md:text-base font-bold">{{ player.full_name }}</div>
+                                <div class="text-xs md:text-sm text-gray-500">{{ player.position }}</div>
                             </div>
                         </div>
                     </div>
@@ -189,8 +190,8 @@ const handleEditPlayer = (updatedPlayer: playerType) => {
                             </div>
 
                         </div>
-                        <div class="text-lg font-bold">{{ player.full_name }}</div>
-                        <div class="text-sm text-gray-500">{{ player.position }}</div>
+                        <div class="text-sm md:text-base font-bold">{{ player.full_name }}</div>
+                        <div class="text-xs md:text-sm text-gray-500">{{ player.position }}</div>
                     </div>
                 </div>
             </div>

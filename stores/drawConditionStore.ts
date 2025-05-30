@@ -39,10 +39,6 @@ export const useDrawConditionStore = defineStore("drawCondition", {
               p.last_name ?? ""
             }`.trim(),
           })) as drawConditionType[];
-          console.log(
-            "📤 Fetched and processed draw conditions preview:",
-            logPayload
-          );
         } else {
           this.drawConditions = [];
         }

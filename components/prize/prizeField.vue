@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePrizeStore } from '@/stores/PrizeStore';
 import PrizesCarousel from './prizesCarousel.vue';
-
+import type { prizeType } from '~/types/prize';
 
 const route = useRoute();
 const prizeStore = usePrizeStore();
@@ -9,9 +9,11 @@ const roomId = route.params.id as string;
 
 const prizesQuantity = computed(() => prizeStore.prizes.length);
 
-const props = defineProps({
-  handleEditPrize: Function
-})
+
+
+const props = defineProps<{
+  handleEditPrize?: (prize: prizeType) => void
+}>();
 </script>
 
 <template>

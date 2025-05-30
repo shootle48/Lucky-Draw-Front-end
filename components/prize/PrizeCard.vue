@@ -7,6 +7,7 @@ const route = useRoute();
 
 const roomID = route.params.id
 const isMainPage = computed(() => route.path.startsWith('/mainPage'));
+const isMainPageUpdate = computed(() => route.path.startsWith('/mainPage/updatePrize'));
 const isPrizeChoose = computed(() => route.path.startsWith('/prizeChoose'))
 const getImageSrc = (image: string | File | null): string => {
   if (!image) return "";
@@ -71,7 +72,7 @@ const confirmDelete = async (id: string) => {
   <div v-else class="card bg-[#ffffff98] border rounded-box relative overflow-hidden min-w-[215px] ">
 
     <!-- ✅ แสดงปุ่มลบเฉพาะใน /room/:id -->
-    <div v-if="!isMainPage && !isPrizeChoose">
+    <div v-if="!isMainPage && !isPrizeChoose || isMainPageUpdate">
       <button @click="confirmDelete(prize.id as string)"
         class="absolute top-2 right-2 btn btn-sm btn-circle btn-error z-10">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"
@@ -108,7 +109,15 @@ const confirmDelete = async (id: string) => {
 
         <div class="card-actions justify-center">
           <!-- ✅ ถ้าอยู่ mainPage → ปุ่ม "เลือก" กลางการ์ด -->
-          <NuxtLink v-if="isMainPage" :to="`/prizeChoose/${roomID}/${prize.id}`">
+          <!-- ✅ ถ้าอยู่ room → ปุ่มแก้ไข -->
+          <button v-if="!isMainPage || isMainPageUpdate" @click="handleEditPrize(prize)"
+            class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-1 px-2 mt-4 border-0 rounded-[2rem] w-full sm:w-fit text-white shadow-black shadow-sm z-30">
+            <div class="bg-[#ffae02] p-1 px-4  rounded-[2rem] font-medium text-center">
+              <p class="drop-shadow-lg">แก้ไข</p>
+            </div>
+          </button>
+          <div v-else-if="isPrizeChoose" class="hidden"></div>
+          <NuxtLink v-else :to="`/prizeChoose/${roomID}/${prize.id}`">
             <button
               class="btn h-fit bg-gradient-to-t from-[#3fc028] to-[#5ee746] p-1 px-2 border-0 rounded-[2rem]  text-white shadow-black shadow-sm mt-4">
               <div class="bg-[#3fc028] rounded-[2rem] p-1 px-4 text-sm md:text-lg font-medium flex items-center gap-1">
@@ -116,15 +125,6 @@ const confirmDelete = async (id: string) => {
               </div>
             </button>
           </NuxtLink>
-          <div v-else-if="isPrizeChoose" class="hidden"></div>
-
-          <!-- ✅ ถ้าอยู่ room → ปุ่มแก้ไข -->
-          <button v-else @click="handleEditPrize(prize)"
-            class="btn h-fit bg-gradient-to-t mx-auto from-[#ff8f00] to-[#ffd902] p-1 sm:p-2 mt-4 border-0 rounded-[1.5rem] w-full sm:w-fit text-white shadow-black shadow-sm">
-            <div class="bg-[#ffae02] px-4 py-2 sm:px-6 sm:py-3 rounded-[1.5rem] font-medium text-center">
-              <p class="drop-shadow-lg">แก้ไข</p>
-            </div>
-          </button>
 
         </div>
       </div>

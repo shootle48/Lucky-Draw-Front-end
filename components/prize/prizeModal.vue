@@ -47,7 +47,7 @@ const isEditFormValid = computed(() => {
     return (
         editingPrize.value !== null &&
         editingPrize.value.name.trim() !== '' &&
-        Number(editingPrize.value.quantity) > 0
+        Number(editingPrize.value.quantity) >= 0
     );
 });
 

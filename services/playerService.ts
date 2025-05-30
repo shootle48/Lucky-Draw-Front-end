@@ -9,9 +9,9 @@ export const fetchRooms = async (page = 1, size = 6, search?: string) => {
         page,
         size,
         search,
-        search_by: 'name',
-        sort_by: 'created_at',
-        order_by: 'desc',
+        search_by: "name",
+        sort_by: "created_at",
+        order_by: "desc",
       },
     });
     // The store will handle setting state, service returns data or throws error
@@ -36,6 +36,20 @@ export const fetchRoom = async (roomId: string) => {
     }
   } catch (error) {
     console.error("Error in playerService.fetchRoom:", error);
+    throw error;
+  }
+};
+
+export const deleteRoom = async (roomId: string) => {
+  try {
+    const response = await apiClient.delete(`/rooms/${roomId}`);
+    if (response.status === 200) {
+      return response.data; // Store was assigning response.data
+    } else {
+      throw new Error(`Failed to delete room: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error in playerService.deleteRoom:", error);
     throw error;
   }
 };
