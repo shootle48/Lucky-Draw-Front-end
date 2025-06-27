@@ -131,7 +131,7 @@ onUnmounted(() => {
 
     <!-- ❌ เมื่อรางวัลหมด หรือสุ่มครบแล้ว -->
     <div v-if="(isPrizeExhausted || isFinished) && !isLoading"
-      class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white">
+      class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-130 text-white">
       <div class="backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-2xl border-4 border-red-300">
         <div class="text-4xl text-white font-black bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text mb-3">
           {{ isPrizeExhausted ? 'รางวัลหมดแล้ว' : 'สุ่มครบตามจำนวนแล้ว' }}
@@ -161,14 +161,14 @@ onUnmounted(() => {
 <style>
 .card.glow {
   animation: glow 0.4s ease-in-out infinite alternate;
-  z-index: 60;
+  z-index: 110;
   position: relative;
 }
 
 .card.glow-temp {
   animation: glow 0.3s ease-in-out infinite alternate;
   border: 2px dashed #ff9800;
-  z-index: 50;
+  z-index: 120;
 }
 
 @keyframes glow {
@@ -191,7 +191,7 @@ onUnmounted(() => {
   height: 100%;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(1px);
-  z-index: 40;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;

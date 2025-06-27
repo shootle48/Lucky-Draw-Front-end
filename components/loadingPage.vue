@@ -1,6 +1,6 @@
 <template>
     <div
-        class="fixed top-0 left-0 z-[9999] w-screen h-screen bg-black/80 flex justify-center items-center overflow-hidden">
+        class="fixed top-0 left-0 z-100 w-screen h-screen bg-black/80 flex justify-center items-center overflow-hidden">
         <!-- Hamster loader -->
         <div aria-label="Orange and tan hamster running in a metal wheel" role="img" class="wheel-and-hamster">
             <div class="wheel"></div>

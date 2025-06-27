@@ -11,6 +11,7 @@ definePageMeta({
 });
 const showQR = ref(false)
 const isMdUp = useMediaQuery('(min-width: 768px)')
+const isCreatingRoom = ref(false);
 const QRcodeTamplateForm = import.meta.env.VITE_QR_CODE_TEMPLATE_FORM_URL;
 
 const { showToast } = getToast();
@@ -37,25 +38,36 @@ const searchQuery = ref("");
 const add_room = async () => {
     try {
         if (RoomData.value.name.trim() !== '') {
+            isCreatingRoom.value = true; // 👉 เริ่มโหลด
             const response = await axios.post(`${import.meta.env.VITE_API}/rooms/create`, {
                 ...RoomData.value,
             });
 
             if (response.status === 200) {
+                showToast('สร้างห้องสำเร็จ!', 'alert-success');
                 const roomId = response.data.data.id;
-                await Router.push(`/room/${roomId}`);
+                setTimeout(async () => {
+                    isCreatingRoom.value = false;
+                    await Router.push(`/room/${roomId}`);
+                }, 1500);
             }
         } else {
             showToast('กรุณากรอกชื่อห้อง', 'alert-warning');
         }
     } catch (error) {
+        isCreatingRoom.value = false;
         showToast('ไม่สามารถสร้างห้องได้ กรุณาลองใหม่', 'alert-error');
     }
 };
 
+
 const openPasswordModal = (room: roomTypes) => {
     if (!room.has_password) {
-        Router.push(`mainPage/${room.id}`)
+        isCreatingRoom.value = true;
+        setTimeout(async () => {
+            isCreatingRoom.value = false;
+            await Router.push(`/mainPage/${room.id}`);
+        }, 500);
         return
     } else {
         selectedRoom.value = room;
@@ -74,6 +86,7 @@ const submitPassword = async () => {
     if (!selectedRoom.value) return;
 
     try {
+        isCreatingRoom.value = true;
         const res = await axios.post(`${import.meta.env.VITE_API}/rooms/login`, {
             id: selectedRoom.value.id,
             password: currentRoomPassword.value.trim()
@@ -82,7 +95,10 @@ const submitPassword = async () => {
         if (res.status === 200) {
             const roomId = selectedRoom.value.id
             closeModal();
-            Router.push(`/mainPage/${roomId}`);
+            setTimeout(async () => {
+                isCreatingRoom.value = false;
+                await Router.push(`/mainPage/${roomId}`);
+            }, 500);
         } else {
             showToast("รหัสผ่านไม่ถูกต้อง", "alert-warning");
         }
@@ -337,7 +353,7 @@ onMounted(async () => {
         </div>
     </NuxtLink>
 
-    <LoadingPage v-if="isLoading" />
+    <LoadingPage v-if="isLoading || isCreatingRoom" />
 </template>
 
 <style lang="scss" scoped></style>
